@@ -4,8 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Doubles;
-import com.sun.istack.internal.Nullable;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.transport.connect.SocketConnection;
@@ -15,7 +13,6 @@ import org.simpleframework.util.thread.Scheduler;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
 import tdg.Options;
-import tdg.analysis.Defaults;
 import tdg.analysis.SiteAnalyser;
 import tdg.models.TDGGlobals;
 import tdg.utils.PhyloUtils;
@@ -61,8 +58,8 @@ public class Server implements Container {
 
                 System.out.printf("Site %s-- Task started.\n", site);
 
-                SiteAnalyser sa = new SiteAnalyser();
-                sa.run(tree, alignment, globals, site, options);
+                SiteAnalyser sa = new SiteAnalyser(tree, alignment, globals, site, options);
+                sa.run();
 
                 PrintStream body = response.getPrintStream();
                 response.set("Content-Type", "text/plain");
@@ -147,8 +144,8 @@ public class Server implements Container {
         FileWriter writer = new FileWriter("host" + in.getHostName() + ".txt");
         BufferedWriter out = new BufferedWriter(writer);
 
-        for (int i=0; i<all.length; i++) {
-            out.write(all[i] + "\n");
+        for (InetAddress anAll : all) {
+            out.write(anAll + "\n");
         }
 
         out.close();

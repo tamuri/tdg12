@@ -103,8 +103,8 @@ public class Analyse {
 
         @Override
         public double[] call() {
-            SiteAnalyser sa = new SiteAnalyser();
-            sa.run(tree, alignment, globals, site, options);
+            SiteAnalyser sa = new SiteAnalyser(tree, alignment, globals, site, options);
+            sa.run();
             System.out.printf("Site %s - Done. Homogeneous lnL = %s. Non-homogeneous lnL = %s\n", this.site, sa.getHomogeneousLikelihood(), sa.getNonHomogeneousLikelihood());
             return new double[]{sa.getHomogeneousLikelihood(), sa.getNonHomogeneousLikelihood()};
         }
