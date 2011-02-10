@@ -5,7 +5,9 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
-import org.apache.commons.math.optimization.*;
+import org.apache.commons.math.optimization.GoalType;
+import org.apache.commons.math.optimization.RealConvergenceChecker;
+import org.apache.commons.math.optimization.RealPointValuePair;
 import org.apache.commons.math.optimization.direct.DirectSearchOptimizer;
 import org.apache.commons.math.optimization.direct.NelderMead;
 import org.apache.commons.math.random.MersenneTwister;
@@ -19,9 +21,9 @@ import tdg.models.MinimisationParameters;
 import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
+import tdg.models.parameters.Parameter;
 import tdg.optim.EquivalentValueConvergenceChecker;
 import tdg.optim.LikelihoodMaximiser;
-import tdg.optim.PointAndValueConvergenceChecker;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -210,18 +212,23 @@ public class SiteAnalyser {
         // ********************* NON-HOMOGENEOUS MODEL *************************
         LikelihoodCalculator nonHomogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
-        Fitness nonHomogeneousFitnessAv = new Fitness(homogeneousFitness.get().clone(), true);
-        Fitness nonHomogeneousFitnessHu = new Fitness(homogeneousFitness.get().clone(), true);
+        // TODO: we should be reading the list of clade labels from command-line Options!
+        List<String> clades = Lists.newArrayList("Av", "Hu");
+        List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
+        List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
+        for (int i = 0; i < clades.size(); i++) {
+            fitnesses.add(i, new Fitness(homogeneousFitness.get().clone(), true));
+            tdgModels.add(i, new TDGCodonModel(globals, fitnesses.get(i), aminoAcidsAtSite));
+            nonHomogeneousModel.addCladeModel(clades.get(i), tdgModels.get(i));
+        }
+        nonHomogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
 
+
+        /*
         // TODO: For some sites, initial parameters matter! (Flat likelihood surface?) e.g. PB2 site 199. Try it:
         // Fitness nonHomogeneousFitnessAv = new Fitness(new double[aminoAcidsAtSite.size()], true);
         // Fitness nonHomogeneousFitnessHu = new Fitness(new double[aminoAcidsAtSite.size()], true);
-
-        nonHomogeneousModel.setParameters(nonHomogeneousFitnessAv, nonHomogeneousFitnessHu);
-        TDGCodonModel tcm2Av = new TDGCodonModel(globals, nonHomogeneousFitnessAv, aminoAcidsAtSite);
-        TDGCodonModel tcm2Hu = new TDGCodonModel(globals, nonHomogeneousFitnessHu, aminoAcidsAtSite);
-        nonHomogeneousModel.addCladeModel("Av", tcm2Av);
-        nonHomogeneousModel.addCladeModel("Hu", tcm2Hu);
+        */
 
         MinimisationParameters mp2 = nonHomogeneousModel.getMinimisationParameters();
 
@@ -238,10 +245,10 @@ public class SiteAnalyser {
 
         nonHomogeneousModel.function(r2.getPoint());
         System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
-        System.out.printf("Site %s - Fitness Av: { %s }\n", site, Doubles.join(", ", nonHomogeneousFitnessAv.get()));
-        System.out.printf("Site %s - Pi Av: { %s }\n", site, Doubles.join(", ", tcm2Av.getAminoAcidFrequencies()));
-        System.out.printf("Site %s - Fitness Hu: { %s }\n", site, Doubles.join(", ", nonHomogeneousFitnessHu.get()));
-        System.out.printf("Site %s - Pi Hu: { %s }\n", site, Doubles.join(", ", tcm2Hu.getAminoAcidFrequencies()));
+        for (int i = 0; i < clades.size(); i++) {
+            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", fitnesses.get(i).get()));
+            System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(i), Doubles.join(", ", tdgModels.get(i).getAminoAcidFrequencies()));
+        }
         nonHomogeneousLikelihood = -r2.getValue();
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
