@@ -15,10 +15,12 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import pal.alignment.Alignment;
+import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -194,9 +196,18 @@ public class ClientHopspack {
         // Load the alignment
         final Alignment alignment = PhyloUtils.readAlignment(alignmentFile);
 
+        List<String> sitesToDo;
+        // Read in the sites not done
+        try {
+            sitesToDo = Files.readLines(new File("sites.notdone"), Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         // Get the Q matrix size (= number of codons) for each site
         Map<Integer, Integer> siteCodonCount = new HashMap<Integer, Integer>();
         for (int i = 1; i <= (alignment.getSiteCount() / 3); i++) {
+            if (!sitesToDo.contains(Integer.toString(i))) continue;
             Map<String, Integer> sitePattern = PhyloUtils.getCodonsAtSite(alignment, i);
             List<Integer> aminoAcidsAtSite = PhyloUtils.getDistinctAminoAcids(sitePattern.values());
             List<Integer> allCodons = PhyloUtils.getCodonsFromAminoAcids(aminoAcidsAtSite);
@@ -232,6 +243,8 @@ public class ClientHopspack {
     public static void main(String[] args) throws Exception {
         // TODO: There should be a 'BaseClient' and then implementations of 'run', or task etc.
         // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
+        // TODO: This needs to be a config item - should use same JCommander option configuration!
+        GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
         ClientHopspack c = new ClientHopspack();
         c.loadConfiguration();
         c.run(args);

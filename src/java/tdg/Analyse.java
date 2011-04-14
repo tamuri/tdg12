@@ -40,6 +40,8 @@ public class Analyse {
     }
 
     private void run() {
+        long startTime = System.currentTimeMillis();
+
         // Global parameters for the TdG model
         final TDGGlobals tdgGlobals = new TDGGlobals(options.tau, options.kappa, options.pi, options.mu, options.gamma);
         final Tree tree = PhyloUtils.readTree(options.treeFile);
@@ -64,7 +66,7 @@ public class Analyse {
         System.out.printf("tdg.Analyse - Running with %s thread(s).\n", threads);
 
         // Add each site analysis to the thread pool
-        for (int site = startSite; site <= endSite ; site++) {
+        for (int site = startSite; site <= endSite; site++) {
             Future<double[]> future = threadPool.submit(new SiteAnalyserThread(site, tree, alignment, tdgGlobals, options));
             results.add(future);
         }
@@ -83,9 +85,10 @@ public class Analyse {
         System.out.printf("tdg.Analyse - Done!\n");
         System.out.printf("tdg.Analyse - Total homogeneous lnL: %s\n", sumHomLnl);
         System.out.printf("tdg.Analyse - Total non-homogeneous lnL: %s\n", sumNonHomLnl);
+        System.out.printf("tdg.Analyse - Total time: %s ms (%.2f m).\n", System.currentTimeMillis() - startTime, (System.currentTimeMillis() - startTime) / 60000.0);
         threadPool.shutdown();
     }
-
+ 
     private class SiteAnalyserThread implements Callable<double[]> {
         private final int site;
         private final TDGGlobals globals;

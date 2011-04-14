@@ -5,10 +5,14 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
+import org.apache.commons.math.FunctionEvaluationException;
+import org.apache.commons.math.MaxEvaluationsExceededException;
 import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.RealConvergenceChecker;
 import org.apache.commons.math.optimization.RealPointValuePair;
+import org.apache.commons.math.optimization.SimpleScalarValueChecker;
 import org.apache.commons.math.optimization.direct.DirectSearchOptimizer;
+import org.apache.commons.math.optimization.direct.MultiDirectional;
 import org.apache.commons.math.optimization.direct.NelderMead;
 import org.apache.commons.math.random.MersenneTwister;
 import org.apache.commons.math.random.RandomData;
@@ -24,15 +28,17 @@ import tdg.models.parameters.Fitness;
 import tdg.models.parameters.Parameter;
 import tdg.optim.EquivalentValueConvergenceChecker;
 import tdg.optim.LikelihoodMaximiser;
+import tdg.optim.PointAndValueConvergenceChecker;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author Asif Tamuri
- * @version $Id: SiteAnalyser.java 157 2010-12-02 16:09:50Z tamuri $
+ * @version $Id: SiteAnalyser.java 157 2010-12-02 16:09:50Z atamuri $
  */
 public class SiteAnalyser {
     private static final int INITIAL_PARAM_RANGE = 3;
@@ -66,6 +72,7 @@ public class SiteAnalyser {
         }
 
         List<Integer> aminoAcidsAtSite = PhyloUtils.getDistinctAminoAcids(sitePattern.values());
+        int observedResidueCount = aminoAcidsAtSite.size();
 
         // If we're not using the approximate method (collapsing the matrix)
         if (!options.approx) {
@@ -100,17 +107,18 @@ public class SiteAnalyser {
             }
         });
 
-        System.out.printf("Site %s - Residues: [%s] { %s }\n", site, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
+        System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
 
         RandomData randomData = new RandomDataImpl(new MersenneTwister());
 
-
+        // This makes a big difference to total optimisation time. We should think about which
+        // convergence checked to use for optimising global parameters vs. site fitness parameters
         // Same as the standard scalar value convergence checker, but regards function has converged if
         // 50 consecutive evaluations do not change by more than 1E-6.
-        RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
-        // RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-10, 500, 1E-7);
-
-
+        //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
+        //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1E-6);
+        
         int runs = options.optimRuns;
 
         Map<String, RealPointValuePair> optimiseRuns = Maps.newHashMap();
@@ -123,8 +131,41 @@ public class SiteAnalyser {
             // The purpose of multiple runs is to test the optimisation routine with different initial parameters
             // So if we are performing multiple runs, then pick a set of random initial parameters for this run
             if (options.optimRuns > 1) {
+                /* // this is the original...
                 double[] newF = new double[aminoAcidsAtSite.size()];
                 for (int j = 1; j < aminoAcidsAtSite.size(); j++) newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
+                homogeneousFitness.set(newF); //
+                */
+                // we're testing approx vs full:
+                double[] newF = new double[aminoAcidsAtSite.size()];
+                for (int j = 1; j < aminoAcidsAtSite.size(); j++) {
+                    if (i == 0) {
+                        // first run - all 0
+                        newF[j] = 0;
+
+                    } else if (i == 1) {
+                        // second run - observed 0, unobserved -20
+                        if (j < observedResidueCount) {
+                            newF[j] = 0;
+                        } else {
+                            newF[j] = -20;
+                        }
+                    } else if (i == 2) {
+                        // third run - random observed, unobserved -20
+                        /*if (j < observedResidueCount) {
+                            newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
+                        }
+
+                        else {
+                            newF[j] = -20;
+
+                        }*/
+                        // third run - all random
+                        newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
+                    }
+
+                }
+                //System.out.printf("newF = %s\n", Doubles.join(", ", newF));
                 homogeneousFitness.set(newF);
             }
 
@@ -145,23 +186,26 @@ public class SiteAnalyser {
                 System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, homogeneousLikelihood);
                 System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", homogeneousFitness.get()));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
+
+                //TODO: we exit out of method here...what about the rest of the output??
                 return;
             }
-
+    
             MinimisationParameters mp = homogeneousModel.getMinimisationParameters();
-            DirectSearchOptimizer dso = new NelderMead(); //new MultiDirectional();
+            DirectSearchOptimizer dso = new NelderMead(); //new MultiDirectional(); //
             // Default convergence criteria : relative: 1.972152e-29, absolute: < 1.780059e-305
             dso.setConvergenceChecker(convergenceChecker);
-
+            dso.setMaxEvaluations(10000);
             LikelihoodMaximiser maximiser = new LikelihoodMaximiser();
             maximiser.setLc(homogeneousModel);
 
+            // System.out.printf("Site %s - Starting optimisation...", site);
             RealPointValuePair r;
             try {
                 r = dso.optimize(maximiser, GoalType.MINIMIZE, mp.getParameters());
-                String key = String.format("%.6f", -r.getValue());
+                String key = String.format("%.3f", -r.getValue());
                 if (!optimiseRuns.containsKey(key)) optimiseRuns.put(key, r);
-                System.out.printf("Site %s - Optimisation run %s. lnL = %s, Params = {%s -> %s}\n", site, i + 1, -r.getValue(), Doubles.join(", ", mp.getParameters()), Doubles.join(", ", r.getPoint()));
+                System.out.printf("Site %s - Optimisation run %s (%s evaluations). lnL = %s, Params = {%s -> %s}\n", site, i + 1, dso.getEvaluations(), -r.getValue(), Doubles.join(", ", mp.getParameters()), Doubles.join(", ", r.getPoint()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -171,6 +215,7 @@ public class SiteAnalyser {
         RealPointValuePair r;
         if (optimiseRuns.size() == 1) {
             r = optimiseRuns.values().iterator().next();
+            if (runs > 1) System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
         } else {
             System.out.printf("Site %s - %s runs converged to %s different optima. (%s)\n", site, runs, optimiseRuns.size(), Joiner.on(", ").join(optimiseRuns.keySet()));
             // get the best
@@ -233,6 +278,8 @@ public class SiteAnalyser {
         MinimisationParameters mp2 = nonHomogeneousModel.getMinimisationParameters();
 
         DirectSearchOptimizer dso2 = new NelderMead();
+        dso2.setConvergenceChecker(convergenceChecker);
+
         LikelihoodMaximiser maximiser2 = new LikelihoodMaximiser();
         maximiser2.setLc(nonHomogeneousModel);
 

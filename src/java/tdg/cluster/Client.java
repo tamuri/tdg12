@@ -17,6 +17,7 @@ import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.UnivariateRealOptimizer;
 import org.apache.commons.math.optimization.univariate.BrentOptimizer;
 import pal.alignment.Alignment;
+import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
 import java.io.File;
@@ -204,6 +205,8 @@ public class Client {
     public static void main(String[] args) throws Exception {
         // TODO: There should be a 'BaseClient' and then implementations of 'run', or task etc.
         // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
+        // TODO: This needs to be a config item - should use same JCommander option configuration!
+        GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
         Client c = new Client();
         c.loadConfiguration();
         c.run();

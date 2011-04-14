@@ -1,5 +1,6 @@
 package tdg.optim;
 
+import com.google.common.primitives.Doubles;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
 import tdg.models.LikelihoodCalculator;
@@ -10,6 +11,7 @@ import tdg.models.LikelihoodCalculator;
  */
 public class LikelihoodMaximiser implements MultivariateRealFunction{
     private static final int CONSTRAINT = 21;
+    private int count = 0;
     private LikelihoodCalculator lc;
     // private Map<DoubleArrayKey, Double> cache = Maps.newHashMap();
 
@@ -34,7 +36,9 @@ public class LikelihoodMaximiser implements MultivariateRealFunction{
 
         double out = lc.function(point);
         //System.out.printf("Params= { %s }; \n ", Doubles.join(", ", point));
-        //System.out.printf("%s \n", out);
+        //System.out.printf("%s - %s \n", count++, out);
+        //count++;
+        //if (count % 500 == 0) System.out.printf("%s ", count);
         // done.put(dak, out);
 
         //System.exit(0);

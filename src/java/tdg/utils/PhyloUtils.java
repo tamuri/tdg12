@@ -42,6 +42,16 @@ public class PhyloUtils {
 
         for (int i = 0; i < alignment.getSequenceCount(); i++) {
 
+  /*          if (GeneticCode.getInstance().getCodonIndexFromNucleotides(
+                            new char[]{alignment.getData(i, nucleotideSite),
+                                    alignment.getData(i, nucleotideSite + 1),
+                                    alignment.getData(i, nucleotideSite + 2)}
+                    ) == -1) {
+                System.out.printf("%s has %s  !!!\n", alignment.getIdentifier(i).getName(), new String(new char[]{alignment.getData(i, nucleotideSite),
+                        alignment.getData(i, nucleotideSite + 1),
+                        alignment.getData(i, nucleotideSite + 2)}));
+                }*/
+
             states.put(alignment.getIdentifier(i).getName(),
                     GeneticCode.getInstance().getCodonIndexFromNucleotides(
                             new char[]{alignment.getData(i, nucleotideSite),

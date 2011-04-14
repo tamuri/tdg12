@@ -38,8 +38,8 @@ public class Options {
     @Parameter(names = "-homogonly", description = "Run homogeneous model only.")
     public boolean homogonly = false;
 
-    @Parameter(names = "-approx", description = "Use the approximate method to optimise the likelihood.", hidden = true)
-    public boolean approx = true;
+    @Parameter(names = "-approx", description = "Use the approximate method to optimise the likelihood")
+    public boolean approx = false;
 
     @Parameter(names = "-optimruns", description = "The number of times to run the optimisation, with random initial parameters.", hidden = true)
     public int optimRuns = 1;

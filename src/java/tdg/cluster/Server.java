@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class Server implements Container {
 
-    static final int SERVER_PORT = 9000;
+    static final int SERVER_PORT = 9090; // TODO: Put in config file
     private Scheduler scheduler;
     private Options options;
     private Tree tree;
@@ -133,7 +133,7 @@ public class Server implements Container {
         SocketAddress address = new InetSocketAddress(SERVER_PORT);
         connection.connect(address);
 
-        System.out.printf("%s started on port %s with %s worker thread(s).\n", Server.class.getName(), SERVER_PORT, args[0]);
+        System.out.printf("%s started on port %s with %s worker thread(s).\n", Server.class.getName(), SERVER_PORT, options.threads);
         writeHostnameFile();
     }
 

@@ -5,13 +5,17 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import cern.jet.math.Functions;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 import tdg.models.parameters.Fitness;
 import tdg.utils.CodeTimer;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -140,7 +144,7 @@ public class TDGCodonModel {
                 double fitnessJ = fitnesses[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codonJ)]];
 
                 double hS = getRelativeFixationProbability(fitnessJ - fitnessI);
-
+                
                 Q[i * matrixSize + j] = globals.getNu() * muIJ * hS;
             }
         }
@@ -240,7 +244,7 @@ public class TDGCodonModel {
         } else {*/
         //long start = CodeTimer.start();
         // NOTE: If matrixSize were a final static int, then there would be some
-        // performance improvement. I think Java doesn't array bounds check
+        // performance improvement. Java doesn't array bounds check
         // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
         // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
         // More improvement using jdk1.7.0 ~58secs to ~42secs!!
@@ -264,10 +268,7 @@ public class TDGCodonModel {
             }
         }
 
-        double[] ref = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
-        for (int i = 0; i < matrix.length; i++) {
-           ref[i] = matrix[i];
-        }
+
         /*    probMatrixStore.put(branchLength, ref);
 
         //CodeTimer.store("getProbabilityMatrix_2", start2);
@@ -309,6 +310,58 @@ public class TDGCodonModel {
         return siteCodons;
     }
 
+    public double[] getFullQ() {
+        double[] fullQ = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+
+        for (int i = 0; i < matrixSize; i++) {
+            for (int j = 0; j < matrixSize; j++) {
+                fullQ[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = Q[i * matrixSize + j];
+            }
+        }
+
+        return fullQ;
+    }
+
+    public double[] getS() {
+        double[] fullS = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+//        System.out.printf("siteCodons = %s\n", Ints.join(" ", siteCodons));
+ //       System.out.printf("aminoAcidsAtSite = %s\n", Joiner.on(" ").join(aminoAcidsAtSite));
+ //       System.out.printf("aminoAcidsToFitness = %s\n", Ints.join(" ", aminoAcidsToFitness));
+ //       System.out.printf("fitness = %s\n", Doubles.join(" ", fitness.get()));
+
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
+                if (i == j) {
+                    fullS[i * GeneticCode.CODON_STATES + j] = 0;
+                } else {
+                    int aa_from = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i);
+                    int aa_to = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j);
+                    if (aa_from < 0 || aa_to < 0) {
+                        // to or from stop codons
+                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                        //} else if (aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
+                    } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] > -1) {
+                        // both amino acids that occur at this site
+                        fullS[i * GeneticCode.CODON_STATES + j] = fitness.get()[aminoAcidsToFitness[aa_to]] - fitness.get()[aminoAcidsToFitness[aa_from]];
+                        //} else if (aminoAcidsAtSite.contains(aa_from) && !aminoAcidsAtSite.contains(aa_to)) {
+                    } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] == -1) {
+                        // from observed to unobserved
+                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                        // } else if (!aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
+                    } else if (aminoAcidsToFitness[aa_from] ==  -1 && aminoAcidsToFitness[aa_to] > -1) {
+                        // from unobserved to observed
+                        //System.out.printf("%s -> %s\n", aa_from, aa_to);
+                        fullS[i * GeneticCode.CODON_STATES + j] = 21;
+                    } else {
+                        // neither of these amino acids are observed at this site
+                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                    }
+                }
+            }
+        }
+        return fullS;
+    }
+
     public double[] getErrorMatrix() {
         return globals.getErrorMatrix();    
     }
@@ -321,6 +374,10 @@ public class TDGCodonModel {
             freqs[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)] += codonPis[i];
         }
         return freqs;
+    }
+
+    public double[] getFitness() {
+        return fitness.get();
     }
 }
 

@@ -213,7 +213,7 @@ public class GeneticCode {
     private static boolean initialised = false;
 
     public static GeneticCode getInstance() {
-        if (!initialised) throw new RuntimeException("Must initialise GeneticCode!");
+        //  if (!initialised) throw new RuntimeException("Must initialise GeneticCode!");
         return INSTANCE;
     }
 }

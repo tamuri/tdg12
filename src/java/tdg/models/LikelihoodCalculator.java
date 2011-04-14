@@ -109,6 +109,8 @@ public class LikelihoodCalculator {
     public double function(double[] parameters) {
         updateParameters(parameters);
         double l = calculateLogLikelihood();
+        double p = calculatePrior();
+
 
        /* if (!useScaling && l == Double.NEGATIVE_INFINITY) {
             useScaling = true;
@@ -117,8 +119,104 @@ public class LikelihoodCalculator {
         }*/
 
        //System.out.printf("function lnL eval = %s\n", -1.0 * l);
+        //System.out.printf("%s\n", Doubles.join(", ", parameters));
+//        System.out.printf("%s - %s\n", l, p);
 //System.exit(0);
-        return -1.0 * l;
+       return -1.0 * (l - p);
+        //return -1.0 * l;
+    }
+
+    private double calculatePrior() {
+        //return calculatePlainFitnessEnt();
+        return calculateTrueFitnessEnt();
+    }
+
+    private double calculateTrueFitnessEnt() {
+        // MIT
+       double[] baseAApi = new double[]{0.018207581862512204, 0.018207581862512204, 0.11236702136442346, 0.014633089085757604,
+                0.0056780258819048, 0.07562774261045106, 0.017241116252006836, 0.004150844977304972,
+                0.06418769404473233, 0.04360137848137165, 0.07418592860773728, 0.13239397825585356,
+                0.05137236783972999, 0.016918488915981182, 0.0798671208133934, 0.06888517921966052,
+                0.1398154366551834, 0.0066900094531035185, 0.04360137848137165, 0.012368035335008317};
+        double[] pi = cladeModels.get(ROOT_MODEL_NAME).getAminoAcidFrequencies();
+
+        double entropy = 0;
+
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
+            entropy += pi[i] * Math.log(pi[i] / baseAApi[i]);
+        }
+        //System.out.printf("%s\n", entropy);
+        return entropy;
+    }
+
+    private double calculatePlainFitnessPrior() {
+        // maximum entropy prior
+        //double[] f = cladeModels.get(ROOT_MODEL_NAME).getAminoAcidFrequencies();
+        double[] f = cladeModels.get(ROOT_MODEL_NAME).getFitness();
+        double[] pi = new double[20];
+
+        double expFSum = 0;
+        for (double F : f) {
+            expFSum += Math.exp(F);
+        }
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES ; i++) {
+            pi[i] = Math.exp(f[i]) / expFSum;
+        }
+
+
+        // the distribution should have unit variance...perhaps?
+        // from: http://en.wikipedia.org/wiki/Prior_probability#Other_approaches
+        /*
+        Another idea, championed by Edwin T. Jaynes, is to use the principle of maximum entropy (MAXENT). The motivation
+        is that the Shannon entropy of a probability distribution measures the amount of information contained in the
+        distribution. The larger the entropy, the less information is provided by the distribution. Thus, by maximizing
+        the entropy over a suitable set of probability distributions on X, one finds that distribution that is least
+        informative in the sense that it contains the least amount of information consistent with the constraints that
+        define the set. For example, the maximum entropy prior on a discrete space, given only that the probability is
+        normalized to 1, is the prior that assigns equal probability to each state. And in the continuous case, the
+        maximum entropy prior given that the density is normalized with mean zero and variance unity is the standard
+        normal distribution. The principle of minimum cross-entropy generalizes MAXENT to the case of "updating" an
+        arbitrary prior distribution with suitability constraints in the maximum-entropy sense.
+         */
+
+/*
+        double mean = 0;
+        for (double P : pi) {
+            mean += P;
+        }
+        mean /= pi.length;
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
+            pi[i] = pi[i] - mean;
+        }
+
+
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+            for( double item : pi) {
+                stats.addValue(item);
+            }
+        double std = stats.getStandardDeviation();
+
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
+            pi[i] /= std;
+        }
+*/
+
+            double sum = 0;
+        //System.out.printf("pi = %s\n", Doubles.join(" ", pi));
+        for (double P : pi) {
+            if (P > 0) sum += P * Math.log(P);
+        }
+
+
+        // normal distribution prior
+        /*double sigma = 10;
+        double[] f = cladeModels.get(ROOT_MODEL_NAME).getFitness();
+        double sum = 0;
+        for (double F : f) {
+            sum += Math.pow(F, 2) / Math.pow(sigma, 2);
+        }*/
+
+        return sum;
     }
 
     private double calculateLogLikelihood() {
@@ -190,7 +288,7 @@ public class LikelihoodCalculator {
                     }
                 }
 
-            }
+                }
 
             if (useScaling) {
                 scaleConditionals(node, partial);
