@@ -131,9 +131,6 @@ public class ResultsParser2 {
             outPiS.write(String.format("%s\n", Doubles.join(" ", PiS)));
             outQS.write(String.format("%s\n", Doubles.join(" ", QS)));
 
-
-
-
             return true;
         }
 
@@ -143,7 +140,7 @@ public class ResultsParser2 {
         }
     }
 }
-    class ROptions {
+class ROptions {
     @Parameter(names = "-tau", description = "Rate of multiple substitutions.", converter = DoubleConverter.class, required = true)
     public double tau;
 
@@ -160,4 +157,4 @@ public class ResultsParser2 {
 
     @Parameter(names = "-gc", description = "The genetic code translation to use (standard or vertebrate_mit).", required = true, converter = GeneticCodeConverter.class)
     public GeneticCode geneticCode;
-    }
+}
