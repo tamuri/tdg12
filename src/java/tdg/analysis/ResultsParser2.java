@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
@@ -30,6 +31,7 @@ public class ResultsParser2 {
     FileWriter outS;
     FileWriter outPiS;
     FileWriter outQS;
+    List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)) ;
 
     public static void main(String[] args) throws Exception {
         ROptions o = new ROptions();
@@ -82,7 +84,6 @@ public class ResultsParser2 {
             });
 
             // exact method
-            List<Integer> aminoAcids = Lists.newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19);
             TDGCodonModel tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);
 
             // approx method
@@ -98,14 +99,15 @@ public class ResultsParser2 {
                 }
             }
             TDGCodonModel tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(ff), false), aa);
-*/
-
+            */
 
             tdg.updateModel();
-
             double[] S = tdg.getS();
             double[] QS = tdg.getFullQ();
             double[] PiS = tdg.getCodonFrequencies();
+            outS.write(String.format("%s\n", Doubles.join(" ", S)));
+            outPiS.write(String.format("%s\n", Doubles.join(" ", PiS)));
+            outQS.write(String.format("%s\n", Doubles.join(" ", QS)));
 
             // without STOP codons:
             /*List<Double> S_nostop = Lists.newArrayList();
@@ -126,10 +128,7 @@ public class ResultsParser2 {
             outS.write(String.format("%s\n", Joiner.on(' ').join(S_nostop)));
             outPiS.write(String.format("%s\n", Joiner.on(' ').join(PiS_nostop)));
             outQS.write(String.format("%s\n", Joiner.on(' ').join(QS_nostop)));
-*/
-            outS.write(String.format("%s\n", Doubles.join(" ", S)));
-            outPiS.write(String.format("%s\n", Doubles.join(" ", PiS)));
-            outQS.write(String.format("%s\n", Doubles.join(" ", QS)));
+            */
 
             return true;
         }
