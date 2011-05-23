@@ -26,104 +26,54 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ResultsParser2 {
-
-    // Mit
-   /* double tau = 1.25000000000000e-02;
-    double kappa = 7.06084250000000e+00;
-    double[] pi = new double[]{1.85704375000000e-01, 2.73384375000000e-01, 4.78586875000000e-01, 6.23243750000000e-02};
-    double mu = 2.41435441700000e+00;
-    double gamma = 0;*/
-
-
-    // PB2
-    /*double tau = 1.25010000000000e-02;
-    double kappa = 7.86404250000000e+00;
-    double[] pi = new double[]{2.36114375000000e-01, 1.95774375000000e-01, 3.65944375000000e-01, 2.02166875000000e-01};
-    double mu = 3.13262666700000e+00;
-    double gamma = 0;
-
-    final TDGGlobals tdgGlobals = new TDGGlobals(tau, kappa, pi, mu, gamma);
-    final FileWriter outS;
-    final FileWriter outPiS;
-    final FileWriter outQS;
-    static String prefix = "/Users/atamuri/Documents/work/mitochondria/110329_TdG_PB2_FullMaxEnt/results.homog/";*/
-
-    // Mit Sim 2
-/*
-
-    double tau = 4.37500000000000e-02;
-    double kappa = 5.32475500000000e+00;
-    double[] pi = new double[]{0.18383875,0.27358875,0.47528375,0.06728875};
-    double mu = 2.68226099300000e+00;
-    double gamma = 0;
-
-*/
-
     TDGGlobals tdgGlobals;
+    String path;
+
     FileWriter outS;
     FileWriter outPiS;
     FileWriter outQS;
-    //static String prefix = "/Users/atamuri/Documents/work/mitochondria/110506_MitSim/1/";
-    //static String prefix = "/Users/atamuri/Documents/work/mitochondria/110328_Mit_PenalisedLnL_MaxEnt/";
-    String prefix = "./";
-
 
     public static void main(String[] args) throws Exception {
-       //GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
-       // GeneticCode.initialise(GeneticCode.STANDARD_CODE);
         ROptions o = new ROptions();
         new JCommander(o, args);
 
-        ResultsParser2 rp = new ResultsParser2();
-        rp.tdgGlobals = new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma);
-//        System.setOut(new PrintStream(new File("/Users/atamuri/Documents/work/mitochondria/110318_TdG_Mit_ApproxVsFull/out.data")));
- //       rp.run("/Users/atamuri/Documents/work/mitochondria/110318_TdG_Mit_ApproxVsFull/full.fitness.ordered.txt");
-//        System.setOut(new PrintStream(new File("/Users/atamuri/Documents/work/mitochondria/110328_Mit_PenalisedLnL_MaxEnt/out.data")));
-  //      rp.run("/Users/atamuri/Documents/work/mitochondria/110328_Mit_PenalisedLnL_MaxEnt/fitness.sorted.txt");
-
-        rp.run(rp.prefix + "fitness.sorted.txt");
-        rp.close();
-       // System.setOut(new PrintStream(new File("/Users/atamuri/Documents/work/mitochondria/110329_TdG_PB2_FullMaxEnt/results.homog/out.data")));
-        //rp.run("/Users/atamuri/Documents/work/mitochondria/110329_TdG_PB2_FullMaxEnt/results.homog/fitness.sorted.txt");
+        ResultsParser2 rp = new ResultsParser2(new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "fitness.sorted.txt");
+        rp.run();
    }
 
-    private void close() throws Exception {
+    public ResultsParser2(TDGGlobals globals, String filePath) throws Exception {
+        this.tdgGlobals = globals;
+        this.path = filePath;
+    }
+
+    private void run() throws Exception {
+        // Neutral Q
+        List<Double> Q0 = Lists.newArrayListWithCapacity(GeneticCode.CODON_STATES * GeneticCode.CODON_STATES);
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
+                if (i == j) Q0.add(-1.0);
+                else Q0.add(tdgGlobals.getNeutralMutationRate(i, j) * tdgGlobals.getNu());
+            }
+        }
+
+        FileWriter outQ0 = new FileWriter(new File("Q0.txt"));
+        outQ0.write(Joiner.on(' ').join(Q0));
+        outQ0.close();
+
+        // S, Q with selection and codon pi files
+        outS = new FileWriter(new File("S.txt"));
+        outPiS = new FileWriter(new File("PiS.txt"));
+        outQS = new FileWriter(new File("QS.txt"));
+
+        Files.readLines(new File(this.path), Charsets.UTF_8, new SWriter());
+
         outS.close();
         outPiS.close();
         outQS.close();
     }
 
-    public ResultsParser2() throws Exception {
-        outS = new FileWriter(new File(prefix + "S.txt"));
-        outPiS = new FileWriter(new File(prefix + "PiS.txt"));
-        outQS = new FileWriter(new File(prefix + "QS.txt"));
-    }
-
-    private void run(String fitnessFilePath) throws Exception {
-        List<Double> Q0 = Lists.newArrayList();
-        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
-            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
-                int aa_from = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i);
-                int aa_to = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j);
-
-                if (aa_from < 0 || aa_to < 0) continue;
-
-
-                if (i == j) Q0.add(-1.0);
-                if (i != j) Q0.add(tdgGlobals.getNeutralMutationRate(i, j) * tdgGlobals.getNu());
-            }
-        }
-        FileWriter outQ0 = new FileWriter(new File(prefix + "Q0.txt"));
-        outQ0.write(Joiner.on(' ').join(Q0));
-        outQ0.close();
-
-
-        // System.exit(0);
-        Files.readLines(new File(fitnessFilePath), Charsets.UTF_8, new SWriter());
-
-    }
-
     class SWriter implements LineProcessor<Object> {
+
         @Override
         public boolean processLine(String line) throws IOException {
             List<Double> fitnesses = Lists.transform(Arrays.asList(line.split(" ")), new Function<String,Double>() {
