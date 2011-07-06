@@ -16,6 +16,7 @@ import tdg.cli.GeneticCodeConverter;
 import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
+import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 
 import java.io.File;
@@ -73,15 +74,10 @@ public class ResultsParser2 {
     }
 
     class SWriter implements LineProcessor<Object> {
-
         @Override
         public boolean processLine(String line) throws IOException {
-            List<Double> fitnesses = Lists.transform(Arrays.asList(line.split(" ")), new Function<String,Double>() {
-                @Override
-                public Double apply(String s) {
-                    return Double.parseDouble(s);
-                }
-            });
+
+            List<Double> fitnesses = Lists.transform(Arrays.asList(line.split(" ")), Functions.stringToDouble());
 
             // exact method
             TDGCodonModel tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);

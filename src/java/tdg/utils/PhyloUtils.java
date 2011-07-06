@@ -1,11 +1,9 @@
 package tdg.utils;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import com.google.common.primitives.Ints;
 import pal.alignment.Alignment;
 import pal.alignment.AlignmentReaders;
@@ -15,6 +13,7 @@ import pal.tree.SimpleTree;
 import pal.tree.Tree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,10 +28,11 @@ public class PhyloUtils {
     public static Alignment readAlignment(String filePath) {
         Alignment a;
         try {
-            a = AlignmentReaders.readPhylipClustalAlignment(new BufferedReader(new FileReader(filePath)), DataTypeTool.getNucleotides());
+            a = AlignmentReaders.readPhylipClustalAlignment(Files.newReader(new File(filePath), Charsets.UTF_8), DataTypeTool.getNucleotides());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return a;
     }
 
@@ -73,15 +73,14 @@ public class PhyloUtils {
     }
 
     public static List<Integer> getCodonsFromAminoAcids(Collection<Integer> aminoAcids) {
-	    int[] collected = new int[0];
+        int[] collected = new int[0];
         for (int a : aminoAcids) {
-	    if (!GeneticCode.getInstance().isUnknownAminoAcidState(a)) {
-		collected = Ints.concat(collected, GeneticCode.getInstance().getCodonIndexFromAminoAcidIndex(a));
+            if (!GeneticCode.getInstance().isUnknownAminoAcidState(a)) {
+                collected = Ints.concat(collected, GeneticCode.getInstance().getCodonIndexFromAminoAcidIndex(a));
             }
         }
         return Ints.asList(collected);
     }
-
 
     public static List<Integer> getDistinctAminoAcids(Collection<Integer> codons) {
         // TODO: Christ almighty, there *must* be a better way to do this! Anyway, here we go...
@@ -100,7 +99,7 @@ public class PhyloUtils {
         }
 
         // Create a list to store the 20 amino acids, initial count of 0
-        List<Residue> allResidues = Lists.newArrayList();
+        List<Residue> allResidues = Lists.newArrayListWithCapacity(GeneticCode.AMINO_ACID_STATES);
         for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) allResidues.add(new Residue(i));
 	
         // Loop through the list of codons

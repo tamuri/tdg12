@@ -128,22 +128,22 @@ public class TDGCodonModel {
      *
      */
     private void makeQ() {
-        double[] fitnesses = fitness.get();
+        double[] f = fitness.get();
 
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
 
                 if (i == j) { Q[i * matrixSize + j] = 0; continue; }
 
-                int codonI = siteCodons[i];
-                int codonJ = siteCodons[j];
+                int cI = siteCodons[i];
+                int cJ = siteCodons[j];
 
-                double muIJ = globals.getNeutralMutationRate(codonI, codonJ);
+                double muIJ = globals.getNeutralMutationRate(cI, cJ);
 
-                double fitnessI = fitnesses[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codonI)]];
-                double fitnessJ = fitnesses[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codonJ)]];
+                double fI = f[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(cI)]];
+                double fJ = f[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(cJ)]];
 
-                double hS = getRelativeFixationProbability(fitnessJ - fitnessI);
+                double hS = getRelativeFixationProbability(fJ - fI);
                 
                 Q[i * matrixSize + j] = globals.getNu() * muIJ * hS;
             }
@@ -232,8 +232,6 @@ public class TDGCodonModel {
 
     Map<Double, double[]> probMatrixStore = Maps.newHashMap();
 
-
-
     public void getProbabilityMatrix(final double[] matrix, final double branchLength) {
 
      /*   if (probMatrixStore.containsKey(branchLength)) {
@@ -254,6 +252,14 @@ public class TDGCodonModel {
                 PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
             }
         }
+
+
+		/*
+		 * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
+		 * when we do the eigenvalue decomposition above i.e.:
+		 * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
+		 */
+
         //CodeTimer.store("getProbabilityMatrix_1", start);
 
         //long start2 = CodeTimer.start();x
@@ -319,6 +325,22 @@ public class TDGCodonModel {
             }
         }
 
+        // add the stop codons explicitly
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
+                int aa_from = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i);
+                int aa_to = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j);
+                // if going to a stop codon
+                if (aa_to < 0) {
+                    // rate is 0
+                    fullQ[i * GeneticCode.CODON_STATES + j] = 0;
+                // if coming from a stop codon and going to a non-stop codon
+                } else if (aa_from < 0) {
+                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * 10000;
+                }
+            }
+        }
+
         return fullQ;
     }
 
@@ -336,10 +358,13 @@ public class TDGCodonModel {
                 } else {
                     int aa_from = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i);
                     int aa_to = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j);
-                    if (aa_from < 0 || aa_to < 0) {
-                        // to or from stop codons
+                    if (aa_to < 0) {
+                        // going to STOP codon
                         fullS[i * GeneticCode.CODON_STATES + j] = -21;
                         //} else if (aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
+                    } else if (aa_from < 0) {
+                        // going from a STOP codon to any non-STOP codon
+                        fullS[i * GeneticCode.CODON_STATES + j] = 21;
                     } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // both amino acids that occur at this site
                         fullS[i * GeneticCode.CODON_STATES + j] = fitness.get()[aminoAcidsToFitness[aa_to]] - fitness.get()[aminoAcidsToFitness[aa_from]];

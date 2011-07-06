@@ -15,6 +15,7 @@ import pal.tree.Tree;
 import tdg.Options;
 import tdg.analysis.SiteAnalyser;
 import tdg.models.TDGGlobals;
+import tdg.utils.Functions;
 import tdg.utils.PhyloUtils;
 
 import java.io.BufferedWriter;
@@ -24,6 +25,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.io.PrintStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,14 +90,7 @@ public class Server implements Container {
         try {
             if (request.getQuery().containsKey("updateglobals")) {
 
-                List<Double> g = Lists.transform(
-                        Lists.newArrayList(request.getParameter("updateglobals").split(",")),
-                        new Function<String, Double>(){
-                            @Override
-                            public Double apply(String input) {
-                                return new Double(input);
-                            }
-                        });
+                List<Double> g = Lists.transform(Arrays.asList(request.getParameter("updateglobals").split(",")), Functions.stringToDouble());
 
                 globals = new TDGGlobals(g.get(0), g.get(1), new double[]{g.get(2), g.get(3), g.get(4), g.get(5)}, g.get(6), g.get(7));
                 System.out.printf("Successfully updated TDGGlobals { %s }.", Joiner.on(", ").join(g));

@@ -17,9 +17,21 @@ import java.util.*;
  */
 public class Test2 {
     public static void main(String[] args) {
+        String[] items = { "dog", "cat", "bat" };
+        String res = "[";
+
+        for (String s : items) {
+           res += (res.length() == 1 ? "" : ", ") + s;
+        }
+        res += "]";
+
+        System.out.printf("%s\n", res);
+
+        /*
         Test2 t = new Test2();
         //t.test();
         t.test2();
+        */
     }
 
     private void test2() {

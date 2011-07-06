@@ -20,6 +20,7 @@ import tdg.utils.PhyloUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author Asif Tamuri
@@ -114,6 +115,8 @@ public class Simulator {
 
     private int selectRandomCharacter(double[] array) {
         double rnd = Math.random();
+        //Random random = new Random(123456789);
+        //random.nextDouble();
         int character = -1;
         double sum = 0.0;
         for (int i = 0; i < array.length; i++) {

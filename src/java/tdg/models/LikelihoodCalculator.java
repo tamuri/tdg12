@@ -109,7 +109,7 @@ public class LikelihoodCalculator {
     public double function(double[] parameters) {
         updateParameters(parameters);
         double l = calculateLogLikelihood();
-        double p = calculatePrior();
+        //double p = calculatePrior();
 
 
        /* if (!useScaling && l == Double.NEGATIVE_INFINITY) {
@@ -122,13 +122,13 @@ public class LikelihoodCalculator {
         //System.out.printf("%s\n", Doubles.join(", ", parameters));
 //        System.out.printf("%s - %s\n", l, p);
 //System.exit(0);
-       return -1.0 * (l - p);
+       return -1.0 * (l); //(l - p)
         //return -1.0 * l;
     }
 
     private double calculatePrior() {
-        //return calculatePlainFitnessEnt();
-        return calculateTrueFitnessEnt();
+        return calculatePlainFitnessPrior();
+        //return calculateTrueFitnessEnt();
     }
 
     private double calculateTrueFitnessEnt() {
@@ -266,14 +266,14 @@ public class LikelihoodCalculator {
                     //System.out.printf("child %s (not tip)\n", Doubles.join(", ", child.getNumber()));
                 }
 
-                if (cladeModels.size() == 1) {
+                if (cladeModels.size() == 1) { // homogeneous model
 
                     cladeModels.get(ROOT_MODEL_NAME).getProbabilityMatrix(probMatrix, child.getBranchLength());
                     updateIntraCladeConditionals(lowerConditional, partial, probMatrix);
 
-                } else {
+                } else { // non-homogeneous model
 
-                    if (getNodeLabel(node).length() == 0 // or the root of the tree is a parent without a label
+                    if (getNodeLabel(node).length() == 0 // the root of the tree is a parent without a label
                             || getNodeLabel(child).substring(0, 2).equals(getNodeLabel(node).substring(0, 2))) { // or we're not switching to a different model
 
                         cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix, child.getBranchLength());
