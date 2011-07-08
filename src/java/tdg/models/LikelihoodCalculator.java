@@ -40,6 +40,10 @@ public class LikelihoodCalculator {
 
     private final double[][] tipConditionals;
     private final double[][] internalConditionals;
+
+    public String hostshiftName;
+    public double avianToIntermediateSplit;
+    public double intermediateToMammalSplit;
     
     public LikelihoodCalculator(Tree tree, Map<String, Integer> states) {
         this.tree = tree;
@@ -274,19 +278,46 @@ public class LikelihoodCalculator {
                 } else { // non-homogeneous model
 
                     if (getNodeLabel(node).length() == 0 // the root of the tree is a parent without a label
-                            || getNodeLabel(child).substring(0, 2).equals(getNodeLabel(node).substring(0, 2))) { // or we're not switching to a different model
+                            || getNodeLabel(child).substring(0, 2).equals(getNodeLabel(node).substring(0, 2))
+                            || getNodeLabel(node).substring(0, 2).equals("HS") && getNodeLabel(child).substring(0, 2).equals(this.hostshiftName)) { // or we're not switching to a different model
 
                         cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix, child.getBranchLength());
                         updateIntraCladeConditionals(lowerConditional, partial, probMatrix);
 
-                    } else {
+                    } else { // this is a hostshift!
 
-                        cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * CLADE_BRANCH_SPLIT[0]);
-                        cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * CLADE_BRANCH_SPLIT[1]);
-                        updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
+                        if (getNodeLabel(node).substring(0, 2).equals("HS")) { // we're going from intermediate to mammal (hu or sw)
+
+                            cladeModels.get(this.hostshiftName.substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * this.intermediateToMammalSplit);
+                            cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * (1.0D - this.intermediateToMammalSplit));
+                            if (this.intermediateToMammalSplit == 0.0D) // entire branch is mammal (hu or sw)
+                                updateIntraCladeConditionals(lowerConditional, partial, probMatrix1);
+                            else if (this.intermediateToMammalSplit == 1.0D)  // entire branch is intermediate mammal
+                                updateIntraCladeConditionals(lowerConditional, partial, probMatrix0);
+                            else
+                                updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
+
+                        } else if (getNodeLabel(child).substring(0, 2).equals("HS")) { // we're going from av to intermediate (av to intermediate)
+
+                            cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * this.avianToIntermediateSplit);
+                            cladeModels.get(this.hostshiftName.substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * (1.0D - this.avianToIntermediateSplit));
+                            if (this.avianToIntermediateSplit == 0.0D) // entire branch is intermediate mammal
+                                updateIntraCladeConditionals(lowerConditional, partial, probMatrix1);
+                            else if (this.avianToIntermediateSplit == 1.0D) // entire branch is avian
+                                updateIntraCladeConditionals(lowerConditional, partial, probMatrix0);
+                            else
+                                updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
+
+                        } else { // standard hostshift
+                            cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * CLADE_BRANCH_SPLIT[0]);
+                            cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * CLADE_BRANCH_SPLIT[1]);
+                            updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
+                        }
+
+
 
                     }
-                }
+                } 
 
                 }
 
