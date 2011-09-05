@@ -17,15 +17,7 @@ import java.util.*;
  */
 public class Test2 {
     public static void main(String[] args) {
-        String[] items = { "dog", "cat", "bat" };
-        String res = "[";
-
-        for (String s : items) {
-           res += (res.length() == 1 ? "" : ", ") + s;
-        }
-        res += "]";
-
-        System.out.printf("%s\n", res);
+        System.out.printf("%s", Double.parseDouble("-Inf".replaceAll("-Inf", "-Infinity")));
 
         /*
         Test2 t = new Test2();

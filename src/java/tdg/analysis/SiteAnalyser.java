@@ -47,7 +47,7 @@ public class SiteAnalyser {
     private double homogeneousLikelihood;
     private double nonHomogeneousLikelihood;
     private final Tree tree;
-    private final Alignment alignment;
+    private final Alignment  alignment;
     private final TDGGlobals globals;
     private final int site;
     private final Options options;
@@ -119,7 +119,7 @@ public class SiteAnalyser {
         // 50 consecutive evaluations do not change by more than 1E-6.
         //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
         //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1E-6);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1E-4);
         
         int runs = options.optimRuns;
 
@@ -154,16 +154,16 @@ public class SiteAnalyser {
                         }
                     } else if (i == 2) {
                         // third run - random observed, unobserved -20
-                        if (j < observedResidueCount) {
+                        /*if (j < observedResidueCount) {
                             newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
                         }
 
                         else {
                             newF[j] = -20;
 
-                        }
+                        }*/
                         // third run - all random
-                        //newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
+                        newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
                     }
 
                 }
@@ -186,7 +186,14 @@ public class SiteAnalyser {
                 }
 
                 System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, homogeneousLikelihood);
-                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", homogeneousFitness.get()));
+
+                double[] orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
+                Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
+                for (int j = 0; j < GeneticCode.AMINO_ACID_STATES; j++) {
+                    if (aminoAcidsAtSite.contains(j)) orderedFitness[j] = homogeneousFitness.get()[aminoAcidsAtSite.indexOf(j)];
+                }
+
+                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
 
                 //TODO: we exit out of method here...what about the rest of the output??
@@ -272,9 +279,9 @@ public class SiteAnalyser {
         for (String hostshift : new String[]{"Hu", "Sw"}) {
             nonHomogeneousModel.hostshiftName = hostshift;
 
-            for (double i : new double[]{0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1}) {
+            for (double i : new double[]{0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1}) {
                 nonHomogeneousModel.avianToIntermediateSplit = i;
-                for (double j : new double[]{0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1}) {
+                for (double j : new double[]{0D,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1D}) {
                     nonHomogeneousModel.intermediateToMammalSplit = j;
 
                     // TODO: we should be reading the list of clade labels from command-line Options!

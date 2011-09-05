@@ -8,7 +8,6 @@ import com.google.common.primitives.Doubles;
 import pal.misc.Identifier;
 import pal.tree.Node;
 import pal.tree.Tree;
-import tdg.Options;
 import tdg.cli.CharArrayConverter;
 import tdg.cli.DoubleArrayConverter;
 import tdg.cli.DoubleConverter;
@@ -20,20 +19,19 @@ import tdg.utils.PhyloUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @author Asif Tamuri
  * @version $Id: Simulator.java 152 2010-11-08 11:10:01Z tamuri $
  */
-public class Simulator {
+public class SimulatorHetero {
 
-    private TDGCodonModel codonModel;
+    private TDGCodonModel codonModel1, codonModel2;
     private Map<Identifier, int[]> seq;
     private double[] Pt = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
     public static void main(String... args) {
-        Simulator s = new Simulator();
+        SimulatorHetero s = new SimulatorHetero();
         JCommander jc = new JCommander(s);
         jc.setProgramName("tdg.models.Simulator");
 
@@ -46,10 +44,10 @@ public class Simulator {
             jc.parse(args);
         }
 
-        s.run(s.tree, s.tau, s.kappa, s.pi, s.fitness, s.residues, s.sites, s.mu);
+        s.run(s.tree, s.tau, s.kappa, s.pi, s.fitness1, s.residues1, s.fitness2, s.residues2, s.sites, s.mu);
     }
 
-    public void run(String treeFile, double tau, double kappa, double[] pi, double[] fitness, char[] residues, int sites, double mu) {
+    public void run(String treeFile, double tau, double kappa, double[] pi, double[] fitness1, char[] residues1, double[] fitness2, char[] residues2, int sites, double mu) {
         Tree tree = PhyloUtils.readTree(treeFile);
 
         // Initialise sequence store
@@ -66,20 +64,28 @@ public class Simulator {
 
         TDGGlobals globals = new TDGGlobals(tau, kappa, pi, mu, gamma);
 
-        List<Integer> aa = Lists.newArrayList();
-        for (char c : residues) {
-            aa.add(GeneticCode.getInstance().getAminoAcidIndexByChar(c));
+        List<Integer> aa1 = Lists.newArrayList();
+        for (char c : residues1) {
+            aa1.add(GeneticCode.getInstance().getAminoAcidIndexByChar(c));
         }
 
         // Initialise codon model (Q)
-        codonModel = new TDGCodonModel(globals, new Fitness(fitness, false), aa);
-        codonModel.updateModel();
+        codonModel1 = new TDGCodonModel(globals, new Fitness(fitness1, false), aa1);
+        codonModel1.updateModel();
 
+        List<Integer> aa2 = Lists.newArrayList();
+        for (char c : residues2) {
+            aa2.add(GeneticCode.getInstance().getAminoAcidIndexByChar(c));
+        }
+
+        // Initialise codon model (Q)
+        codonModel2 = new TDGCodonModel(globals, new Fitness(fitness2, false), aa2);
+        codonModel2.updateModel();
 
         // Simulate sequence at the root
         Node root = tree.getRoot();
         for (int i = 0; i < sites; i++) {
-            seq.get(root.getIdentifier())[i] = selectRandomCharacter(codonModel.getCodonFrequencies());
+            seq.get(root.getIdentifier())[i] = selectRandomCharacter(codonModel1.getCodonFrequencies());
         }
 
         // Traverse tree
@@ -91,8 +97,6 @@ public class Simulator {
             seqout.put(n.getName(), GeneticCode.getInstance().getCodonTLA(seq.get(n)[0]));
         }
 
-
-
         // Print tips
         /*for (int i = 0; i < tree.getExternalNodeCount(); i++) {
             Identifier n = tree.getExternalNode(i).getIdentifier();
@@ -101,16 +105,23 @@ public class Simulator {
                 System.out.printf("%s", GeneticCode.getInstance().getCodonTLA(seq.get(n)[j]));
             }
             System.out.println("");
-        }
+        }*/
 
-        System.err.printf("Pi: %s\n\n", Doubles.join(",", codonModel.getAminoAcidFrequencies()));*/
+        // System.err.printf("Pi: %s\n\n", Doubles.join(",", codonModel.getAminoAcidFrequencies()));
     }
 
     private void downTree(Node parent, int sites) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             Node child = parent.getChild(i);
 
-            codonModel.getProbabilityMatrix(Pt, child.getBranchLength());
+            // decide on which codon model to use
+            if ((parent.getIdentifier().getName().length() > 0 && parent.getIdentifier().getName().substring(0,2).equals("Hu"))
+                    || child.getIdentifier().getName().substring(0,2).equals("Hu")) {
+                codonModel2.getProbabilityMatrix(Pt, child.getBranchLength());
+            } else {
+                codonModel1.getProbabilityMatrix(Pt, child.getBranchLength());
+            }
+
 
             for (int j = 0; j < sites; j++) {
                 int row = seq.get(parent.getIdentifier())[j];
@@ -153,11 +164,18 @@ public class Simulator {
     @Parameter(names = "-pi", description = "Comma-separated base nucleotide frequencies (T,C,A,G).", converter = DoubleArrayConverter.class, required = true)
     public double[] pi;
 
-    @Parameter(names = "-fitness", description = "Comma-separated fitness coefficients.", converter = DoubleArrayConverter.class, required = true)
-    public double[] fitness;
+    @Parameter(names = "-fitness1", description = "Comma-separated fitness coefficients.", converter = DoubleArrayConverter.class, required = true)
+    public double[] fitness1;
 
-    @Parameter(names = "-characters", description = "Comma-separated amino acids (matching fitness coefficents).", converter = CharArrayConverter.class, required = true)
-    public char[] residues;
+    @Parameter(names = "-fitness2", description = "Comma-separated fitness coefficients.", converter = DoubleArrayConverter.class, required = true)
+    public double[] fitness2;
+
+    @Parameter(names = "-characters1", description = "Comma-separated amino acids (matching fitness coefficents).", converter = CharArrayConverter.class, required = true)
+    public char[] residues1;
+
+    @Parameter(names = "-characters2", description = "Comma-separated amino acids (matching fitness coefficents).", converter = CharArrayConverter.class, required = true)
+    public char[] residues2;
+
 
     @Parameter(names = "-mu", description = "Branch/rate scaling factor.", converter = DoubleConverter.class, required = true)
     public double mu;

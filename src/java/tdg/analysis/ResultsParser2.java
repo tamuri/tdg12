@@ -28,21 +28,23 @@ import java.util.List;
 public class ResultsParser2 {
     TDGGlobals tdgGlobals;
     String path;
+    ROptions o;
 
     FileWriter outS;
     FileWriter outPiS;
-    FileWriter outQS;
+    FileWriter outQS, outPiAA;
     List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)) ;
 
     public static void main(String[] args) throws Exception {
         ROptions o = new ROptions();
         new JCommander(o, args);
 
-        ResultsParser2 rp = new ResultsParser2(new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "fitness.sorted.txt");
+        ResultsParser2 rp = new ResultsParser2(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "fitness.sorted.txt");
         rp.run();
    }
 
-    public ResultsParser2(TDGGlobals globals, String filePath) throws Exception {
+    public ResultsParser2(ROptions o, TDGGlobals globals, String filePath) throws Exception {
+        this.o = o;
         this.tdgGlobals = globals;
         this.path = filePath;
     }
@@ -65,23 +67,42 @@ public class ResultsParser2 {
         outS = new FileWriter(new File("S.txt"));
         outPiS = new FileWriter(new File("PiS.txt"));
         outQS = new FileWriter(new File("QS.txt"));
+        outPiAA = new FileWriter(new File("PiAA.txt"));
 
         Files.readLines(new File(this.path), Charsets.UTF_8, new SWriter());
 
         outS.close();
         outPiS.close();
         outQS.close();
+        outPiAA.close();
+        
     }
 
     class SWriter implements LineProcessor<Object> {
         @Override
         public boolean processLine(String line) throws IOException {
 
-            List<Double> fitnesses = Lists.transform(Arrays.asList(line.split(" ")), Functions.stringToDouble());
+            List<Double> fitnesses = Lists.transform(Arrays.asList(line.replaceAll("-Inf", "-Infinity").split(" ")), Functions.stringToDouble());
 
-            // exact method
-            TDGCodonModel tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);
+            TDGCodonModel tdg;
 
+            if (o.approx) {
+                List<Integer> aa = Lists.newArrayList();
+                List<Double> ff = Lists.newArrayList();
+                int pos = 0;
+                for (double f : fitnesses) {
+                    if (!Double.isInfinite(f)) {
+                        // this amino acid is observed
+                        aa.add(pos);
+                        ff.add(f);
+                        pos++;
+                    }
+                }
+                tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(ff), false), aa);
+            } else {
+                tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);
+            }
+                
             // approx method
             /*List<Integer> aa = Lists.newArrayList();
             List<Double> ff = Lists.newArrayList();
@@ -104,7 +125,7 @@ public class ResultsParser2 {
             outS.write(String.format("%s\n", Doubles.join(" ", S)));
             outPiS.write(String.format("%s\n", Doubles.join(" ", PiS)));
             outQS.write(String.format("%s\n", Doubles.join(" ", QS)));
-
+            outPiAA.write(String.format("%s\n", Doubles.join(" ", tdg.getAminoAcidFrequencies())));
             // without STOP codons:
             /*List<Double> S_nostop = Lists.newArrayList();
             List<Double> QS_nostop = Lists.newArrayList();
@@ -152,4 +173,9 @@ class ROptions {
 
     @Parameter(names = "-gc", description = "The genetic code translation to use (standard or vertebrate_mit).", required = true, converter = GeneticCodeConverter.class)
     public GeneticCode geneticCode;
+
+    @Parameter(names = "-approx", description = "Use the approximate method to optimise the likelihood")
+    public boolean approx = false;
+
 }
+    

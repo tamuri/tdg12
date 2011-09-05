@@ -15,6 +15,8 @@ import tdg.utils.CodeTimer;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -234,12 +236,12 @@ public class TDGCodonModel {
 
     public void getProbabilityMatrix(final double[] matrix, final double branchLength) {
 
-     /*   if (probMatrixStore.containsKey(branchLength)) {
+      if (probMatrixStore.containsKey(branchLength)) {
             double[] ref = probMatrixStore.get(branchLength);
             for (int i = 0; i < matrix.length; i++) {
                 matrix[i] = ref[i];
             }
-        } else {*/
+        } else {
         //long start = CodeTimer.start();
         // NOTE: If matrixSize were a final static int, then there would be some
         // performance improvement. Java doesn't array bounds check
@@ -275,11 +277,11 @@ public class TDGCodonModel {
         }
 
 
-        /*    probMatrixStore.put(branchLength, ref);
+          probMatrixStore.put(branchLength, Arrays.copyOf(matrix,GeneticCode.CODON_STATES * GeneticCode.CODON_STATES ));
 
         //CodeTimer.store("getProbabilityMatrix_2", start2);
         }
-*/
+// */
         /* This works, but would be horrible to have all these classes though...wouldn't it!?
 
         Briefly, if we had a class for each size of matrix (from some lower-limit to 64),

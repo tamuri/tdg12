@@ -19,8 +19,8 @@ import java.util.Map;
  */
 public class LikelihoodCalculator {
     private static final double[] CLADE_BRANCH_SPLIT = {0.5, 0.5};
-    private static final double SCALING_THRESHOLD = 1e-70;
-    private static final int SCALING_NODE_STEP = 10;
+    private static final double SCALING_THRESHOLD = 1e-15;
+    private static final int SCALING_NODE_STEP = 5;
     private static final double FITNESS_INITIAL_VALUE = 0.0;
 
     private final Tree tree;
@@ -46,7 +46,7 @@ public class LikelihoodCalculator {
     public double intermediateToMammalSplit;
     
     public LikelihoodCalculator(Tree tree, Map<String, Integer> states) {
-        this.tree = tree;
+        this.tree = tree; 
         this.states = states;
 
         // set up name lookup
@@ -126,7 +126,7 @@ public class LikelihoodCalculator {
         //System.out.printf("%s\n", Doubles.join(", ", parameters));
 //        System.out.printf("%s - %s\n", l, p);
 //System.exit(0);
-       return -1.0 * (l); //(l - p)
+       return -1.0 * (l); //(l) or (l - p)
         //return -1.0 * l;
     }
 
@@ -226,7 +226,7 @@ public class LikelihoodCalculator {
     private double calculateLogLikelihood() {
         logScaling = 0.0;
         double[] conditionals = downTree();
-  //      System.out.printf("conditionals out = %s\n", Doubles.join(",", conditionals));
+  //     System.out.printf("conditionals out = %s\n", Doubles.join(",", conditionals));
 
         double[] f = cladeModels.get(ROOT_MODEL_NAME).getCodonFrequencies();
     //    System.out.printf("codon freqs = %s\n", Doubles.join(",", f));
@@ -395,7 +395,7 @@ public class LikelihoodCalculator {
         if (node.getNumber() % SCALING_NODE_STEP == 0) {
             double scalingFactor = 0;
             for (int i = 0; i < conditionals.length; i++) {
-                if (conditionals[i] > 0 && conditionals[i] > scalingFactor) {
+                 if (conditionals[i] > 0 && conditionals[i] > scalingFactor) {
                     scalingFactor = conditionals[i];
                 }
             }
