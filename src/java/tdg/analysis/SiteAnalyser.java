@@ -276,75 +276,60 @@ public class SiteAnalyser {
         // ********************* NON-HOMOGENEOUS MODEL *************************
         LikelihoodCalculator nonHomogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
-        for (String hostshift : new String[]{"Hu", "Sw"}) {
-            nonHomogeneousModel.hostshiftName = hostshift;
+        // TODO: we should be reading the list of clade labels from command-line Options!
+        List<String> clades = Lists.newArrayList("Av", "Hu", "Sw");
+        List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
+        List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
+        for (int i = 0; i < clades.size(); i++) {
+            fitnesses.add(i, new Fitness(homogeneousFitness.get().clone(), true));
+            tdgModels.add(i, new TDGCodonModel(globals, fitnesses.get(i), aminoAcidsAtSite));
+            nonHomogeneousModel.addCladeModel(clades.get(i), tdgModels.get(i));
+        }
 
-            for (double i : new double[]{0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1}) {
-                nonHomogeneousModel.avianToIntermediateSplit = i;
-                for (double j : new double[]{0D,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1D}) {
-                    nonHomogeneousModel.intermediateToMammalSplit = j;
+        /*nonHomogeneousModel.addCladeModel("Av", tdgModels.get(0));
+        nonHomogeneousModel.addCladeModel("Hu", tdgModels.get(0));
+        nonHomogeneousModel.addCladeModel("Sw", tdgModels.get(1));
+        */
 
-                    // TODO: we should be reading the list of clade labels from command-line Options!
-                    List<String> clades = Lists.newArrayList("Av", "Hu", "Sw");
-                    List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
-                    List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
-                    for (int k = 0; k < clades.size(); k++) {
-                        fitnesses.add(k, new Fitness(homogeneousFitness.get().clone(), true));
-                        tdgModels.add(k, new TDGCodonModel(globals, fitnesses.get(k), aminoAcidsAtSite));
-                        nonHomogeneousModel.addCladeModel(clades.get(k), tdgModels.get(k));
-                    }
-
-                    /*nonHomogeneousModel.addCladeModel("Av", tdgModels.get(0));
-                    nonHomogeneousModel.addCladeModel("Hu", tdgModels.get(0));
-                    nonHomogeneousModel.addCladeModel("Sw", tdgModels.get(1));
-                    */
-
-                    nonHomogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
+        nonHomogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
 
 
-                    /*
-                    // TODO: For some sites, initial parameters matter! (Flat likelihood surface?) e.g. PB2 site 199. Try it:
-                    // Fitness nonHomogeneousFitnessAv = new Fitness(new double[aminoAcidsAtSite.size()], true);
-                    // Fitness nonHomogeneousFitnessHu = new Fitness(new double[aminoAcidsAtSite.size()], true);
-                    */
+        /*
+        // TODO: For some sites, initial parameters matter! (Flat likelihood surface?) e.g. PB2 site 199. Try it:
+        // Fitness nonHomogeneousFitnessAv = new Fitness(new double[aminoAcidsAtSite.size()], true);
+        // Fitness nonHomogeneousFitnessHu = new Fitness(new double[aminoAcidsAtSite.size()], true);
+        */
 
-                    MinimisationParameters mp2 = nonHomogeneousModel.getMinimisationParameters();
+        MinimisationParameters mp2 = nonHomogeneousModel.getMinimisationParameters();
 
-                    DirectSearchOptimizer dso2 = new NelderMead();
-                    dso2.setConvergenceChecker(convergenceChecker);
+        DirectSearchOptimizer dso2 = new NelderMead();
+        dso2.setConvergenceChecker(convergenceChecker);
 
-                    LikelihoodMaximiser maximiser2 = new LikelihoodMaximiser();
-                    maximiser2.setLc(nonHomogeneousModel);
+        LikelihoodMaximiser maximiser2 = new LikelihoodMaximiser();
+        maximiser2.setLc(nonHomogeneousModel);
 
-                    RealPointValuePair r2;
-                    try {
-                        r2 = dso2.optimize(maximiser2, GoalType.MINIMIZE, mp2.getParameters());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+        RealPointValuePair r2;
+        try {
+            r2 = dso2.optimize(maximiser2, GoalType.MINIMIZE, mp2.getParameters());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-                    nonHomogeneousModel.function(r2.getPoint());
-                    System.out.printf("Site %s (%s, %s, %s) - Non-homogeneous model lnL: %s\n", site, hostshift, i, j, -r2.getValue());
-                    for (int k = 0; k < clades.size(); k++) {
+        nonHomogeneousModel.function(r2.getPoint());
+        System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
+        for (int i = 0; i < clades.size(); i++) {
 
-                        orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
-                        Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
-                        for (int m = 0; m < GeneticCode.AMINO_ACID_STATES; m++) {
-                            if (aminoAcidsAtSite.contains(m)) orderedFitness[m] = fitnesses.get(k).get()[aminoAcidsAtSite.indexOf(m)];
-                        }
-
-                        //System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", fitnesses.get(i).get()));
-                        System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(k), Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
-                        System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(k), Doubles.join(", ", tdgModels.get(k).getAminoAcidFrequencies()));
-                    }
-                    nonHomogeneousLikelihood = -r2.getValue();
-
-                }
+            orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
+            Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
+            for (int j = 0; j < GeneticCode.AMINO_ACID_STATES; j++) {
+                if (aminoAcidsAtSite.contains(j)) orderedFitness[j] = fitnesses.get(i).get()[aminoAcidsAtSite.indexOf(j)];
             }
 
-
-
+            //System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", fitnesses.get(i).get()));
+            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
+            System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(i), Doubles.join(", ", tdgModels.get(i).getAminoAcidFrequencies()));
         }
+        nonHomogeneousLikelihood = -r2.getValue();
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
 
