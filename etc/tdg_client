@@ -1,0 +1,1 @@
+java -cp lib/*:../../../java.libs/google-gson-1.5/gson-1.5.jar:out/artifacts/tdg10/tdg10.jar tdg.MitChonThreads $1 $2 $3 $4

@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/gson-1.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/pal-1.5.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/simple-4.1.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/colt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guava-r07.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcommander-1.15.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/async-http-client-1.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-collections-3.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-math-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-configuration-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../java.libs/commons-math-2.1/src/test/java" />
+      <root url="file://$PROJECT_DIR$/../java.libs/commons-math-2.1/src/main/java" />
+    </SOURCES>
+  </library>
+</component>
