@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tdg10" default="all">
+  
+  
+  <property file="build.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.apk"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.6" value="${jdk.home.1.6}/bin"/>
+  <path id="jdk.classpath.1.6">
+    <fileset dir="${jdk.home.1.6}">
+      <include name="../../../../Support/Deploy.bundle/Contents/Resources/Java/deploy.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javaws.jar"/>
+      <include name="lib/jce.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/management-agent.jar"/>
+      <include name="lib/plugin.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="../Classes/alt-rt.jar"/>
+      <include name="../Classes/charsets.jar"/>
+      <include name="../Classes/classes.jar"/>
+      <include name="../Classes/jsse.jar"/>
+      <include name="../Classes/ui.jar"/>
+      <include name="lib/ext/apple_provider.jar"/>
+      <include name="lib/ext/dnsns.jar"/>
+      <include name="lib/ext/localedata.jar"/>
+      <include name="lib/ext/sunjce_provider.jar"/>
+      <include name="lib/ext/sunpkcs11.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.6}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.6}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.6"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.lib.classpath">
+    <pathelement location="${basedir}/lib/async-http-client-1.4.0.jar"/>
+    <pathelement location="${basedir}/lib/colt.jar"/>
+    <pathelement location="${basedir}/lib/commons-collections-3.2.1.jar"/>
+    <pathelement location="${basedir}/lib/commons-configuration-1.6.jar"/>
+    <pathelement location="${basedir}/lib/commons-lang-2.4.jar"/>
+    <pathelement location="${basedir}/lib/commons-logging-1.1.1.jar"/>
+    <pathelement location="${basedir}/lib/commons-math-2.1.jar"/>
+    <pathelement location="${basedir}/lib/gson-1.5.jar"/>
+    <pathelement location="${basedir}/lib/guava-r07.jar"/>
+    <pathelement location="${basedir}/lib/jcommander-1.15.jar"/>
+    <pathelement location="${basedir}/lib/pal-1.5.1.jar"/>
+    <pathelement location="${basedir}/lib/simple-4.1.21.jar"/>
+  </path>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module tdg10 -->
+  
+  <dirname property="module.tdg10.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.tdg10" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.tdg10" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.tdg10" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.tdg10" value="${compiler.args}"/>
+  
+  <property name="tdg10.output.dir" value="${module.tdg10.basedir}/out/production/tdg10"/>
+  <property name="tdg10.testoutput.dir" value="${module.tdg10.basedir}/out/test/tdg10"/>
+  
+  <path id="tdg10.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="tdg10.module.production.classpath">
+    <path refid="${module.jdk.classpath.tdg10}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="tdg10.runtime.production.module.classpath">
+    <pathelement location="${tdg10.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="tdg10.module.classpath">
+    <path refid="${module.jdk.classpath.tdg10}"/>
+    <pathelement location="${tdg10.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="tdg10.runtime.module.classpath">
+    <pathelement location="${tdg10.testoutput.dir}"/>
+    <pathelement location="${tdg10.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.tdg10">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.tdg10">
+    <patternset refid="excluded.from.module.tdg10"/>
+  </patternset>
+  
+  <path id="tdg10.module.sourcepath">
+    <dirset dir="${module.tdg10.basedir}/src">
+      <include name="java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.tdg10" depends="compile.module.tdg10.production,compile.module.tdg10.tests" description="Compile module tdg10"/>
+  
+  <target name="compile.module.tdg10.production" description="Compile module tdg10; production classes">
+    <mkdir dir="${tdg10.output.dir}"/>
+    <javac destdir="${tdg10.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.tdg10}/javac">
+      <compilerarg line="${compiler.args.tdg10}"/>
+      <bootclasspath refid="tdg10.module.bootclasspath"/>
+      <classpath refid="tdg10.module.production.classpath"/>
+      <src refid="tdg10.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.tdg10"/>
+    </javac>
+    
+    <copy todir="${tdg10.output.dir}">
+      <fileset dir="${module.tdg10.basedir}/src/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.tdg10.tests" depends="compile.module.tdg10.production" description="compile module tdg10; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.tdg10" description="cleanup module">
+    <delete dir="${tdg10.output.dir}"/>
+    <delete dir="${tdg10.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.tdg10" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.tdg10" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.tdg10" value="${basedir}/out/artifacts/tdg10"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.tdg10.jar" value="${artifacts.temp.dir}/tdg10.jar"/>
+  </target>
+  
+  <target name="artifact.tdg10" depends="init.artifacts, compile.module.tdg10" description="Build &#39;tdg10&#39; artifact">
+    <property name="artifact.temp.output.tdg10" value="${artifacts.temp.dir}/tdg10"/>
+    <mkdir dir="${artifact.temp.output.tdg10}"/>
+    <jar destfile="${temp.jar.path.tdg10.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${tdg10.output.dir}"/>
+    </jar>
+    <copy file="${temp.jar.path.tdg10.jar}" tofile="${artifact.temp.output.tdg10}/tdg10.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.tdg10" description="Build all artifacts">
+    <mkdir dir="${artifact.output.tdg10}"/>
+    <copy todir="${artifact.output.tdg10}">
+      <fileset dir="${artifact.temp.output.tdg10}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
