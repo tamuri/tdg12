@@ -26,7 +26,6 @@ import java.util.Map;
  * Useful for bootstrapping
  *
  * @author Asif Tamuri
- * @version $Id$
  */
 public class AlignmentSampler {
 

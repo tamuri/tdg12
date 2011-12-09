@@ -8,7 +8,6 @@ import tdg.utils.GeneticCode;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class Options {
     @Parameter(names = "-t", description = "Tree file in Newick format", required = true)

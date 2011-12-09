@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
 import pal.misc.Identifier;
 import pal.tree.Node;
+import pal.tree.ReadTree;
 import pal.tree.Tree;
 import tdg.Options;
 import tdg.cli.CharArrayConverter;
@@ -31,6 +32,7 @@ public class Simulator {
     private TDGCodonModel codonModel;
     private Map<Identifier, int[]> seq;
     private double[] Pt = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    private Tree parsedTree;
 
     public static void main(String... args) {
         Simulator s = new Simulator();
@@ -46,22 +48,25 @@ public class Simulator {
             jc.parse(args);
         }
 
-        s.run(s.tree, s.tau, s.kappa, s.pi, s.fitness, s.residues, s.sites, s.mu);
+        s.readTree(s.tree);
+        s.run(s.tau, s.kappa, s.pi, s.fitness, s.residues, s.sites, s.mu);
     }
 
-    public void run(String treeFile, double tau, double kappa, double[] pi, double[] fitness, char[] residues, int sites, double mu) {
-        Tree tree = PhyloUtils.readTree(treeFile);
+    public void readTree(String treeFile) {
+        parsedTree = PhyloUtils.readTree(treeFile);
+    }
 
+    public void run(double tau, double kappa, double[] pi, double[] fitness, char[] residues, int sites, double mu) {
         // Initialise sequence store
         seq = Maps.newHashMap();
-        seq.put(tree.getRoot().getIdentifier(), new int[sites]);
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
+        seq.put(parsedTree.getRoot().getIdentifier(), new int[sites]);
+        for (int i = 0; i < parsedTree.getExternalNodeCount(); i++) {
             int[] store = new int[sites];
-            seq.put(tree.getExternalNode(i).getIdentifier(), store);
+            seq.put(parsedTree.getExternalNode(i).getIdentifier(), store);
         }
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
+        for (int i = 0; i < parsedTree.getInternalNodeCount(); i++) {
             int[] store = new int[sites];
-            seq.put(tree.getInternalNode(i).getIdentifier(), store);
+            seq.put(parsedTree.getInternalNode(i).getIdentifier(), store);
         }
 
         TDGGlobals globals = new TDGGlobals(tau, kappa, pi, mu, gamma);
@@ -77,7 +82,7 @@ public class Simulator {
 
 
         // Simulate sequence at the root
-        Node root = tree.getRoot();
+        Node root = parsedTree.getRoot();
         for (int i = 0; i < sites; i++) {
             seq.get(root.getIdentifier())[i] = selectRandomCharacter(codonModel.getCodonFrequencies());
         }
@@ -86,16 +91,16 @@ public class Simulator {
         downTree(root, sites);
 
         seqout = Maps.newHashMap();
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            Identifier n = tree.getExternalNode(i).getIdentifier();
+        for (int i = 0; i < parsedTree.getExternalNodeCount(); i++) {
+            Identifier n = parsedTree.getExternalNode(i).getIdentifier();
             seqout.put(n.getName(), GeneticCode.getInstance().getCodonTLA(seq.get(n)[0]));
         }
 
 
 
         // Print tips
-        /*for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            Identifier n = tree.getExternalNode(i).getIdentifier();
+        for (int i = 0; i < parsedTree.getExternalNodeCount(); i++) {
+            Identifier n = parsedTree.getExternalNode(i).getIdentifier();
             System.out.printf("%s     ", n.getName());
             for (int j = 0; j < sites; j++) {
                 System.out.printf("%s", GeneticCode.getInstance().getCodonTLA(seq.get(n)[j]));
@@ -103,7 +108,7 @@ public class Simulator {
             System.out.println("");
         }
 
-        System.err.printf("Pi: %s\n\n", Doubles.join(",", codonModel.getAminoAcidFrequencies()));*/
+        System.err.printf("Pi: %s\n\n", Doubles.join(",", codonModel.getAminoAcidFrequencies()));
     }
 
     private void downTree(Node parent, int sites) {
@@ -169,5 +174,4 @@ public class Simulator {
     public GeneticCode gc;
 
     public Map<String, String> seqout;
-    
 }

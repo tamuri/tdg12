@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class ClientHopspack {
     private String alignmentFile, hostnameFilesPath;

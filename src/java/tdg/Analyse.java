@@ -13,7 +13,6 @@ import java.util.concurrent.*;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class Analyse {
     Options options;
@@ -52,12 +51,14 @@ public class Analyse {
         // Something to collect results from the analysis of each site
         Set<Future<double[]>> results = Sets.newHashSet();
 
+        // By default, we analyse the entire alignment
         int startSite = 1;
         int endSite = sites;
 
-        // Only analyse the given site, not the entire alignment
+        // Option to only analyse a single site, not the entire alignment
         if (options.site != 0) {
             startSite = endSite = options.site;
+            // We parallelise on sites, so for one site we only need one thread
             options.threads = 1;
         }
 
@@ -82,10 +83,12 @@ public class Analyse {
             }
         }
 
+        long endTime = System.currentTimeMillis();
+
         System.out.printf("tdg.Analyse - Done!\n");
         System.out.printf("tdg.Analyse - Total homogeneous lnL: %s\n", sumHomLnl);
         System.out.printf("tdg.Analyse - Total non-homogeneous lnL: %s\n", sumNonHomLnl);
-        System.out.printf("tdg.Analyse - Total time: %s ms (%.2f m).\n", System.currentTimeMillis() - startTime, (System.currentTimeMillis() - startTime) / 60000.0);
+        System.out.printf("tdg.Analyse - Total time: %s ms (%.2f m).\n", endTime - startTime, (endTime - startTime) / 60000.0);
         threadPool.shutdown();
     }
  

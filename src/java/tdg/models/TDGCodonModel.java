@@ -277,7 +277,7 @@ public class TDGCodonModel {
         }
 
 
-          probMatrixStore.put(branchLength, Arrays.copyOf(matrix,GeneticCode.CODON_STATES * GeneticCode.CODON_STATES ));
+        probMatrixStore.put(branchLength, Arrays.copyOf(matrix,GeneticCode.CODON_STATES * GeneticCode.CODON_STATES ));
 
         //CodeTimer.store("getProbabilityMatrix_2", start2);
         }
@@ -308,7 +308,7 @@ public class TDGCodonModel {
      */
     public double[] getCodonFrequencies() {
         double[] fullF = new double[GeneticCode.CODON_STATES];
-        for (int i = 0; i < matrixSize; i++) {
+        for (int i = 0; i < matrixSize; i++) {  
             fullF[siteCodons[i]] = codonPi[i];
         }
         return fullF;
@@ -327,6 +327,9 @@ public class TDGCodonModel {
             }
         }
 
+
+        double s = getRelativeFixationProbability(20 - -20);
+
         // add the stop codons explicitly
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
@@ -338,9 +341,17 @@ public class TDGCodonModel {
                     fullQ[i * GeneticCode.CODON_STATES + j] = 0;
                 // if coming from a stop codon and going to a non-stop codon
                 } else if (aa_from < 0) {
-                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * 10000;
+                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * s;
                 }
             }
+        }
+
+        for (int row = 0; row < GeneticCode.CODON_STATES; row++) {
+            double sum = 0;
+            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
+                sum += fullQ[row * GeneticCode.CODON_STATES + j];
+            }
+            fullQ[row * GeneticCode.CODON_STATES + row] = -sum;
         }
 
         return fullQ;

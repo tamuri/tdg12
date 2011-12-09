@@ -6,7 +6,6 @@ import tdg.utils.GeneticCode;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class MatrixMult54 implements MatrixMult {
     private static final int size = 54;

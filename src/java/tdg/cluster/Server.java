@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class Server implements Container {
 

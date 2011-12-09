@@ -13,7 +13,6 @@ import java.util.*;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class Defaults {
     static String FITNESS_DEFAULT_FILENAME = "fitness.defaults";

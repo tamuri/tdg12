@@ -29,7 +29,6 @@ import java.util.concurrent.Future;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class Client {
     private String alignmentFile, hostnameFilesPath;

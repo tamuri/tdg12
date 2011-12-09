@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
+import com.sun.org.apache.bcel.internal.classfile.SourceFile;
 import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 
@@ -20,23 +21,25 @@ public class SimulatorTest {
 
         Map<String, StringBuffer> seqout = Maps.newHashMap();
 
-        double[] d = new double[20];
-        Arrays.fill(d, 0.0);
-        List<Double> fit = Doubles.asList(d);
+        double[] d;// = new double[20];
+        //Arrays.fill(d, 0.0);
+        //List<Double> fit = Doubles.asList(d);
         char[] res = new char[]{'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V'};
+
 
         List<String> fits = Files.readLines(new File("./fitness.for.synth.txt"), Charsets.UTF_8);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < fits.size(); i++) {
 
            d = Doubles.toArray(Lists.transform(Arrays.asList(fits.get(i).split(" ")), Functions.stringToDouble()));
 
             Simulator s = new Simulator();
+            //s.readTree("./all.but.ND6.FMutSel0.tree");
+            s.readTree("./tree.4096.tree");
 
-            s.run("./tree.256.tree", // tree
-                    1.0e-02, // tau
+            s.run(  1.0e-02, // tau
                     2.0, // kappa
-                    new double[]{0.25, 0.25, 0.25, 0.25}, // s.pi
+                    new double[]{0.25,0.25,0.25,0.25}, // s.pi
                     d, // fitnesses
                     res, // residues
                     1, // sites
@@ -48,6 +51,8 @@ public class SimulatorTest {
                 }
                 seqout.get(x.getKey()).append(x.getValue());
             }
+
+            System.out.printf("%s                                \r", i);
         }
 
         System.out.println();

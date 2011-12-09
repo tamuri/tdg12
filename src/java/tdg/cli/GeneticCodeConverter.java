@@ -5,7 +5,6 @@ import tdg.utils.GeneticCode;
 
 /**
  * @author Asif Tamuri
- * @version $Id$
  */
 public class GeneticCodeConverter implements IStringConverter<GeneticCode> {
     @Override

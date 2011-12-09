@@ -225,7 +225,7 @@ public class SiteAnalyser {
         if (optimiseRuns.size() == 1) {
             r = optimiseRuns.values().iterator().next();
             if (runs > 1) System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
-        } else {
+        } else {    
             System.out.printf("Site %s - %s runs converged to %s different optima. (%s)\n", site, runs, optimiseRuns.size(), Joiner.on(", ").join(optimiseRuns.keySet()));
             // get the best
             double best = Double.NEGATIVE_INFINITY;
@@ -277,7 +277,7 @@ public class SiteAnalyser {
         LikelihoodCalculator nonHomogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
         // TODO: we should be reading the list of clade labels from command-line Options!
-        List<String> clades = Lists.newArrayList("Av", "Hu", "Sw");
+        List<String> clades = Lists.newArrayList("Av", "Hu");
         List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
         List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
         for (int i = 0; i < clades.size(); i++) {
