@@ -12,8 +12,6 @@ import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.Response;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.math.FunctionEvaluationException;
-import org.apache.commons.math.analysis.UnivariateRealFunction;
 import pal.alignment.Alignment;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;

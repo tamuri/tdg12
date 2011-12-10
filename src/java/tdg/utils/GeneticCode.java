@@ -3,8 +3,6 @@ package tdg.utils;
 import com.google.common.primitives.Chars;
 import com.google.common.primitives.Ints;
 
-import javax.annotation.Generated;
-import java.awt.datatransfer.ClipboardOwner;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -7,7 +7,8 @@ import tdg.cli.GeneticCodeConverter;
 import tdg.utils.GeneticCode;
 
 /**
- * @author Asif Tamuri
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ * @version 1.0
  */
 public class Options {
     @Parameter(names = "-t", description = "Tree file in Newick format", required = true)

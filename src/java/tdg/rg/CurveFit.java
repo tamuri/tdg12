@@ -1,8 +1,8 @@
 package tdg.rg;
 
-import java.io.*;
-import java.util.*;
-import pal.math.*;
+import pal.math.ConjugateDirectionSearch;
+
+import java.util.Arrays;
 
 public class CurveFit {
 

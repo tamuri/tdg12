@@ -5,12 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
-import com.sun.org.apache.bcel.internal.classfile.SourceFile;
 import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

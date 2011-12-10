@@ -9,10 +9,16 @@ import tdg.models.TDGGlobals;
 import tdg.utils.PhyloUtils;
 
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
- * @author Asif Tamuri
+ * the Main class for multithreaded (but not distributed) analysis. Most people can use this.
+ *
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ * @version 1.0
  */
 public class Analyse {
     Options options;
@@ -45,7 +51,7 @@ public class Analyse {
         final TDGGlobals tdgGlobals = new TDGGlobals(options.tau, options.kappa, options.pi, options.mu, options.gamma);
         final Tree tree = PhyloUtils.readTree(options.treeFile);
         final Alignment alignment = PhyloUtils.readAlignment(options.alignmentFile);
-        final int sites = alignment.getSiteCount() / 3;
+        final int sites = alignment.getSiteCount() / 3; // Alignment object is a nucleotide alignment
         System.out.printf("tdg.Analyse - %s alignment file has %s sequences, each with %s codon sites.\n", options.alignmentFile, alignment.getSequenceCount(), sites);
 
         // Something to collect results from the analysis of each site
