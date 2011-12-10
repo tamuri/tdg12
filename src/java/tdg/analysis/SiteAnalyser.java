@@ -44,6 +44,8 @@ public class SiteAnalyser {
     // Random initial value for fitness parameter from range -INITIAL_PARAM_RANGE to INITIAL_PARAM_RANGE
     private static final int INITIAL_PARAM_RANGE = 3;
     private static final double CONVERGENCE_TOL = 1E-6;
+    private static final double NEGATIVE_INFINITY_FITNESS = -20; // effectively -Infinity for fitness parameter
+
     private double homogeneousLikelihood;
     private double nonHomogeneousLikelihood;
     private final Tree tree;
@@ -132,12 +134,12 @@ public class SiteAnalyser {
                         newF[j] = 0;
                     // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
                     } else if (i == 1) {
-                        if (j < observedResidueCount) newF[j] = 0; else newF[j] = -20;
+                        if (j < observedResidueCount) newF[j] = 0; else newF[j] = NEGATIVE_INFINITY_FITNESS;
                     // All other runs - all residues have random fitness picked from uniform distribution in range
                     } else if (i >= 2) {
                         newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
-                        // could also be random observed, unobserved -20 e.g.:
-                        // if (j < observedResidueCount) { newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else newF[j] = -20;
+                        // could also be random observed, unobserved NEGATIVE_INFINITY_FITNESS e.g.:
+                        // if (j < observedResidueCount) { newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else newF[j] = NEGATIVE_INFINITY_FITNESS;
                     }
                 }
                 // set the new initial fitness values
@@ -167,7 +169,7 @@ public class SiteAnalyser {
                     if (aminoAcidsAtSite.contains(j)) orderedFitness[j] = homogeneousFitness.get()[aminoAcidsAtSite.indexOf(j)];
                 }
 
-                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
+                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
 
                 //TODO: we exit out of method here...what about the rest of the output??
@@ -226,7 +228,7 @@ public class SiteAnalyser {
             if (aminoAcidsAtSite.contains(i)) orderedFitness[i] = homogeneousFitness.get()[aminoAcidsAtSite.indexOf(i)];
         }
 
-        System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
+        System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness));
         System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
         homogeneousLikelihood = -r.getValue();
 
