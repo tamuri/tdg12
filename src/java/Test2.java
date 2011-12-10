@@ -1,10 +1,12 @@
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
+import tdg.cli.GeneticCodeConverter;
 import tdg.utils.GeneticCode;
 
-import java.util.Iterator;
-import java.util.Map;
+import javax.annotation.Generated;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.

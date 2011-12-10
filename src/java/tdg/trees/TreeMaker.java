@@ -1,13 +1,10 @@
 package tdg.trees;
 
-import pal.tree.Node;
-import pal.tree.SimpleNode;
-import pal.tree.SimpleTree;
-import pal.tree.TreeUtils;
+import com.google.common.collect.Lists;
+import pal.tree.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.

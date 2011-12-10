@@ -1,5 +1,6 @@
 package tdg.optim;
 
+import com.google.common.primitives.Doubles;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
 import tdg.models.LikelihoodCalculator;

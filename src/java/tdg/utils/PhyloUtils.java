@@ -12,50 +12,37 @@ import pal.tree.ReadTree;
 import pal.tree.SimpleTree;
 import pal.tree.Tree;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Collection of static methods, including some that wrap common functions available in PAL.
- *
- * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
+ * @author Asif Tamuri
+ * @version $Id: PhyloUtils.java 155 2010-12-02 16:02:14Z tamuri $
  */
 public class PhyloUtils {
-    /**
-     * Reads a PHYLIP formatted alignment file
-     * @param path Full path to alignment file
-     * @return a PAL alignment object
-     */
-    public static Alignment readAlignment(String path) {
+    public static Alignment readAlignment(String filePath) {
         Alignment a;
         try {
-            a = AlignmentReaders.readPhylipClustalAlignment(Files.newReader(new File(path), Charsets.UTF_8), DataTypeTool.getNucleotides());
+            a = AlignmentReaders.readPhylipClustalAlignment(Files.newReader(new File(filePath), Charsets.UTF_8), DataTypeTool.getNucleotides());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return a;
     }
 
-    /**
-     * Returns a collection of codons observed at a particular site
-     * @param alignment the PAL alignment object
-     * @param site the location of interest
-     * @return a map, where key for entry is taxon name and value is the codon state
-     */
     public static Map<String, Integer> getCodonsAtSite(Alignment alignment, int site) {
-        // Alignment holds a nucleotide alignment
         int nucleotideSite = (site - 1) * 3;
         Map<String, Integer> states = Maps.newHashMap();
 
         for (int i = 0; i < alignment.getSequenceCount(); i++) {
 
-            /*
-            // check for bad codons
-            if (GeneticCode.getInstance().getCodonIndexFromNucleotides(
+  /*          if (GeneticCode.getInstance().getCodonIndexFromNucleotides(
                             new char[]{alignment.getData(i, nucleotideSite),
                                     alignment.getData(i, nucleotideSite + 1),
                                     alignment.getData(i, nucleotideSite + 2)}
@@ -63,8 +50,7 @@ public class PhyloUtils {
                 System.out.printf("%s has %s  !!!\n", alignment.getIdentifier(i).getName(), new String(new char[]{alignment.getData(i, nucleotideSite),
                         alignment.getData(i, nucleotideSite + 1),
                         alignment.getData(i, nucleotideSite + 2)}));
-                }
-            */
+                }*/
 
             states.put(alignment.getIdentifier(i).getName(),
                     GeneticCode.getInstance().getCodonIndexFromNucleotides(
@@ -76,26 +62,16 @@ public class PhyloUtils {
         return states;
     }
 
-    /**
-     * Reads a Newick formatted tree
-     * @param path path to the tree file
-     * @return a PAL tree object
-     */
-    public static Tree readTree(String path) {
+    public static Tree readTree(String filePath) {
         SimpleTree tree;
         try {
-            tree = new ReadTree(path);
+            tree = new ReadTree(filePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return tree;
     }
 
-    /**
-     * Gets all the codons that code for a particular set of amino acids
-     * @param aminoAcids a collection of amino acid indexes
-     * @return a list of codon indexes that code for the given amino acids
-     */
     public static List<Integer> getCodonsFromAminoAcids(Collection<Integer> aminoAcids) {
         int[] collected = new int[0];
         for (int a : aminoAcids) {
@@ -106,14 +82,6 @@ public class PhyloUtils {
         return Ints.asList(collected);
     }
 
-    /**
-     * Given a list of codons [observed at a given site], return a list of all observed residues, ordered by frequency.
-     * i.e. the most common observed residue first, then the next most common etc. Amino acids that are observed an
-     * equal number or times preserve the canonical amino acid order.
-     *
-     * @param codons a collection of codons (e.g. all codons observed at a particular location in alignment)
-     * @return an ordered list of amino acid from most common -> least common, sub-ordered by canonical ordering.
-     */
     public static List<Integer> getDistinctAminoAcids(Collection<Integer> codons) {
         // TODO: Christ almighty, there *must* be a better way to do this! Anyway, here we go...
 

@@ -1,10 +1,14 @@
 package tdg.models;
 
+import tdg.utils.CoreUtils;
 import tdg.utils.GeneticCode;
+import tdg.utils.PhyloUtils;
+
+import java.util.Arrays;
 
 /**
- * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
+ * @author Asif Tamuri
+ * @version $Id: TDGGlobals.java 156 2010-12-02 16:07:50Z tamuri $
  */
 public class TDGGlobals {
     private final double tau, kappa, mu, nu, gamma;
@@ -25,13 +29,11 @@ public class TDGGlobals {
     }
 
     private void makeErrorMatrix() {
-        /*
-        Arrays.fill(errorMatrix, gamma);
+        /*Arrays.fill(errorMatrix, gamma);
         double diagonal = 1 - (GeneticCode.CODON_STATES * gamma);
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             errorMatrix[i * GeneticCode.CODON_STATES + i] = diagonal;
-        }
-        */
+        }*/
 
         // trying a different style of error matrix, with no_of_substitutions^gamma
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
@@ -54,14 +56,13 @@ public class TDGGlobals {
             errorMatrix[i * GeneticCode.CODON_STATES + i] = 1 - diagonal;
         }
 
-        /*
-        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+        /*for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
                 System.out.printf("%s\t", errorMatrix[i * GeneticCode.CODON_STATES + j]);
             }
             System.out.println();
         }
-        */
+               */
 
     }
 

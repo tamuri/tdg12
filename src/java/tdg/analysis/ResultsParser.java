@@ -7,6 +7,7 @@ import com.google.common.io.LineProcessor;
 import com.google.common.primitives.Doubles;
 import org.apache.commons.lang.text.StrTokenizer;
 import pal.alignment.Alignment;
+import pal.tree.Tree;
 import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
@@ -15,6 +16,7 @@ import tdg.utils.PhyloUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
