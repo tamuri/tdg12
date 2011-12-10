@@ -2,6 +2,7 @@ package tdg.optim;
 
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
+import tdg.Constants;
 import tdg.models.LikelihoodCalculator;
 
 /**
@@ -9,7 +10,7 @@ import tdg.models.LikelihoodCalculator;
  * @version $Id: LikelihoodMaximiser.java 152 2010-11-08 11:10:01Z tamuri $
  */
 public class LikelihoodMaximiser implements MultivariateRealFunction{
-    private static final int CONSTRAINT = 21;
+    private static final double CONSTRAINT = Constants.FITNESS_BOUND + 1;
     private int count = 0;
     private LikelihoodCalculator lc;
     // private Map<DoubleArrayKey, Double> cache = Maps.newHashMap();

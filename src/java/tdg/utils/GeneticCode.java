@@ -31,7 +31,7 @@ import java.util.List;
  * @version $Id: GeneticCode.java 151 2010-11-08 11:08:36Z tamuri $
  */
 public class GeneticCode {
-    private static final int UNKNOWN_STATE = -1;
+    public static final int UNKNOWN_STATE = -1;
     private static final char UNKNOWN_CHARACTER = '?';
     private static final String UNKNOWN_TLA = "???";
     private static final char[] NUCLEOTIDES = "TCAG".toCharArray();

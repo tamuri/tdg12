@@ -16,6 +16,7 @@ import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
+import tdg.Constants;
 import tdg.Options;
 import tdg.models.LikelihoodCalculator;
 import tdg.models.MinimisationParameters;
@@ -41,11 +42,6 @@ import java.util.Map;
  * @see TDGCodonModel
  */
 public class SiteAnalyser {
-    // Random initial value for fitness parameter from range -INITIAL_PARAM_RANGE to INITIAL_PARAM_RANGE
-    private static final int INITIAL_PARAM_RANGE = 3;
-    private static final double CONVERGENCE_TOL = 1E-6;
-    private static final double NEGATIVE_INFINITY_FITNESS = -20; // effectively -Infinity for fitness parameter
-
     private double homogeneousLikelihood;
     private double nonHomogeneousLikelihood;
     private final Tree tree;
@@ -72,7 +68,7 @@ public class SiteAnalyser {
         for (Map.Entry<String, Integer> e : sitePattern.entrySet()) {
             if (GeneticCode.getInstance().isUnknownCodonState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(e.getValue()))) {
                 System.out.printf("Site %s - Sequence %s has stop codon (%s) - removing.\n", site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
-                sitePattern.put(e.getKey(), -1);
+                sitePattern.put(e.getKey(), GeneticCode.UNKNOWN_STATE);
             }
         }
 
@@ -117,7 +113,7 @@ public class SiteAnalyser {
         // 50 consecutive evaluations do not change by more than 1E-6.
         //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
         //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, CONVERGENCE_TOL);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
 
         // The purpose of multiple runs is to ensure good convergence of optimisation by using different initial parameters
         int runs = options.optimRuns;
@@ -134,12 +130,12 @@ public class SiteAnalyser {
                         newF[j] = 0;
                     // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
                     } else if (i == 1) {
-                        if (j < observedResidueCount) newF[j] = 0; else newF[j] = NEGATIVE_INFINITY_FITNESS;
+                        if (j < observedResidueCount) newF[j] = 0; else newF[j] = -Constants.FITNESS_BOUND;
                     // All other runs - all residues have random fitness picked from uniform distribution in range
                     } else if (i >= 2) {
-                        newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE);
-                        // could also be random observed, unobserved NEGATIVE_INFINITY_FITNESS e.g.:
-                        // if (j < observedResidueCount) { newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else newF[j] = NEGATIVE_INFINITY_FITNESS;
+                        newF[j] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
+                        // could also be random observed, unobserved -FITNESS_BOUND e.g.:
+                        // if (j < observedResidueCount) { newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else newF[j] = -FITNESS_BOUND;
                     }
                 }
                 // set the new initial fitness values
