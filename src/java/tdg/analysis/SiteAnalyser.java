@@ -49,6 +49,7 @@ public class SiteAnalyser {
     private final TDGGlobals globals;
     private final int site;
     private final Options options;
+    private RandomData randomData = new RandomDataImpl(new MersenneTwister());
 
     public SiteAnalyser(Tree tree, Alignment alignment, TDGGlobals globals, int site, Options options) {
         this.tree = tree;
@@ -85,13 +86,7 @@ public class SiteAnalyser {
         }
 
         // Display which amino acids we've observed at this site and for which we're going to estimate the fitness.
-        List<String> aaChar = Lists.transform(aminoAcidsAtSite, new Function<Integer,String>(){
-            int pos = 1;
-            public String apply(Integer input) {
-                return String.format("%s:(%s, %s)", pos++, input, GeneticCode.getInstance().getAminoAcidCharByIndex(input));
-            }
-        });
-        System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
+        displayAminoAcids(aminoAcidsAtSite, observedResidueCount);
 
         // TODO: Use specified initial fitness for a site from e.g. a file. Would be good for global parameter optimisation.
 
@@ -115,32 +110,14 @@ public class SiteAnalyser {
         //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
         RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
 
-        // The purpose of multiple runs is to ensure good convergence of optimisation by using different initial parameters
+        // The purpose of multiple runs is to ensure good convergence of optimisation by using different initial parameters.
+        // We run the procedure as many times as specified in the optimRuns.
         int runs = options.optimRuns;
         Map<String, RealPointValuePair> optimiseRuns = Maps.newHashMap();
-        RandomData randomData = new RandomDataImpl(new MersenneTwister());
 
         for (int i = 0; i < runs; i++) {
-            // If we are performing more than one run, then set random initial values for each run (> 2)
-            if (options.optimRuns > 1) {
-                double[] newF = new double[aminoAcidsAtSite.size()];
-                for (int j = 1; j < aminoAcidsAtSite.size(); j++) {
-                    // First run - all residues have equal fitness = 0
-                    if (i == 0) {
-                        newF[j] = 0;
-                    // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
-                    } else if (i == 1) {
-                        if (j < observedResidueCount) newF[j] = 0; else newF[j] = -Constants.FITNESS_BOUND;
-                    // All other runs - all residues have random fitness picked from uniform distribution in range
-                    } else if (i >= 2) {
-                        newF[j] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
-                        // could also be random observed, unobserved -FITNESS_BOUND e.g.:
-                        // if (j < observedResidueCount) { newF[j] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else newF[j] = -FITNESS_BOUND;
-                    }
-                }
-                // set the new initial fitness values
-                homogeneousFitness.set(newF);
-            }
+            // Set the initial values for the fitness parameters (see method for details)
+            homogeneousFitness.set(getInitialFitnessParameters(aminoAcidsAtSite, observedResidueCount, i));
 
             // The model will estimate the parameters in this Fitness object
             homogeneousModel.setParameters(homogeneousFitness);
@@ -177,7 +154,7 @@ public class SiteAnalyser {
             DirectSearchOptimizer dso = new NelderMead(); // or MultiDirectional()
             // Default convergence criteria : relative: 1.972152e-29, absolute: < 1.780059e-305
             dso.setConvergenceChecker(convergenceChecker);
-            dso.setMaxEvaluations(10000);
+            dso.setMaxEvaluations(Constants.MAX_EVALUATIONS);
             LikelihoodMaximiser maximiser = new LikelihoodMaximiser();
             maximiser.setLc(homogeneousModel);
 
@@ -292,6 +269,36 @@ public class SiteAnalyser {
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
 
+    }
+
+    private double[] getInitialFitnessParameters(List<Integer> aminoAcidsAtSite, int observedResidueCount, int run) {
+        double[] initialFitness = new double[aminoAcidsAtSite.size()];
+        for (int i = 1; i < aminoAcidsAtSite.size(); i++) {
+            // First run - all residues have equal fitness = 0
+            if (run == 0) {
+                initialFitness[i] = 0;
+            // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
+            } else if (run == 1) {
+                if (i < observedResidueCount) initialFitness[i] = 0; else initialFitness[i] = -Constants.FITNESS_BOUND;
+            // All other runs - all residues have random fitness picked from uniform distribution in range
+            } else if (run >= 2) {
+                initialFitness[i] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
+                // could also be random observed, unobserved -FITNESS_BOUND e.g.:
+                // if (i < observedResidueCount) { initialFitness[i] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else initialFitness[i] = -FITNESS_BOUND;
+            }
+        }
+        return initialFitness;
+    }
+
+    private void displayAminoAcids(List<Integer> aminoAcidsAtSite, int observedResidueCount) {
+        List<String> aaChar = Lists.transform(aminoAcidsAtSite, new Function<Integer, String>() {
+            int pos = 1;
+
+            public String apply(Integer input) {
+                return String.format("%s:(%s, %s)", pos++, input, GeneticCode.getInstance().getAminoAcidCharByIndex(input));
+            }
+        });
+        System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
     }
 
     public double getNonHomogeneousLikelihood() {

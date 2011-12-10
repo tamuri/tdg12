@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Implementation of Felsenstein's pruning algorithm to calculate the likelihood.
+ *
  * @author Asif Tamuri
- * @version $Id: LikelihoodCalculator.java 152 2010-11-08 11:10:01Z tamuri $
+ * @version 1.0
  */
 public class LikelihoodCalculator {
     private static final double[] CLADE_BRANCH_SPLIT = {0.5, 0.5};

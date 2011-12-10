@@ -7,6 +7,7 @@ import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import cern.jet.math.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
+import tdg.Constants;
 import tdg.models.parameters.Fitness;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
@@ -32,8 +33,8 @@ import java.util.Map;
             {\rm{e}}^{F_J}
    \f]
  *
- * @author Asif Tamuri
- * @version $Id: TDGCodonModel.java 152 2010-11-08 11:10:01Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ * @version 1.0
  */
 public class TDGCodonModel {
     private final TDGGlobals globals;
@@ -322,7 +323,7 @@ public class TDGCodonModel {
         }
 
 
-        double s = getRelativeFixationProbability(20 - -20);
+        double s = getRelativeFixationProbability(Constants.FITNESS_BOUND - -Constants.FITNESS_BOUND);
 
         // add the stop codons explicitly
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
@@ -367,26 +368,26 @@ public class TDGCodonModel {
                     int aa_to = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j);
                     if (aa_to < 0) {
                         // going to STOP codon
-                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                        fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
                         //} else if (aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aa_from < 0) {
                         // going from a STOP codon to any non-STOP codon
-                        fullS[i * GeneticCode.CODON_STATES + j] = 21;
+                        fullS[i * GeneticCode.CODON_STATES + j] = Constants.FITNESS_BOUND;
                     } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // both amino acids that occur at this site
                         fullS[i * GeneticCode.CODON_STATES + j] = fitness.get()[aminoAcidsToFitness[aa_to]] - fitness.get()[aminoAcidsToFitness[aa_from]];
                         //} else if (aminoAcidsAtSite.contains(aa_from) && !aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] == -1) {
                         // from observed to unobserved
-                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                        fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
                         // } else if (!aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aminoAcidsToFitness[aa_from] ==  -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // from unobserved to observed
                         //System.out.printf("%s -> %s\n", aa_from, aa_to);
-                        fullS[i * GeneticCode.CODON_STATES + j] = 21;
+                        fullS[i * GeneticCode.CODON_STATES + j] = Constants.FITNESS_BOUND;
                     } else {
                         // neither of these amino acids are observed at this site
-                        fullS[i * GeneticCode.CODON_STATES + j] = -21;
+                        fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
                     }
                 }
             }

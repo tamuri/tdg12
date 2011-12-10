@@ -6,12 +6,15 @@ import tdg.Constants;
 import tdg.models.LikelihoodCalculator;
 
 /**
+ * Wraps the likelihood function in a MultivariateRealFunction, as needed by the Apache Commons Math optimisation
+ * routines.
+ *
  * @author Asif Tamuri
  * @version $Id: LikelihoodMaximiser.java 152 2010-11-08 11:10:01Z tamuri $
+ * @see LikelihoodCalculator
  */
 public class LikelihoodMaximiser implements MultivariateRealFunction{
     private static final double CONSTRAINT = Constants.FITNESS_BOUND + 1;
-    private int count = 0;
     private LikelihoodCalculator lc;
     // private Map<DoubleArrayKey, Double> cache = Maps.newHashMap();
 
@@ -21,27 +24,23 @@ public class LikelihoodMaximiser implements MultivariateRealFunction{
 
     @Override
     public double value(double[] point) throws FunctionEvaluationException, IllegalArgumentException {
-        // don't give very small or very large fitness coefficients
+        // TODO: Theoretically, we should be using something like Powell's COBYLA with proper handling of constraints
+        // Keep fitness parameters within our constraints - if any point is outside constraint, return a very bad likelihood value
         for (double d : point) {
             if (d < -CONSTRAINT || d > CONSTRAINT) {
-                return 999999;
+                return Constants.VERY_BAD_LIKELIHOOD;
             }
         }   
 
-        /*DoubleArrayKey dak = new DoubleArrayKey(point);
-        if (done.containsKey(dak)) {
-            System.out.printf("HIT in site params!\n");
-            return done.get(dak);
-        }*/
+        /*
+        // If we want to cache results (some optimisers seem to cover the same ground)
+        DoubleArrayKey dak = new DoubleArrayKey(point);
+        if (cache.containsKey(dak)) {
+            return cache.get(dak);
+        }
+        cache.put(dak, out);
+        */
 
-        double out = lc.function(point);
-        //System.out.printf("Params= { %s }; \n ", Doubles.join(", ", point));
-        //System.out.printf("%s - %s \n", count++, out);
-        //count++;
-        //if (count % 500 == 0) System.out.printf("%s ", count);
-        // done.put(dak, out);
-
-        //System.exit(0);
-        return out;
+        return lc.function(point);
     }
 }
