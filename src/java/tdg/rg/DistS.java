@@ -1,9 +1,13 @@
 package tdg.rg;
 
-import java.io.*;
-import java.util.*;
-import pal.math.*;
+import pal.math.MultivariateFunction;
+import pal.math.OrthogonalHints;
 import tdg.utils.GeneticCode;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Random;
 
 public class DistS implements MultivariateFunction {
 

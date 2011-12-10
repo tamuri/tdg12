@@ -1,10 +1,6 @@
-import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 import tdg.models.TDGGlobals;
 import tdg.utils.GeneticCode;
-
-import javax.annotation.Generated;
-import java.util.Arrays;
 
 public class Test {
     public static void main(String[] args) {

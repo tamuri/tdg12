@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
-import tdg.utils.CodeTimer;
 import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 

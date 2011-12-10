@@ -1,14 +1,13 @@
 package tdg.cluster;
 
 import com.beust.jcommander.JCommander;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import org.simpleframework.http.Request;
+import org.simpleframework.http.Response;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.transport.connect.SocketConnection;
-import org.simpleframework.http.Response;
-import org.simpleframework.http.Request;
 import org.simpleframework.util.thread.Scheduler;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
@@ -20,11 +19,11 @@ import tdg.utils.PhyloUtils;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.io.PrintStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 

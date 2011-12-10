@@ -1,10 +1,5 @@
 package tdg.rg;
 
-import java.io.*;
-import java.util.*;
-import pal.math.*;
-import tdg.rg.Fractions;
-
 public class FractionsRun {
 
 

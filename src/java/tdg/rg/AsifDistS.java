@@ -5,7 +5,6 @@ import tdg.utils.GeneticCode;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Random;
-import java.util.Vector;
 
 public class AsifDistS {
     boolean doMuts;
