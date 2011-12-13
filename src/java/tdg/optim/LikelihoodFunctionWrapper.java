@@ -10,10 +10,10 @@ import tdg.models.LikelihoodCalculator;
  * routines.
  *
  * @author Asif Tamuri
- * @version $Id: LikelihoodMaximiser.java 152 2010-11-08 11:10:01Z tamuri $
+ * @version $Id: LikelihoodFunctionWrapper.java 152 2010-11-08 11:10:01Z tamuri $
  * @see LikelihoodCalculator
  */
-public class LikelihoodMaximiser implements MultivariateRealFunction{
+public class LikelihoodFunctionWrapper implements MultivariateRealFunction{
     private static final double CONSTRAINT = Constants.FITNESS_BOUND + 1;
     private LikelihoodCalculator lc;
     // private Map<DoubleArrayKey, Double> cache = Maps.newHashMap();
@@ -24,7 +24,7 @@ public class LikelihoodMaximiser implements MultivariateRealFunction{
 
     @Override
     public double value(double[] point) throws FunctionEvaluationException, IllegalArgumentException {
-        // TODO: Theoretically, we should be using something like Powell's COBYLA with proper handling of constraints
+        // TODO: I guess we should be using something like Powell's COBYLA with proper handling of constraints
         // Keep fitness parameters within our constraints - if any point is outside constraint, return a very bad likelihood value
         for (double d : point) {
             if (d < -CONSTRAINT || d > CONSTRAINT) {

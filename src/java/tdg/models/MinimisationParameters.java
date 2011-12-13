@@ -4,7 +4,7 @@ import com.google.common.primitives.Doubles;
 
 /**
  * @author Asif Tamuri
- * @version $Id: MinimisationParameters.java 25 2010-04-19 14:39:24Z atamuri $
+ * @version 1.0
  */
 public class MinimisationParameters {
     private double[] parameters;

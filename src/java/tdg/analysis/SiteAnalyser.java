@@ -24,7 +24,7 @@ import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
 import tdg.models.parameters.Parameter;
-import tdg.optim.LikelihoodMaximiser;
+import tdg.optim.LikelihoodFunctionWrapper;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -36,6 +36,8 @@ import java.util.Map;
  * Performs the MLE for a single site, calling the likelihood function. (i.e. optimising the fitness parameters for
  * the swMutSel0 model.)
  *
+ * TODO: Bit of an organic mess. Need to clean/refactor this, Fitness, LikelihoodCalculator, TDGCodonModel + LikelihoodFunctionWrapper...how??
+ *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  * @version 1.0
  * @see LikelihoodCalculator
@@ -43,7 +45,7 @@ import java.util.Map;
  */
 public class SiteAnalyser {
     private double homogeneousLikelihood;
-    private double nonHomogeneousLikelihood;
+    private double heterogeneousLikelihood;
     private final Tree tree;
     private final Alignment  alignment;
     private final TDGGlobals globals;
@@ -68,7 +70,8 @@ public class SiteAnalyser {
         // Remove any stop codons and treat them as gaps
         for (Map.Entry<String, Integer> e : sitePattern.entrySet()) {
             if (GeneticCode.getInstance().isUnknownCodonState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(e.getValue()))) {
-                System.out.printf("Site %s - Sequence %s has stop codon (%s) - removing.\n", site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
+                System.out.printf("Site %s - Sequence %s has stop codon (%s) - removing.\n",
+                        site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
                 sitePattern.put(e.getKey(), GeneticCode.UNKNOWN_STATE);
             }
         }
@@ -86,7 +89,7 @@ public class SiteAnalyser {
         }
 
         // Display which amino acids we've observed at this site and for which we're going to estimate the fitness.
-        displayAminoAcids(aminoAcidsAtSite, observedResidueCount);
+        displayResidues(aminoAcidsAtSite, observedResidueCount);
 
         // TODO: Use specified initial fitness for a site from e.g. a file. Would be good for global parameter optimisation.
 
@@ -97,18 +100,9 @@ public class SiteAnalyser {
         double[] f = new double[aminoAcidsAtSite.size()];
         Fitness homogeneousFitness = new Fitness(f, true);
 
-        // Create an instance of the swMutSel0 model
+        // Create an instance of the swMutSel0 model, homogeneous model only has one model for the entire tree
         TDGCodonModel tcm1 = new TDGCodonModel(globals, homogeneousFitness, aminoAcidsAtSite);
-        // Homogeneous model only has one clade
         homogeneousModel.addCladeModel("ALL", tcm1);
-
-        // This makes a big difference to total optimisation time. We should think about which
-        // convergence criteria to use for optimising global parameters vs. site fitness parameters
-        // Same as the standard scalar value convergence checker, but regards function has converged if
-        // 50 consecutive evaluations do not change by more than 1E-6.
-        //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
-        //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
 
         // The purpose of multiple runs is to ensure good convergence of optimisation by using different initial parameters.
         // We run the procedure as many times as specified in the optimRuns.
@@ -119,11 +113,11 @@ public class SiteAnalyser {
             // Set the initial values for the fitness parameters (see method for details)
             homogeneousFitness.set(getInitialFitnessParameters(aminoAcidsAtSite, observedResidueCount, i));
 
-            // The model will estimate the parameters in this Fitness object
+            // The model will use the parameters in this Fitness object
             homogeneousModel.setParameters(homogeneousFitness);
 
-            // TODO: Remove this
-            homogeneousModel.applyErrorMatrix(globals.getErrorMatrix());
+            // TODO: Remove this (or make it an option)
+            // homogeneousModel.applyErrorMatrix(globals.getErrorMatrix());
 
             // Single residue observed at this site
             if (aminoAcidsAtSite.size() == 1) {
@@ -131,52 +125,31 @@ public class SiteAnalyser {
                 homogeneousLikelihood = -homogeneousModel.function(new double[]{});
 
                 if (!options.homogonly) {
-                    nonHomogeneousLikelihood = homogeneousLikelihood;
+                    heterogeneousLikelihood = homogeneousLikelihood;
                 }
 
                 System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, homogeneousLikelihood);
-
-                double[] orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
-                Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
-                for (int j = 0; j < GeneticCode.AMINO_ACID_STATES; j++) {
-                    if (aminoAcidsAtSite.contains(j)) orderedFitness[j] = homogeneousFitness.get()[aminoAcidsAtSite.indexOf(j)];
-                }
-
-                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness));
+                System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
 
                 //TODO: we exit out of method here...what about the rest of the output??
                 return;
             }
 
-            // Optimise the likelihood function
-            MinimisationParameters mp = homogeneousModel.getMinimisationParameters();
-            DirectSearchOptimizer dso = new NelderMead(); // or MultiDirectional()
-            // Default convergence criteria : relative: 1.972152e-29, absolute: < 1.780059e-305
-            dso.setConvergenceChecker(convergenceChecker);
-            dso.setMaxEvaluations(Constants.MAX_EVALUATIONS);
-            LikelihoodMaximiser maximiser = new LikelihoodMaximiser();
-            maximiser.setLc(homogeneousModel);
+            RealPointValuePair r = optimise(homogeneousModel);
 
-            RealPointValuePair r;
-            try {
-                r = dso.optimize(maximiser, GoalType.MINIMIZE, mp.getParameters());
-                String key = String.format("%.3f", -r.getValue());
-                if (!optimiseRuns.containsKey(key)) optimiseRuns.put(key, r);
-                System.out.printf("Site %s - Optimisation run %s (%s evaluations). lnL = %s, Params = {%s -> %s}\n", site, i + 1, dso.getEvaluations(), -r.getValue(), Doubles.join(", ", mp.getParameters()), Doubles.join(", ", r.getPoint()));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            // Store the log-likelihood, to 3 decimal places, and point for this run
+            String key = String.format("%.3f", -r.getValue());
+            if (!optimiseRuns.containsKey(key)) optimiseRuns.put(key, r);
 
-        } // end runs
+        }
 
-
-        // We've completed the optimisation runs - see what we have
+        // We've completed the optimisation runs - see what we have, pick the best
         RealPointValuePair r;
         if (optimiseRuns.size() == 1) {
             r = optimiseRuns.values().iterator().next();
             if (runs > 1) System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
-        } else {    
+        } else {
             System.out.printf("Site %s - %s runs converged to %s different optima. (%s)\n", site, runs, optimiseRuns.size(), Joiner.on(", ").join(optimiseRuns.keySet()));
             // Get the best
             double best = Double.NEGATIVE_INFINITY;
@@ -193,15 +166,7 @@ public class SiteAnalyser {
 
         homogeneousModel.function(r.getPoint());
         System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, -r.getValue());
-
-        // if we're optimising all 19 fitness parameters
-        double[] orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
-        Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
-        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
-            if (aminoAcidsAtSite.contains(i)) orderedFitness[i] = homogeneousFitness.get()[aminoAcidsAtSite.indexOf(i)];
-        }
-
-        System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", orderedFitness));
+        System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
         System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
         homogeneousLikelihood = -r.getValue();
 
@@ -209,8 +174,8 @@ public class SiteAnalyser {
             return;
         }
 
-        // ********************* NON-HOMOGENEOUS MODEL *************************
-        LikelihoodCalculator nonHomogeneousModel = new LikelihoodCalculator(tree, sitePattern);
+        // ********************* HETEROGENEOUS MODEL *************************
+        LikelihoodCalculator heterogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
         // TODO: we should be reading the list of clade labels from command-line Options!
         List<String> clades = Lists.newArrayList("Av", "Hu");
@@ -219,58 +184,78 @@ public class SiteAnalyser {
         for (int i = 0; i < clades.size(); i++) {
             fitnesses.add(i, new Fitness(homogeneousFitness.get().clone(), true));
             tdgModels.add(i, new TDGCodonModel(globals, fitnesses.get(i), aminoAcidsAtSite));
-            nonHomogeneousModel.addCladeModel(clades.get(i), tdgModels.get(i));
+            heterogeneousModel.addCladeModel(clades.get(i), tdgModels.get(i));
         }
-
-        /*nonHomogeneousModel.addCladeModel("Av", tdgModels.get(0));
-        nonHomogeneousModel.addCladeModel("Hu", tdgModels.get(0));
-        nonHomogeneousModel.addCladeModel("Sw", tdgModels.get(1));
-        */
-
-        nonHomogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
-
+        heterogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
 
         /*
+        heterogeneousModel.addCladeModel("Av", tdgModels.get(0));
+        heterogeneousModel.addCladeModel("Hu", tdgModels.get(0));
+        heterogeneousModel.addCladeModel("Sw", tdgModels.get(1));
         // TODO: For some sites, initial parameters matter! (Flat likelihood surface?) e.g. PB2 site 199. Try it:
         // Fitness nonHomogeneousFitnessAv = new Fitness(new double[aminoAcidsAtSite.size()], true);
         // Fitness nonHomogeneousFitnessHu = new Fitness(new double[aminoAcidsAtSite.size()], true);
         */
 
-        MinimisationParameters mp2 = nonHomogeneousModel.getMinimisationParameters();
-
-        DirectSearchOptimizer dso2 = new NelderMead();
-        dso2.setConvergenceChecker(convergenceChecker);
-
-        LikelihoodMaximiser maximiser2 = new LikelihoodMaximiser();
-        maximiser2.setLc(nonHomogeneousModel);
-
-        RealPointValuePair r2;
-        try {
-            r2 = dso2.optimize(maximiser2, GoalType.MINIMIZE, mp2.getParameters());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        nonHomogeneousModel.function(r2.getPoint());
+        RealPointValuePair r2 = optimise(heterogeneousModel);        
+        heterogeneousModel.function(r2.getPoint());
+        
         System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
         for (int i = 0; i < clades.size(); i++) {
-
-            orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
-            Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
-            for (int j = 0; j < GeneticCode.AMINO_ACID_STATES; j++) {
-                if (aminoAcidsAtSite.contains(j)) orderedFitness[j] = fitnesses.get(i).get()[aminoAcidsAtSite.indexOf(j)];
-            }
-
-            //System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", fitnesses.get(i).get()));
-            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", orderedFitness).replaceAll("Infinity", "Inf"));
+            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, fitnesses.get(i).get())));
             System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(i), Doubles.join(", ", tdgModels.get(i).getAminoAcidFrequencies()));
         }
-        nonHomogeneousLikelihood = -r2.getValue();
+        heterogeneousLikelihood = -r2.getValue();
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
 
     }
 
+    private RealPointValuePair optimise(LikelihoodCalculator model) {
+        MinimisationParameters mp = model.getMinimisationParameters();
+        DirectSearchOptimizer dso = new NelderMead();
+        dso.setMaxEvaluations(Constants.MAX_EVALUATIONS);
+
+        // Big difference for total optimisation time. We should think about which
+        // convergence criteria to use for optimising global parameters vs. site fitness parameters
+        // Same as the standard scalar value convergence checker, but regards function has converged if
+        // 50 consecutive evaluations do not change by more than 1E-6.
+        //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
+        //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
+        
+        dso.setConvergenceChecker(convergenceChecker);
+
+        LikelihoodFunctionWrapper wrapper = new LikelihoodFunctionWrapper();
+        wrapper.setLc(model);
+
+        RealPointValuePair pair;
+        try {
+            pair = dso.optimize(wrapper, GoalType.MINIMIZE, mp.getParameters());
+            System.out.printf("Site %s - Optimisation run (%s evaluations). lnL = %s, params = { %s -> %s }\n",
+                    site, 
+                    dso.getEvaluations(), 
+                    -pair.getValue(), 
+                    Doubles.join(", ", mp.getParameters()), // initial parameters
+                    Doubles.join(", ", pair.getPoint()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return pair;
+    }
+
+    private double[] getOrderedFitness(List<Integer> aminoAcidsAtSite, double[] unorderedFitnesses) {
+        double[] orderedFitness = new double[GeneticCode.AMINO_ACID_STATES];
+        Arrays.fill(orderedFitness, Double.NEGATIVE_INFINITY);
+
+        for (int j = 0; j < GeneticCode.AMINO_ACID_STATES; j++)
+            if (aminoAcidsAtSite.contains(j))
+                orderedFitness[j] = unorderedFitnesses[aminoAcidsAtSite.indexOf(j)];
+
+        return orderedFitness;
+    }
+    
     private double[] getInitialFitnessParameters(List<Integer> aminoAcidsAtSite, int observedResidueCount, int run) {
         double[] initialFitness = new double[aminoAcidsAtSite.size()];
         for (int i = 1; i < aminoAcidsAtSite.size(); i++) {
@@ -278,10 +263,10 @@ public class SiteAnalyser {
             if (run == 0) {
                 initialFitness[i] = 0;
             // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
-            } else if (run == 1) {
+            } else if (run == 1 && !options.approx) {
                 if (i < observedResidueCount) initialFitness[i] = 0; else initialFitness[i] = -Constants.FITNESS_BOUND;
             // All other runs - all residues have random fitness picked from uniform distribution in range
-            } else if (run >= 2) {
+            } else {
                 initialFitness[i] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
                 // could also be random observed, unobserved -FITNESS_BOUND e.g.:
                 // if (i < observedResidueCount) { initialFitness[i] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else initialFitness[i] = -FITNESS_BOUND;
@@ -290,7 +275,7 @@ public class SiteAnalyser {
         return initialFitness;
     }
 
-    private void displayAminoAcids(List<Integer> aminoAcidsAtSite, int observedResidueCount) {
+    private void displayResidues(List<Integer> aminoAcidsAtSite, int observedResidueCount) {
         List<String> aaChar = Lists.transform(aminoAcidsAtSite, new Function<Integer, String>() {
             int pos = 1;
 
@@ -301,8 +286,8 @@ public class SiteAnalyser {
         System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
     }
 
-    public double getNonHomogeneousLikelihood() {
-        return nonHomogeneousLikelihood;
+    public double getHeterogeneousLikelihood() {
+        return heterogeneousLikelihood;
     }
 
     public double getHomogeneousLikelihood() {

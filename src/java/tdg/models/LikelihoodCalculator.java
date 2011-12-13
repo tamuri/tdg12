@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
 import pal.tree.Node;
 import pal.tree.Tree;
+import tdg.Constants;
 import tdg.models.parameters.Fitness;
 import tdg.models.parameters.Parameter;
 import tdg.utils.GeneticCode;
@@ -20,11 +21,6 @@ import java.util.Map;
  * @version 1.0
  */
 public class LikelihoodCalculator {
-    private static final double[] CLADE_BRANCH_SPLIT = {0.5, 0.5};
-    private static final double SCALING_THRESHOLD = 1e-15;
-    private static final int SCALING_NODE_STEP = 5;
-    private static final double FITNESS_INITIAL_VALUE = 0.0;
-
     private final Tree tree;
     private String ROOT_MODEL_NAME; 
     private final Map<String, Integer> states;
@@ -311,8 +307,8 @@ public class LikelihoodCalculator {
                                 updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
 
                         } else { // standard hostshift
-                            cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * CLADE_BRANCH_SPLIT[0]);
-                            cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * CLADE_BRANCH_SPLIT[1]);
+                            cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[0]);
+                            cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[1]);
                             updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
                         }
 
@@ -377,8 +373,8 @@ public class LikelihoodCalculator {
 
                     } else {
                         // we're on a branch switching clades
-                        cladeModels.get(parentName.substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * CLADE_BRANCH_SPLIT[0]);
-                        cladeModels.get(childName.substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * CLADE_BRANCH_SPLIT[1]);
+                        cladeModels.get(parentName.substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[0]);
+                        cladeModels.get(childName.substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[1]);
                         updateInterCladeConditionals(lowerConditional, conditionals, probMatrix0, probMatrix1);
                     }
                 }
@@ -394,7 +390,7 @@ public class LikelihoodCalculator {
 
     private void scaleConditionals(Node node, double[] conditionals) {
 
-        if (node.getNumber() % SCALING_NODE_STEP == 0) {
+        if (node.getNumber() % Constants.SCALING_NODE_STEP == 0) {
             double scalingFactor = 0;
             for (int i = 0; i < conditionals.length; i++) {
                  if (conditionals[i] > 0 && conditionals[i] > scalingFactor) {
@@ -402,7 +398,7 @@ public class LikelihoodCalculator {
                 }
             }
 
-            if (scalingFactor < SCALING_THRESHOLD) {
+            if (scalingFactor < Constants.SCALING_THRESHOLD) {
             //    System.out.printf("need to scale, scalingFactor = %s\n", scalingFactor);
              //   System.out.printf("conditionals before scaling: %s\n", Doubles.join(",", conditionals));
 
@@ -452,7 +448,7 @@ public class LikelihoodCalculator {
         for (Parameter p : parameters) {
             if (p.getClass() == Fitness.class) {
                 int len = ((double[]) p.get()).length; // number of fitness coefficient parameters
-                double[] tmp = Doubles.concat(new double[]{FITNESS_INITIAL_VALUE}, Arrays.copyOfRange(params, offset, offset + len - 1));
+                double[] tmp = Doubles.concat(new double[]{Constants.FITNESS_INITIAL_VALUE}, Arrays.copyOfRange(params, offset, offset + len - 1));
                 p.set(tmp);
                 offset = offset + len - 1;
             }
@@ -483,7 +479,7 @@ public class LikelihoodCalculator {
             // TODO: currently only optimising fitness parameters
             if (p.getClass() == Fitness.class) {
                 double[] fitness = (double[]) p.get();
-                // first fitness is always 1.0
+                // First fitness is fixed to FITNESS_INITIAL_VALUE ( = 0.0)
                 minParams.addAll(Doubles.asList(fitness).subList(1, fitness.length));
             } else {
                 throw new RuntimeException("NOT IMPLEMENTED!");
