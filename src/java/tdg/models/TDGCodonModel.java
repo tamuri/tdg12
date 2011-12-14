@@ -316,16 +316,16 @@ public class TDGCodonModel {
     public double[] getFullQ() {
         double[] fullQ = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
+        // This is the entire 60x60 matrix for Q
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
                 fullQ[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = Q[i * matrixSize + j];
             }
         }
 
-
-        double s = getRelativeFixationProbability(Constants.FITNESS_BOUND - -Constants.FITNESS_BOUND);
-
         // add the stop codons explicitly
+        double stopS = getRelativeFixationProbability(Constants.FITNESS_BOUND - -Constants.FITNESS_BOUND);
+
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
                 int aa_from = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i);
@@ -336,7 +336,7 @@ public class TDGCodonModel {
                     fullQ[i * GeneticCode.CODON_STATES + j] = 0;
                 // if coming from a stop codon and going to a non-stop codon
                 } else if (aa_from < 0) {
-                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * s;
+                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * stopS;
                 }
             }
         }
@@ -400,7 +400,7 @@ public class TDGCodonModel {
     }
 
     public double[] getAminoAcidFrequencies() {
-        double[] freqs = new double[20];
+        double[] freqs = new double[GeneticCode.AMINO_ACID_STATES];
         double[] codonPis = getCodonFrequencies();
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             if (GeneticCode.getInstance().isUnknownAminoAcidState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i))) continue;

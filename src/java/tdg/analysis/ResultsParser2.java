@@ -81,7 +81,7 @@ public class ResultsParser2 {
         @Override
         public boolean processLine(String line) throws IOException {
 
-            List<Double> fitnesses = Lists.transform(Arrays.asList(line.replaceAll("-Inf", "-Infinity").split(" ")), Functions.stringToDouble());
+            List<Double> fitnesses = Lists.transform(Arrays.asList(line.split(" ")), Functions.stringToDouble());
 
             TDGCodonModel tdg;
 
@@ -101,7 +101,7 @@ public class ResultsParser2 {
             } else {
                 tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);
             }
-                
+
             // approx method
             /*List<Integer> aa = Lists.newArrayList();
             List<Double> ff = Lists.newArrayList();

@@ -34,7 +34,7 @@ public class Analyse {
         if (args.length == 0) {
             jc.usage();
             System.out.println("Options preceded by an asterisk are required.");
-            System.out.println("Example: -t HA.tree -s HA.co -site 123 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -homogonly");
+            System.out.println("Example: -t HA.tree -s HA.co -site 123 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -heteroClades");
             System.exit(0);
         } else {
             jc.parse(args);

@@ -83,6 +83,7 @@ public class SiteAnalyser {
         // If we're not using the approximate method (collapsing the matrix)
         if (!options.approx) {
             // Optimise all 19 Fitness parameters, rather than just the observed amino acids
+            // This will add the remaining amino acids at the end of the list of observed residues in canonical order
             for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
                 if (!aminoAcidsAtSite.contains(i)) aminoAcidsAtSite.add(i);
             }
@@ -187,16 +188,7 @@ public class SiteAnalyser {
         }
         heterogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
 
-        /*
-        heterogeneousModel.addCladeModel("Av", tdgModels.get(0));
-        heterogeneousModel.addCladeModel("Hu", tdgModels.get(0));
-        heterogeneousModel.addCladeModel("Sw", tdgModels.get(1));
-        // TODO: For some sites, initial parameters matter! (Flat likelihood surface?) e.g. PB2 site 199. Try it:
-        // Fitness nonHomogeneousFitnessAv = new Fitness(new double[aminoAcidsAtSite.size()], true);
-        // Fitness nonHomogeneousFitnessHu = new Fitness(new double[aminoAcidsAtSite.size()], true);
-        */
-
-        RealPointValuePair r2 = optimise(heterogeneousModel);        
+        RealPointValuePair r2 = optimise(heterogeneousModel);
         heterogeneousModel.function(r2.getPoint());
         
         System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
@@ -221,7 +213,7 @@ public class SiteAnalyser {
         //RealConvergenceChecker convergenceChecker = new EquivalentValueConvergenceChecker(1E-6, 50);
         //RealConvergenceChecker convergenceChecker = new PointAndValueConvergenceChecker(1E-6, 20, 1E-6);
         RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
-        
+
         dso.setConvergenceChecker(convergenceChecker);
 
         LikelihoodFunctionWrapper wrapper = new LikelihoodFunctionWrapper();

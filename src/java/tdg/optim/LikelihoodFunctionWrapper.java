@@ -27,10 +27,10 @@ public class LikelihoodFunctionWrapper implements MultivariateRealFunction{
         // TODO: I guess we should be using something like Powell's COBYLA with proper handling of constraints
         // Keep fitness parameters within our constraints - if any point is outside constraint, return a very bad likelihood value
         for (double d : point) {
-            if (d < -CONSTRAINT || d > CONSTRAINT) {
+            if (d < -(CONSTRAINT + 1) || d > (CONSTRAINT + 1)) {
                 return Constants.VERY_BAD_LIKELIHOOD;
             }
-        }   
+        }
 
         /*
         // If we want to cache results (some optimisers seem to cover the same ground)
