@@ -124,7 +124,7 @@ public class SiteAnalyser {
                 System.out.printf("Site %s - Site is conserved.\n", site);
                 homogeneousLikelihood = -homogeneousModel.function(new double[]{});
 
-                if (!options.homogonly) {
+                if (options.heteroClades.length() > 0) {
                     heterogeneousLikelihood = homogeneousLikelihood;
                 }
 
@@ -132,7 +132,7 @@ public class SiteAnalyser {
                 System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
 
-                //TODO: we exit out of method here...what about the rest of the output??
+                //TODO: we exit out of method here...what about the rest of the output (e.g. heterogeneous model)?
                 return;
             }
 
@@ -170,15 +170,14 @@ public class SiteAnalyser {
         System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
         homogeneousLikelihood = -r.getValue();
 
-        if (options.homogonly) {
+        if (options.heteroClades == null) {
             return;
         }
 
         // ********************* HETEROGENEOUS MODEL *************************
         LikelihoodCalculator heterogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
-        // TODO: we should be reading the list of clade labels from command-line Options!
-        List<String> clades = Lists.newArrayList("Av", "Hu");
+        List<String> clades = Lists.newArrayList(options.heteroClades.split(","));
         List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
         List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
         for (int i = 0; i < clades.size(); i++) {
@@ -208,7 +207,6 @@ public class SiteAnalyser {
         heterogeneousLikelihood = -r2.getValue();
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
-
     }
 
     private RealPointValuePair optimise(LikelihoodCalculator model) {
@@ -276,14 +274,14 @@ public class SiteAnalyser {
     }
 
     private void displayResidues(List<Integer> aminoAcidsAtSite, int observedResidueCount) {
-        List<String> aaChar = Lists.transform(aminoAcidsAtSite, new Function<Integer, String>() {
+        List<String> residueStrings = Lists.transform(aminoAcidsAtSite, new Function<Integer, String>() {
             int pos = 1;
 
             public String apply(Integer input) {
                 return String.format("%s:(%s, %s)", pos++, input, GeneticCode.getInstance().getAminoAcidCharByIndex(input));
             }
         });
-        System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(aaChar));
+        System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", site, observedResidueCount, aminoAcidsAtSite.size(), Joiner.on(", ").join(residueStrings));
     }
 
     public double getHeterogeneousLikelihood() {

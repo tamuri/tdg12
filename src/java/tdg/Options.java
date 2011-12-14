@@ -35,8 +35,8 @@ public class Options {
     @Parameter(names = "-gamma", description = "Probability of error.", converter = DoubleConverter.class, hidden = true)
     public double gamma = 0;
 
-    @Parameter(names = "-homogonly", description = "Run homogeneous model only.")
-    public boolean homogonly = false;
+    @Parameter(names = "-heteroclades", description = "Perform analysis using the heterogeneous model with these comma-separated clade prefixes.")
+    public String heteroClades = null;
 
     @Parameter(names = "-approx", description = "Use the approximate method to optimise the likelihood")
     public boolean approx = false;
