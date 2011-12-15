@@ -48,6 +48,8 @@ public class GeneticCode {
     // From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
     public static final String STANDARD_CODE                 = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
     public static final String VERTEBRATE_MITOCHONDRIAL_CODE = "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG";
+    
+    public static String CURRENT_CODE;
 
     public static final int CODON_STATES = 64;
     public static final int AMINO_ACID_STATES = AMINO_ACIDS.length;
@@ -83,6 +85,8 @@ public class GeneticCode {
             throw new RuntimeException("Genetic code already initialised!");
 
         GeneticCode gc = new GeneticCode();
+        CURRENT_CODE = code;
+
         for (int i = 0; i < CODON_STATES; i++) {
             if (code.charAt(i) == '*') {
                 CODONS_TO_AMINO_ACIDS[i] = UNKNOWN_STATE; // stop codon
