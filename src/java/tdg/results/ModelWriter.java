@@ -1,7 +1,6 @@
-package tdg.analysis;
+package tdg.results;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -9,9 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.google.common.primitives.Doubles;
-import tdg.cli.DoubleArrayConverter;
-import tdg.cli.DoubleConverter;
-import tdg.cli.GeneticCodeConverter;
 import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
@@ -24,10 +20,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class ResultsParser2 {
+/**
+ * Takes a list of fitnesses (usually constructed by a call to FitnessExtractor) and swMutSel0 global parameters and
+ * writes the following files:
+ *
+ * 1. Q0.txt - the neutral substitution rate matrix for each site
+ * 2. QS.txt - the substitution rate matrix, with selection
+ * 3. S.txt - the selection coefficient (S_ij) matrix
+ * 4. PiS.txt - the codon frequencies
+ * 5. PiAA.txt - the amino acid frequencies
+ *
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ * @see FitnessExtractor
+ */
+public class ModelWriter {
     TDGGlobals tdgGlobals;
     String path;
-    ROptions o;
+    Options o;
 
     FileWriter outS;
     FileWriter outPiS;
@@ -35,14 +44,14 @@ public class ResultsParser2 {
     List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)) ;
 
     public static void main(String[] args) throws Exception {
-        ROptions o = new ROptions();
+        Options o = new Options();
         new JCommander(o, args);
 
-        ResultsParser2 rp = new ResultsParser2(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "fitness.sorted.txt");
+        ModelWriter rp = new ModelWriter(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "F.txt");
         rp.run();
    }
 
-    public ResultsParser2(ROptions o, TDGGlobals globals, String filePath) throws Exception {
+    public ModelWriter(Options o, TDGGlobals globals, String filePath) throws Exception {
         this.o = o;
         this.tdgGlobals = globals;
         this.path = filePath;
@@ -68,16 +77,16 @@ public class ResultsParser2 {
         outQS = new FileWriter(new File("QS.txt"));
         outPiAA = new FileWriter(new File("PiAA.txt"));
 
-        Files.readLines(new File(this.path), Charsets.UTF_8, new SWriter());
+        Files.readLines(new File(this.path), Charsets.UTF_8, new FitnessProcessor());
 
         outS.close();
         outPiS.close();
         outQS.close();
         outPiAA.close();
-        
+
     }
 
-    class SWriter implements LineProcessor<Object> {
+    class FitnessProcessor implements LineProcessor<Object> {
         @Override
         public boolean processLine(String line) throws IOException {
 
@@ -154,27 +163,5 @@ public class ResultsParser2 {
             return null;
         }
     }
-}
-class ROptions {
-    @Parameter(names = "-tau", description = "Rate of multiple substitutions.", converter = DoubleConverter.class, required = true)
-    public double tau;
-
-    @Parameter(names = "-kappa", description = "Transition/transversion bias.", converter = DoubleConverter.class, required = true)
-    public double kappa;
-
-    @Parameter(names = "-pi", description = "Comma-separated base nucleotide frequencies (T,C,A,G).", converter = DoubleArrayConverter.class, required = true)
-    public double[] pi;
-
-    @Parameter(names = "-mu", description = "Branch/rate scaling factor.", converter = DoubleConverter.class, required = true)
-    public double mu;
-
-    double gamma = 0;
-
-    @Parameter(names = "-gc", description = "The genetic code translation to use (standard or vertebrate_mit).", required = true, converter = GeneticCodeConverter.class)
-    public GeneticCode geneticCode;
-
-    @Parameter(names = "-approx", description = "Use the approximate method to optimise the likelihood")
-    public boolean approx = false;
 
 }
-    
