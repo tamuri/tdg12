@@ -31,17 +31,18 @@ import java.util.List;
  * 4. PiS.txt - the codon frequencies
  * 5. PiAA.txt - the amino acid frequencies
  *
+ * DistributionWriter then uses these to create a file containing the distribution of selection coefficients.
+ *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  * @see FitnessExtractor
+ * @see DistributionWriter
  */
 public class ModelWriter {
     TDGGlobals tdgGlobals;
     String path;
     Options o;
 
-    FileWriter outS;
-    FileWriter outPiS;
-    FileWriter outQS, outPiAA;
+    FileWriter outS, outPiS, outQS, outPiAA;
     List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)) ;
 
     public static void main(String[] args) throws Exception {
@@ -84,7 +85,6 @@ public class ModelWriter {
         outPiS.close();
         outQS.close();
         outPiAA.close();
-
     }
 
     class FitnessProcessor implements LineProcessor<Object> {
