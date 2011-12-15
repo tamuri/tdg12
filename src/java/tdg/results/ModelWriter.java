@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.google.common.primitives.Doubles;
+import tdg.Constants;
 import tdg.models.TDGCodonModel;
 import tdg.models.TDGGlobals;
 import tdg.models.parameters.Fitness;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Takes a list of fitnesses (usually constructed by a call to FitnessExtractor) and swMutSel0 global parameters and
+ * Takes a list of fitnesses (usually made by running FitnessExtractor) and swMutSel0 global parameters and
  * writes the following files:
  *
  * 1. Q0.txt - the neutral substitution rate matrix for each site
@@ -46,8 +47,8 @@ public class ModelWriter {
     public static void main(String[] args) throws Exception {
         Options o = new Options();
         new JCommander(o, args);
-
-        ModelWriter rp = new ModelWriter(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), "F.txt");
+        
+        ModelWriter rp = new ModelWriter(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), Constants.F_FILENAME);
         rp.run();
    }
 
@@ -67,15 +68,15 @@ public class ModelWriter {
             }
         }
 
-        FileWriter outQ0 = new FileWriter(new File("Q0.txt"));
+        FileWriter outQ0 = new FileWriter(new File(Constants.Q0_FILENAME));
         outQ0.write(Joiner.on(' ').join(Q0));
         outQ0.close();
 
         // S, Q with selection and codon pi files
-        outS = new FileWriter(new File("S.txt"));
-        outPiS = new FileWriter(new File("PiS.txt"));
-        outQS = new FileWriter(new File("QS.txt"));
-        outPiAA = new FileWriter(new File("PiAA.txt"));
+        outS = new FileWriter(new File(Constants.S_FILENAME));
+        outPiS = new FileWriter(new File(Constants.PI_FILENAME));
+        outQS = new FileWriter(new File(Constants.QS_FILENAME));
+        outPiAA = new FileWriter(new File(Constants.PIAA_FILENAME));
 
         Files.readLines(new File(this.path), Charsets.UTF_8, new FitnessProcessor());
 
@@ -111,21 +112,6 @@ public class ModelWriter {
                 tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(fitnesses), false), aminoAcids);
             }
 
-            // approx method
-            /*List<Integer> aa = Lists.newArrayList();
-            List<Double> ff = Lists.newArrayList();
-            int pos = 0;
-            for (double f : fitnesses) {
-                if (f != -21) {
-                    // this amino acid is observed
-                    aa.add(pos);
-                    ff.add(f);
-                    pos++;
-                }
-            }
-            TDGCodonModel tdg = new TDGCodonModel(tdgGlobals, new Fitness(Doubles.toArray(ff), false), aa);
-            */
-
             tdg.updateModel();
             double[] S = tdg.getS();
             double[] QS = tdg.getFullQ();
@@ -134,26 +120,6 @@ public class ModelWriter {
             outPiS.write(String.format("%s\n", Doubles.join(" ", PiS)));
             outQS.write(String.format("%s\n", Doubles.join(" ", QS)));
             outPiAA.write(String.format("%s\n", Doubles.join(" ", tdg.getAminoAcidFrequencies())));
-            // without STOP codons:
-            /*List<Double> S_nostop = Lists.newArrayList();
-            List<Double> QS_nostop = Lists.newArrayList();
-            List<Double> PiS_nostop = Lists.newArrayList();
-
-            for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
-                if (GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i) >= 0) {
-                    PiS_nostop.add(PiS[i]);
-                    for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
-                        if (GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(j) >= 0) {
-                            S_nostop.add(S[i * GeneticCode.CODON_STATES + j]);
-                            QS_nostop.add(QS[i * GeneticCode.CODON_STATES + j]);
-                        }
-                    }
-                }
-            }
-            outS.write(String.format("%s\n", Joiner.on(' ').join(S_nostop)));
-            outPiS.write(String.format("%s\n", Joiner.on(' ').join(PiS_nostop)));
-            outQS.write(String.format("%s\n", Joiner.on(' ').join(QS_nostop)));
-            */
 
             return true;
         }

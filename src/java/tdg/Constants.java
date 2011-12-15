@@ -15,4 +15,12 @@ public class Constants {
     public static final double SCALING_THRESHOLD = 1e-15;
     public static final int SCALING_NODE_STEP = 5;
     public static final double FITNESS_INITIAL_VALUE = 0.0;
+    
+    public static final String S_FILENAME = "S.txt";
+    public static final String Q0_FILENAME = "Q0.txt";
+    public static final String QS_FILENAME = "QS.txt";
+    public static final String PI_FILENAME = "PiS.txt";
+    public static final String PIAA_FILENAME = "PiAA.txt";
+    public static final String F_FILENAME = "F.txt";
+
 }
