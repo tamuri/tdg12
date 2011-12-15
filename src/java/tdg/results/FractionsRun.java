@@ -1,4 +1,4 @@
-package tdg.rg;
+package tdg.results;
 
 public class FractionsRun {
 

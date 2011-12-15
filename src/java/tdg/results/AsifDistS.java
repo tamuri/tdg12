@@ -1,4 +1,4 @@
-package tdg.rg;
+package tdg.results;
 
 import tdg.utils.GeneticCode;
 
