@@ -4,7 +4,9 @@ import com.beust.jcommander.IStringConverter;
 import tdg.utils.GeneticCode;
 
 /**
- * @author Asif Tamuri
+ * A helper for JCommander: takes the command-line 'gc' option and loads the correct GeneticCode instance.
+ *
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class GeneticCodeConverter implements IStringConverter<GeneticCode> {
     @Override

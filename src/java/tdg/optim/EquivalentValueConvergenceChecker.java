@@ -8,9 +8,7 @@ import org.apache.commons.math.optimization.SimpleScalarValueChecker;
  * Same as the standard scalar value convergence checker, but regards function has converged if
  * 50 consecutive evaluations do not change by more than 1E-6.
  *
- * User: atamuri
- * Date: 08/02/11
- * Time: 15:05
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
 */
 public class EquivalentValueConvergenceChecker implements RealConvergenceChecker {
     RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker();

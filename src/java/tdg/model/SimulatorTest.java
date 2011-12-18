@@ -1,4 +1,4 @@
-package tdg.models;
+package tdg.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;

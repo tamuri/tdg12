@@ -6,9 +6,7 @@ import org.apache.commons.math.optimization.SimpleRealPointChecker;
 import org.apache.commons.math.optimization.SimpleScalarValueChecker;
 
 /**
-* User: atamuri
-* Date: 08/02/11
-* Time: 15:08
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
 */
 public class PointAndValueConvergenceChecker implements RealConvergenceChecker {
     RealConvergenceChecker rcc1;

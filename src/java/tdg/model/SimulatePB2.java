@@ -1,4 +1,4 @@
-package tdg.models;
+package tdg.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -67,7 +67,7 @@ public class SimulatePB2 {
 
     public static void homogmain(String[] args) throws Exception {
         //String homogpath = "/Users/atamuri/Documents/work/mitochondria/110329_TdG_PB2_FullMaxEnt/pb2.exact.maxent/homog/";
-        String homogpath = "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/results.homog/";
+        String homogpath = "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/tdg.results.results.homog/";
 
 
         int[] sigsites = new int[]{44, 107, 111, 120, 199, 251, 288, 290, 377, 395, 399, 475, 478, 493, 522, 537, 569, 588, 613, 623, 627, 661, 682, 684, 740};

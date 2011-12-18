@@ -4,8 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.google.common.collect.Sets;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
-import tdg.analysis.SiteAnalyser;
-import tdg.models.TDGGlobals;
+import tdg.model.TDGGlobals;
 import tdg.utils.PhyloUtils;
 
 import java.util.Set;
@@ -15,10 +14,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * the Main class for multithreaded (but not distributed) analysis. Most people can use this.
+ * The main class for multithreaded (but not distributed) analysis. Most people should use this to run the TdG12 program.
+ * Loads the tree, alignment and sets up the global parameters. Then calls SiteAnalyser for the site(s) you want to
+ * analyse.
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  * @version 1.0
+ * @see SiteAnalyser
  */
 public class Analyse {
     Options options;

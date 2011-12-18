@@ -1,8 +1,7 @@
-package tdg.models.parameters;
+package tdg.model.parameters;
 
 /**
- * @author Asif Tamuri
- * @version $Id: Parameter.java 128 2010-08-10 12:19:12Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public abstract class Parameter {
     private Object value;

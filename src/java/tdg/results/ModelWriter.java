@@ -9,9 +9,9 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.google.common.primitives.Doubles;
 import tdg.Constants;
-import tdg.models.TDGCodonModel;
-import tdg.models.TDGGlobals;
-import tdg.models.parameters.Fitness;
+import tdg.model.TDGCodonModel;
+import tdg.model.TDGGlobals;
+import tdg.model.parameters.Fitness;
 import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 

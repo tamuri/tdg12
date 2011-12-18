@@ -3,8 +3,7 @@ package tdg.cli;
 import com.beust.jcommander.IStringConverter;
 
 /**
- * @author Asif Tamuri
- * @version $Id: DoubleArrayConverter.java 149 2010-08-14 18:48:07Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class DoubleArrayConverter implements IStringConverter<double[]> {
 

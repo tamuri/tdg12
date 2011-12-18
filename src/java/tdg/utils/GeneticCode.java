@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * Copied some of the Nucleotide and Codon functions we're using from PAL because
  * PAL uses { A, C, G, T } for nucleotide states, but we want { T, C, A, G } !!
  *
@@ -27,8 +26,7 @@ import java.util.List;
  *   Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
  *   Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
  *
- * @author Asif Tamuri
- * @version $Id: GeneticCode.java 151 2010-11-08 11:08:36Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class GeneticCode {
     public static final int UNKNOWN_STATE = -1;

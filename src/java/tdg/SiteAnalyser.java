@@ -1,4 +1,4 @@
-package tdg.analysis;
+package tdg;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -16,14 +16,12 @@ import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
-import tdg.Constants;
-import tdg.Options;
-import tdg.models.LikelihoodCalculator;
-import tdg.models.MinimisationParameters;
-import tdg.models.TDGCodonModel;
-import tdg.models.TDGGlobals;
-import tdg.models.parameters.Fitness;
-import tdg.models.parameters.Parameter;
+import tdg.model.LikelihoodCalculator;
+import tdg.model.MinimisationParameters;
+import tdg.model.TDGCodonModel;
+import tdg.model.TDGGlobals;
+import tdg.model.parameters.Fitness;
+import tdg.model.parameters.Parameter;
 import tdg.optim.LikelihoodFunctionWrapper;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;

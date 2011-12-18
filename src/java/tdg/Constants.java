@@ -2,7 +2,9 @@ package tdg;
 
 /**
  * Various constants used throughout the program but not expected to be changed by end-users.
+ *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ * @version 1.0
  */
 public class Constants {
     // Random initial value for fitness parameter from range -INITIAL_PARAM_RANGE to INITIAL_PARAM_RANGE

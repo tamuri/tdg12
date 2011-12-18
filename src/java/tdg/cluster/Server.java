@@ -12,8 +12,8 @@ import org.simpleframework.util.thread.Scheduler;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
 import tdg.Options;
-import tdg.analysis.SiteAnalyser;
-import tdg.models.TDGGlobals;
+import tdg.SiteAnalyser;
+import tdg.model.TDGGlobals;
 import tdg.utils.Functions;
 import tdg.utils.PhyloUtils;
 
@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Asif Tamuri
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class Server implements Container {
 

@@ -1,8 +1,7 @@
 package tdg.utils;
 
 /**
- * @author Asif Tamuri
- * @version $Id: CoreUtils.java 148 2010-08-13 16:35:08Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class CoreUtils {
 

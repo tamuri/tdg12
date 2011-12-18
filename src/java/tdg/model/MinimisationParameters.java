@@ -1,10 +1,9 @@
-package tdg.models;
+package tdg.model;
 
 import com.google.common.primitives.Doubles;
 
 /**
- * @author Asif Tamuri
- * @version 1.0
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class MinimisationParameters {
     private double[] parameters;
@@ -37,7 +36,7 @@ public class MinimisationParameters {
 
     @Override
     public String toString() {
-        return "models.ParametersForMinimisation{" +
+        return "model.ParametersForMinimisation{" +
                 "parameters=" + (parameters == null ? null : Doubles.join(", ", parameters)) +
                 ", stepsize=" + (stepSize == null ? null : Doubles.join(", ", stepSize)) +
                 ", lowerBounds=" + (lowerBounds == null ? null : Doubles.join(", ", lowerBounds)) +

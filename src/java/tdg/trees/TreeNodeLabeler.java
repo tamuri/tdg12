@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Asif Tamuri
- * @version $Id: TreeNodeLabeler.java 148 2010-08-13 16:35:08Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class TreeNodeLabeler {
     public static void main(String[] args) {

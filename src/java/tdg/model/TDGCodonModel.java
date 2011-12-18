@@ -1,4 +1,4 @@
-package tdg.models;
+package tdg.model;
 
 import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -8,7 +8,7 @@ import cern.jet.math.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 import tdg.Constants;
-import tdg.models.parameters.Fitness;
+import tdg.model.parameters.Fitness;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -34,7 +34,6 @@ import java.util.Map;
    \f]
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  */
 public class TDGCodonModel {
     private final TDGGlobals globals;
@@ -288,7 +287,7 @@ public class TDGCodonModel {
             MatrixMult matrixMultiplier;
         In constructor:
             try {
-                this.matrixMultiplier = (MatrixMult) Class.forName("tdg.models.MatrixMult" + matrixSize).newInstance();
+                this.matrixMultiplier = (MatrixMult) Class.forName("tdg.model.MatrixMult" + matrixSize).newInstance();
             } catch (Exception e) { e.printStackTrace(); }
         Then here:
             matrixMultiplier.getProbabilityMatrix(matrix, branchLength, lambda, U, UInv, siteCodons);

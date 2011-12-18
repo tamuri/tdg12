@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * @author Asif Tamuri
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class Client {
     private String alignmentFile, hostnameFilesPath;
@@ -107,7 +107,7 @@ public class Client {
                         }
                     });
 
-            // Add the Future object to our results collection
+            // Add the Future object to our tdg.results.results collection
             results.add(f);
         }
     }

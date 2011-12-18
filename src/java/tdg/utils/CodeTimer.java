@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author Asif Tamuri
- * @version $Id: CodeTimer.java 148 2010-08-13 16:35:08Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class CodeTimer {
     private static final Map<String, AtomicLong> times = Maps.newConcurrentMap();

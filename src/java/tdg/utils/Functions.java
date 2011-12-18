@@ -2,7 +2,9 @@ package tdg.utils;
 
 import com.google.common.base.Function;
 
-
+/**
+ * @author  Asif Tamuri (atamuri@nimr.mrc.ac.uk)
+ */
 public class Functions {
    public static Function<String, Double> stringToDouble() {
        return new Function<String,Double>() {

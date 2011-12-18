@@ -1,10 +1,9 @@
-package tdg.models;
+package tdg.model;
 
 import tdg.utils.GeneticCode;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  */
 public class TDGGlobals {
     private final double tau, kappa, mu, nu, gamma;

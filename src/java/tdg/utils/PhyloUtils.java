@@ -22,7 +22,6 @@ import java.util.Map;
  * Collection of static methods, including some that wrap common functions available in PAL.
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  */
 public class PhyloUtils {
     /**

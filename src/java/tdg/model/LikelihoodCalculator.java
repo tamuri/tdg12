@@ -1,4 +1,4 @@
-package tdg.models;
+package tdg.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -6,8 +6,8 @@ import com.google.common.primitives.Doubles;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
-import tdg.models.parameters.Fitness;
-import tdg.models.parameters.Parameter;
+import tdg.model.parameters.Fitness;
+import tdg.model.parameters.Parameter;
 import tdg.utils.GeneticCode;
 
 import java.util.Arrays;
@@ -15,10 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of Felsenstein's pruning algorithm to calculate the likelihood.
+ * Felsenstein's pruning algorithm to calculate the likelihood for codon based models. Can deal with heterogenous models.
  *
- * @author Asif Tamuri
- * @version 1.0
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class LikelihoodCalculator {
     private final Tree tree;
@@ -454,7 +453,7 @@ public class LikelihoodCalculator {
             }
         }
 
-        // We've updated the parameters. Notify every clade model to create new models.
+        // We've updated the parameters. Notify every clade model to create new model.
         for (String key : cladeModels.keySet()) {
             cladeModels.get(key).updateModel();
         }

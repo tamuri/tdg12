@@ -1,4 +1,4 @@
-package tdg.models;
+package tdg.model;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -11,7 +11,7 @@ import tdg.cli.CharArrayConverter;
 import tdg.cli.DoubleArrayConverter;
 import tdg.cli.DoubleConverter;
 import tdg.cli.GeneticCodeConverter;
-import tdg.models.parameters.Fitness;
+import tdg.model.parameters.Fitness;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Asif Tamuri
- * @version $Id: Simulator.java 152 2010-11-08 11:10:01Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class SimulatorHetero {
 
@@ -32,7 +31,7 @@ public class SimulatorHetero {
     public static void main(String... args) {
         SimulatorHetero s = new SimulatorHetero();
         JCommander jc = new JCommander(s);
-        jc.setProgramName("tdg.models.Simulator");
+        jc.setProgramName("tdg.model.Simulator");
 
         if (args.length == 0) {
             jc.usage();

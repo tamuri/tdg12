@@ -3,14 +3,13 @@ package tdg.optim;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
 import tdg.Constants;
-import tdg.models.LikelihoodCalculator;
+import tdg.model.LikelihoodCalculator;
 
 /**
  * Wraps the likelihood function in a MultivariateRealFunction, as needed by the Apache Commons Math optimisation
  * routines.
  *
  * @author Asif Tamuri
- * @version $Id: LikelihoodFunctionWrapper.java 152 2010-11-08 11:10:01Z tamuri $
  * @see LikelihoodCalculator
  */
 public class LikelihoodFunctionWrapper implements MultivariateRealFunction{

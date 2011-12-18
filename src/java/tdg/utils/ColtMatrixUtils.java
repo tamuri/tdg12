@@ -3,8 +3,7 @@ package tdg.utils;
 import cern.colt.matrix.DoubleMatrix2D;
 
 /**
- * @author Asif Tamuri
- * @version $Id: ColtMatrixUtils.java 149 2010-08-14 18:48:07Z tamuri $
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class ColtMatrixUtils {
     // From c++ source:

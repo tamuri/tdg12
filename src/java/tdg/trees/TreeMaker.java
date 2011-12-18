@@ -10,11 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Created by IntelliJ IDEA.
- * User: atamuri
- * Date: 20/08/2011
- * Time: 04:07
- * To change this template use File | Settings | File Templates.
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class TreeMaker {
     public static void main(String[] args) {

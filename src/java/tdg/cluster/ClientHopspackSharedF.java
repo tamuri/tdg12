@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * @author Asif Tamuri
+ * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class ClientHopspackSharedF {
     private String alignmentFile, hostnameFilesPath;
@@ -159,7 +159,7 @@ public class ClientHopspackSharedF {
                         }
                     });
 
-            // Add the Future object to our results collection
+            // Add the Future object to our tdg.results.results collection
             results.add(f);
         }
     }
