@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class ClientHopspackSharedF {
+public class MasterHopspack {
     private String alignmentFile, hostnameFilesPath;
     private int maxConnectionsPerHost, requestTimeout, threadPoolSize;
 
@@ -48,26 +48,6 @@ public class ClientHopspackSharedF {
         double tau = Double.parseDouble(lines.get(7));
         double mu = Double.parseDouble(lines.get(8));
         double gamma = Double.parseDouble(lines.get(9));
-        // fitnesses A = 0, R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V
-        double fR = Double.parseDouble(lines.get(9));
-        double fN = Double.parseDouble(lines.get(9));
-        double fD = Double.parseDouble(lines.get(9));
-        double fC = Double.parseDouble(lines.get(9));
-        double fQ = Double.parseDouble(lines.get(9));
-        double fE = Double.parseDouble(lines.get(9));
-        double fG = Double.parseDouble(lines.get(9));
-        double fH = Double.parseDouble(lines.get(9));
-        double fI = Double.parseDouble(lines.get(9));
-        double fL = Double.parseDouble(lines.get(9));
-        double fK = Double.parseDouble(lines.get(9));
-        double fM = Double.parseDouble(lines.get(9));
-        double fF = Double.parseDouble(lines.get(9));
-        double fP = Double.parseDouble(lines.get(9));
-        double fS = Double.parseDouble(lines.get(9));
-        double fT = Double.parseDouble(lines.get(9));
-        double fW = Double.parseDouble(lines.get(9));
-        double fY = Double.parseDouble(lines.get(9));
-        double fV = Double.parseDouble(lines.get(9));
 
 
         // Update TdG globals on each server
@@ -126,7 +106,7 @@ public class ClientHopspackSharedF {
         Set<Future<Response>> results = Sets.newHashSet();
 
         for (String server : servers) {
-            final String url = "http://" + server + ":" + Server.SERVER_PORT + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma);
+            final String url = "http://" + server + ":" + Slave.SERVER_PORT + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma);
             Future<Response> f = asyncHttpClient.prepareGet(url).execute();
             results.add(f);
         }
@@ -147,7 +127,7 @@ public class ClientHopspackSharedF {
             final int site = siteIterator.next();
 
             // Pick a server and construct request URL
-            final String url = "http://" + cycleServers.next() + ":" + Server.SERVER_PORT + "/?site=" + site;
+            final String url = "http://" + cycleServers.next() + ":" + Slave.SERVER_PORT + "/?site=" + site;
 
             // Send a request to the selected server
             Future<Response> f = asyncHttpClient.prepareGet(url).execute(
@@ -262,7 +242,7 @@ public class ClientHopspackSharedF {
         // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
         // TODO: This needs to be a config item - should use same JCommander option configuration!
         GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
-        ClientHopspackSharedF c = new ClientHopspackSharedF();
+        MasterHopspack c = new MasterHopspack();
         c.loadConfiguration();
         c.run(args);
     }

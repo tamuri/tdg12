@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class Server implements Container {
+public class Slave implements Container {
 
     static final int SERVER_PORT = 9090; // TODO: Put in config file
     private Scheduler scheduler;
@@ -74,7 +74,7 @@ public class Server implements Container {
         }
     }
 
-    public Server(Scheduler scheduler, AnalyseOptions options) {
+    public Slave(Scheduler scheduler, AnalyseOptions options) {
         this.scheduler = scheduler;
         this.options = options;
 
@@ -121,12 +121,12 @@ public class Server implements Container {
         }
 
         Scheduler scheduler = new Scheduler(options.threads);
-        Container container = new Server(scheduler, options);
+        Container container = new Slave(scheduler, options);
         Connection connection = new SocketConnection(container);
         SocketAddress address = new InetSocketAddress(SERVER_PORT);
         connection.connect(address);
 
-        System.out.printf("%s started on port %s with %s worker thread(s).\n", Server.class.getName(), SERVER_PORT, options.threads);
+        System.out.printf("%s started on port %s with %s worker thread(s).\n", Slave.class.getName(), SERVER_PORT, options.threads);
         writeHostnameFile();
     }
 

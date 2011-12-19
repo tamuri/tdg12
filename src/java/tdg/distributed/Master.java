@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class Client {
+public class Master {
     private String alignmentFile, hostnameFilesPath;
     private int maxConnectionsPerHost, requestTimeout, threadPoolSize;
 
@@ -74,7 +74,7 @@ public class Client {
         Set<Future<Response>> results = Sets.newHashSet();
 
         for (String server : servers) {
-            final String url = "http://" + server + ":" + Server.SERVER_PORT + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma);
+            final String url = "http://" + server + ":" + Slave.SERVER_PORT + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma);
             Future<Response> f = asyncHttpClient.prepareGet(url).execute();
             results.add(f);
         }
@@ -95,7 +95,7 @@ public class Client {
             final int site = siteIterator.next();
 
             // Pick a server and construct request URL
-            final String url = "http://" + cycleServers.next() + ":" + Server.SERVER_PORT + "/?site=" + site;
+            final String url = "http://" + cycleServers.next() + ":" + Slave.SERVER_PORT + "/?site=" + site;
 
             // Send a request to the selected server
             Future<Response> f = asyncHttpClient.prepareGet(url).execute(
@@ -203,7 +203,7 @@ public class Client {
         // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
         // TODO: This needs to be a config item - should use same JCommander option configuration!
         GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
-        Client c = new Client();
+        Master c = new Master();
         c.loadConfiguration();
         c.run();
     }
