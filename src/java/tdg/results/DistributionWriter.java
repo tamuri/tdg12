@@ -45,7 +45,7 @@ public class DistributionWriter {
         dw.run();
     }
 
-    private void run() throws Exception {
+    public void run() throws Exception {
         // We need to know the genetic code to determine non-synonymous changes
         char[] aaCode = GeneticCode.CURRENT_CODE.toCharArray();
 

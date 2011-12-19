@@ -59,7 +59,7 @@ public class ModelWriter {
         this.path = filePath;
     }
 
-    private void run() throws Exception {
+    public void run() throws Exception {
         // Neutral Q
         List<Double> Q0 = Lists.newArrayListWithCapacity(GeneticCode.CODON_STATES * GeneticCode.CODON_STATES);
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {

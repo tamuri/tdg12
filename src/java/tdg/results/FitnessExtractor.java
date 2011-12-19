@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * Given the full output of the TdG12 swMutSel0 analysis, writes a file of fitnesses, ordered by site
- *
+ * <p/>
  * TODO: Handle heterogeneous fitness output (e.g. Fitness_C1, Fitness_C2 etc.) Currently, you have to do those by hand
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -27,7 +27,7 @@ public class FitnessExtractor {
         fe.extract(args[0]);
     }
 
-    private void extract(String resultsFile) throws Exception {
+    public void extract(String resultsFile) throws Exception {
 
         Map<Integer, double[]> allFitnesses = Maps.newHashMap();
 
@@ -48,12 +48,12 @@ public class FitnessExtractor {
         }
 
         reader.close();
-        
+
         ArrayList<Integer> orderedKeys = Lists.newArrayList(allFitnesses.keySet());
         Collections.sort(orderedKeys);
 
         BufferedWriter writer = Files.newWriter(new File("F.txt"), Charsets.US_ASCII);
-        
+
         for (int site : orderedKeys) {
             writer.write(Doubles.join(" ", allFitnesses.get(site)));
             writer.write("\n");
