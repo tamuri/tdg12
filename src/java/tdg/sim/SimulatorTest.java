@@ -1,4 +1,4 @@
-package tdg.model;
+package tdg.sim;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -29,15 +29,15 @@ public class SimulatorTest {
 
         for (int i = 0; i < fits.size(); i++) {
 
-           d = Doubles.toArray(Lists.transform(Arrays.asList(fits.get(i).split(" ")), Functions.stringToDouble()));
+            d = Doubles.toArray(Lists.transform(Arrays.asList(fits.get(i).split(" ")), Functions.stringToDouble()));
 
             Simulator s = new Simulator();
             //s.readTree("./all.but.ND6.FMutSel0.tree");
             s.readTree("./tree.4096.tree");
 
-            s.run(  1.0e-02, // tau
+            s.run(1.0e-02, // tau
                     2.0, // kappa
-                    new double[]{0.25,0.25,0.25,0.25}, // s.pi
+                    new double[]{0.25, 0.25, 0.25, 0.25}, // s.pi
                     d, // fitnesses
                     res, // residues
                     1, // sites

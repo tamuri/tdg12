@@ -9,9 +9,9 @@ import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
 import com.google.common.primitives.Doubles;
 import tdg.Constants;
+import tdg.model.Fitness;
 import tdg.model.TDGCodonModel;
 import tdg.model.TDGGlobals;
-import tdg.model.parameters.Fitness;
 import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 
@@ -24,13 +24,13 @@ import java.util.List;
 /**
  * Takes a list of fitnesses (usually made by running FitnessExtractor) and swMutSel0 global parameters and
  * writes the following files:
- *
+ * <p/>
  * 1. Q0.txt - the neutral substitution rate matrix for each site
  * 2. QS.txt - the substitution rate matrix, with selection
  * 3. S.txt - the selection coefficient (S_ij) matrix
  * 4. PiS.txt - the codon frequencies
  * 5. PiAA.txt - the amino acid frequencies
- *
+ * <p/>
  * DistributionWriter then uses these to create a file containing the distribution of selection coefficients.
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -43,15 +43,15 @@ public class ModelWriter {
     Options o;
 
     FileWriter outS, outPiS, outQS, outPiAA;
-    List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)) ;
+    List<Integer> aminoAcids = ImmutableList.copyOf(Lists.<Integer>newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19));
 
     public static void main(String[] args) throws Exception {
         Options o = new Options();
         new JCommander(o, args);
-        
-        ModelWriter rp = new ModelWriter(o, new TDGGlobals(o.tau, o.kappa, o.pi, o.mu, o.gamma), Constants.F_FILENAME);
+
+        ModelWriter rp = new ModelWriter(o, new TDGGlobals(o.globals.tau, o.globals.kappa, o.globals.pi, o.globals.mu, o.globals.gamma), Constants.F_FILENAME);
         rp.run();
-   }
+    }
 
     public ModelWriter(Options o, TDGGlobals globals, String filePath) throws Exception {
         this.o = o;
@@ -95,7 +95,7 @@ public class ModelWriter {
 
             TDGCodonModel tdg;
 
-            if (o.approx) {
+            if (o.approx.useApprox) {
                 List<Integer> aa = Lists.newArrayList();
                 List<Double> ff = Lists.newArrayList();
                 int pos = 0;

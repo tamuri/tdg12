@@ -1,4 +1,4 @@
-package tdg.model;
+package tdg.sim;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -42,14 +42,14 @@ public class SimulatePB2 {
             s.gc = GeneticCode.getInstance();
             s.kappa = 7.8640425;
             s.mu = 3.132626667;
-            s.pi = new double[]{2.36114375000000e-01,1.95774375000000e-01,3.65944375000000e-01,2.02166875000000e-01};
+            s.pi = new double[]{2.36114375000000e-01, 1.95774375000000e-01, 3.65944375000000e-01, 2.02166875000000e-01};
 
             s.sites = 1;
             s.tau = 1.25010000000000e-02;
             s.tree = "/Users/atamuri/Documents/work/tdg10/etc/PB2_FMutSel0.tree.out";
 
             s.run(s.tree, s.tau, s.kappa, s.pi, s.fitness1, s.residues1, s.fitness2, s.residues2, 1, s.mu);
-            
+
             for (Map.Entry<String, String> x : s.seqout.entrySet()) {
                 if (!seqout.containsKey(x.getKey())) {
                     seqout.put(x.getKey(), new StringBuffer());
@@ -88,7 +88,7 @@ public class SimulatePB2 {
                 pos++;
                 continue;
             }
-            
+
             String[] fs = f.split(" ");
             List<Double> fitnesses = Lists.transform(Arrays.asList(fs), Functions.stringToDouble());
             Simulator s = new Simulator();
@@ -98,7 +98,7 @@ public class SimulatePB2 {
 
             s.kappa = 7.8640425;
             s.mu = 3.132626667;
-            s.pi = new double[]{2.36114375000000e-01,1.95774375000000e-01,3.65944375000000e-01,2.02166875000000e-01};
+            s.pi = new double[]{2.36114375000000e-01, 1.95774375000000e-01, 3.65944375000000e-01, 2.02166875000000e-01};
             s.tau = 1.25010000000000e-02;
 
             s.residues = new char[]{'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V'};
@@ -123,7 +123,6 @@ public class SimulatePB2 {
         for (Map.Entry<String, StringBuffer> x : seqout.entrySet()) {
             System.out.printf("%s      %s\n", x.getKey(), x.getValue().toString());
         }
-
 
 
     }

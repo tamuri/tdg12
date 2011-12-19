@@ -8,7 +8,6 @@ import cern.jet.math.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 import tdg.Constants;
-import tdg.model.parameters.Fitness;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -18,20 +17,20 @@ import java.util.Map;
 
 /**
  * TDG10 codon selection model.
- *
+ * <p/>
  * The full formulation is:
- *
+ * <p/>
  * \f[
-   q_{IJ}  = \left[ {
-                \mu \tau ^{n - 1} \kappa ^{n_t }
-                \frac{1}{{\prod\limits_{k \ne k\prime } {\pi _{j_{k\prime } }^* } }}
-                \times
-                \frac{{F_J  - F_I }}{{{\rm{e}}^{F_J }  - {\rm{e}}^{F_I } }}
-             } \right]
-            \times
-            \left( {\prod\limits_{k = 1}^3 {\pi _{j_k }^* }} \right)
-            {\rm{e}}^{F_J}
-   \f]
+ * q_{IJ}  = \left[ {
+ * \mu \tau ^{n - 1} \kappa ^{n_t }
+ * \frac{1}{{\prod\limits_{k \ne k\prime } {\pi _{j_{k\prime } }^* } }}
+ * \times
+ * \frac{{F_J  - F_I }}{{{\rm{e}}^{F_J }  - {\rm{e}}^{F_I } }}
+ * } \right]
+ * \times
+ * \left( {\prod\limits_{k = 1}^3 {\pi _{j_k }^* }} \right)
+ * {\rm{e}}^{F_J}
+ * \f]
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
@@ -94,11 +93,11 @@ public class TDGCodonModel {
 
     /**
      * Performs 2 tasks:
-     *
+     * <p/>
      * 1. Calculates \f[ \pi _J  = \left( {\prod\limits_{k = 1}^3 {\pi _{j_k }^* } } \right){\rm{e}}^{F_J } \f]
-     *
+     * <p/>
      * 2. Creates diagonal matrix of codon frequencies, which can be used for
-     *    eigenvalue decomposition of Q via B = PI^0.5 Q PI^-0.5
+     * eigenvalue decomposition of Q via B = PI^0.5 Q PI^-0.5
      */
     private void makePI() {
         double z = 0;
@@ -115,13 +114,12 @@ public class TDGCodonModel {
 
     /**
      * Construct Q matrix directly using formulation:
-     *
-        \f[
-        q_{IJ}  = \nu  \times \left( {\tau ^{n - 1} \kappa ^{n_t } \prod\limits_{k,i_k  \ne j_k } {\pi _{j_k }^* } } \right) \times h(S_{IJ} )
-        \f]
-     *
+     * <p/>
+     * \f[
+     * q_{IJ}  = \nu  \times \left( {\tau ^{n - 1} \kappa ^{n_t } \prod\limits_{k,i_k  \ne j_k } {\pi _{j_k }^* } } \right) \times h(S_{IJ} )
+     * \f]
+     * <p/>
      * without using separate S and PI matrices. The two methods are equivalent.
-     *
      */
     private void makeQ() {
         double[] f = fitness.get();
@@ -129,7 +127,10 @@ public class TDGCodonModel {
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
 
-                if (i == j) { Q[i * matrixSize + j] = 0; continue; }
+                if (i == j) {
+                    Q[i * matrixSize + j] = 0;
+                    continue;
+                }
 
                 int cI = siteCodons[i];
                 int cJ = siteCodons[j];
@@ -140,7 +141,7 @@ public class TDGCodonModel {
                 double fJ = f[aminoAcidsToFitness[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(cJ)]];
 
                 double hS = getRelativeFixationProbability(fJ - fI);
-                
+
                 Q[i * matrixSize + j] = globals.getNu() * muIJ * hS;
             }
         }
@@ -171,33 +172,32 @@ public class TDGCodonModel {
 
     /**
      * Performs eigenvalue decomposition on Q. Two methods:
-     *
+     * <p/>
      * 1. Diagonalise Q directly.
-     *
+     * <p/>
      * 2. Gets eigenvalues and eigenvectors from a constructed symmetric matrix,
-     *    B, based on PI and Q. Diagonalising B is faster than Q because B is
-     *    symmetric.
-     *
+     * B, based on PI and Q. Diagonalising B is faster than Q because B is
+     * symmetric.
+     * <p/>
      * Described in Yang 2006, Computational Molecular Evolution, pp 68-9.
-     *
+     * <p/>
      * To start,
      * \f[ B = \Pi ^{{1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}}
-               Q
-               \Pi ^{ - {1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}}
-       \f]
-     *
+     * Q
+     * \Pi ^{ - {1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}}
+     * \f]
+     * <p/>
      * then diagonalise B,
      * \f[ B = U\Lambda U^{ - 1} \f]
-     *
+     * <p/>
      * where U is the U and ∆ is the lambda on the diagonal.
-     *
+     * <p/>
      * then,
-     *
+     * <p/>
      * \f[ Q = (\Pi ^{ - {1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}} U)
-               \Lambda
-               (\Pi ^{{1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}} U^{ - 1} )
-       \f]
-     *
+     * \Lambda
+     * (\Pi ^{{1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}} U^{ - 1} )
+     * \f]
      */
     private void doEigenValueDecomposition() {
         EigenvalueDecomposition evdB = new EigenvalueDecomposition(B);
@@ -230,50 +230,50 @@ public class TDGCodonModel {
 
     public void getProbabilityMatrix(final double[] matrix, final double branchLength) {
 
-      if (probMatrixStore.containsKey(branchLength)) {
+        if (probMatrixStore.containsKey(branchLength)) {
             double[] ref = probMatrixStore.get(branchLength);
             for (int i = 0; i < matrix.length; i++) {
                 matrix[i] = ref[i];
             }
         } else {
-        //long start = CodeTimer.start();
-        // NOTE: If matrixSize were a final static int, then there would be some
-        // performance improvement. Java doesn't array bounds check
-        // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
-        // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
-        // More improvement using jdk1.7.0 ~58secs to ~42secs!!
-        for (int i = 0; i < matrixSize; i++) {
-            double temp = Math.exp(branchLength * lambda.getQuick(i));
-            for (int j = 0; j < matrixSize; j++) {
-                PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
-            }
-        }
-
-
-		/*
-		 * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
-		 * when we do the eigenvalue decomposition above i.e.:
-		 * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
-		 */
-
-        //CodeTimer.store("getProbabilityMatrix_1", start);
-
-        //long start2 = CodeTimer.start();x
-        for (int j = 0; j < matrixSize; j++) {
+            //long start = CodeTimer.start();
+            // NOTE: If matrixSize were a final static int, then there would be some
+            // performance improvement. Java doesn't array bounds check
+            // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
+            // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
+            // More improvement using jdk1.7.0 ~58secs to ~42secs!!
             for (int i = 0; i < matrixSize; i++) {
-                double temp = 0;
-                for (int k = 0; k < matrixSize; k++) {
-                    temp += PtTemp[i * matrixSize + k] * UInv[k * matrixSize + j];
+                double temp = Math.exp(branchLength * lambda.getQuick(i));
+                for (int j = 0; j < matrixSize; j++) {
+                    PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
                 }
-                if (temp < 0) temp = 0;
-                matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = temp;
             }
-        }
 
 
-        probMatrixStore.put(branchLength, Arrays.copyOf(matrix,GeneticCode.CODON_STATES * GeneticCode.CODON_STATES ));
+            /*
+            * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
+            * when we do the eigenvalue decomposition above i.e.:
+            * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
+            */
 
-        //CodeTimer.store("getProbabilityMatrix_2", start2);
+            //CodeTimer.store("getProbabilityMatrix_1", start);
+
+            //long start2 = CodeTimer.start();x
+            for (int j = 0; j < matrixSize; j++) {
+                for (int i = 0; i < matrixSize; i++) {
+                    double temp = 0;
+                    for (int k = 0; k < matrixSize; k++) {
+                        temp += PtTemp[i * matrixSize + k] * UInv[k * matrixSize + j];
+                    }
+                    if (temp < 0) temp = 0;
+                    matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = temp;
+                }
+            }
+
+
+            probMatrixStore.put(branchLength, Arrays.copyOf(matrix, GeneticCode.CODON_STATES * GeneticCode.CODON_STATES));
+
+            //CodeTimer.store("getProbabilityMatrix_2", start2);
         }
 // */
         /* This works, but would be horrible to have all these classes though...wouldn't it!?
@@ -302,7 +302,7 @@ public class TDGCodonModel {
      */
     public double[] getCodonFrequencies() {
         double[] fullF = new double[GeneticCode.CODON_STATES];
-        for (int i = 0; i < matrixSize; i++) {  
+        for (int i = 0; i < matrixSize; i++) {
             fullF[siteCodons[i]] = codonPi[i];
         }
         return fullF;
@@ -333,9 +333,9 @@ public class TDGCodonModel {
                 if (aa_to < 0) {
                     // rate is 0
                     fullQ[i * GeneticCode.CODON_STATES + j] = 0;
-                // if coming from a stop codon and going to a non-stop codon
+                    // if coming from a stop codon and going to a non-stop codon
                 } else if (aa_from < 0) {
-                    fullQ[i * GeneticCode.CODON_STATES + j] =  globals.getNeutralMutationRate(i, j) * globals.getNu() * stopS;
+                    fullQ[i * GeneticCode.CODON_STATES + j] = globals.getNeutralMutationRate(i, j) * globals.getNu() * stopS;
                 }
             }
         }
@@ -354,9 +354,9 @@ public class TDGCodonModel {
     public double[] getS() {
         double[] fullS = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 //        System.out.printf("siteCodons = %s\n", Ints.join(" ", siteCodons));
- //       System.out.printf("aminoAcidsAtSite = %s\n", Joiner.on(" ").join(aminoAcidsAtSite));
- //       System.out.printf("aminoAcidsToFitness = %s\n", Ints.join(" ", aminoAcidsToFitness));
- //       System.out.printf("fitness = %s\n", Doubles.join(" ", fitness.get()));
+        //       System.out.printf("aminoAcidsAtSite = %s\n", Joiner.on(" ").join(aminoAcidsAtSite));
+        //       System.out.printf("aminoAcidsToFitness = %s\n", Ints.join(" ", aminoAcidsToFitness));
+        //       System.out.printf("fitness = %s\n", Doubles.join(" ", fitness.get()));
 
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
@@ -380,7 +380,7 @@ public class TDGCodonModel {
                         // from observed to unobserved
                         fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
                         // } else if (!aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
-                    } else if (aminoAcidsToFitness[aa_from] ==  -1 && aminoAcidsToFitness[aa_to] > -1) {
+                    } else if (aminoAcidsToFitness[aa_from] == -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // from unobserved to observed
                         //System.out.printf("%s -> %s\n", aa_from, aa_to);
                         fullS[i * GeneticCode.CODON_STATES + j] = Constants.FITNESS_BOUND;
@@ -395,14 +395,15 @@ public class TDGCodonModel {
     }
 
     public double[] getErrorMatrix() {
-        return globals.getErrorMatrix();    
+        return globals.getErrorMatrix();
     }
 
     public double[] getAminoAcidFrequencies() {
         double[] freqs = new double[GeneticCode.AMINO_ACID_STATES];
         double[] codonPis = getCodonFrequencies();
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
-            if (GeneticCode.getInstance().isUnknownAminoAcidState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i))) continue;
+            if (GeneticCode.getInstance().isUnknownAminoAcidState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)))
+                continue;
             freqs[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)] += codonPis[i];
         }
         return freqs;

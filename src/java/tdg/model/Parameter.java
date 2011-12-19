@@ -1,4 +1,4 @@
-package tdg.model.parameters;
+package tdg.model;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)

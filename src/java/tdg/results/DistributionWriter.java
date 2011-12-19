@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import tdg.Constants;
+import tdg.cli.GeneticCodeOption;
 import tdg.utils.GeneticCode;
 
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ import java.io.FileReader;
 /**
  * Given the model files produced by ModelWriter (S.txt etc.), this parses those files and produced the distribution
  * of selection coefficients for mutations and substitutions (all & non-synonymous only for both).
- *
+ * <p/>
  * TODO: PB2 plots significant vs. other sites (i.e. the black + red histogram in paper)
  * TODO: Really needs a less hard-coded way to correct construct the histogram bins, allowing some options etc.
  *
@@ -23,7 +24,7 @@ import java.io.FileReader;
  * @see FitnessExtractor
  */
 public class DistributionWriter {
-    Options options;
+    GeneticCodeOption options;
     private static final String ROOT_DIR = "./";
 
     private static final double HI = 21D;
@@ -36,14 +37,14 @@ public class DistributionWriter {
     private static final String SUBSTITUTIONS_FILENAME = "distribution.substitutions.txt";
 
     public static void main(String[] args) throws Exception {
-        Options o = new Options();
+        GeneticCodeOption o = new GeneticCodeOption();
         new JCommander(o, args);
-        
+
         DistributionWriter dw = new DistributionWriter();
         dw.options = o;
         dw.run();
     }
-    
+
     private void run() throws Exception {
         // We need to know the genetic code to determine non-synonymous changes
         char[] aaCode = GeneticCode.CURRENT_CODE.toCharArray();
@@ -67,7 +68,7 @@ public class DistributionWriter {
         BufferedReader PiReader = new BufferedReader(new FileReader(ROOT_DIR + Constants.PI_FILENAME));
 
         double mutsAllDenom = 0, mutsNonSynDenom = 0, subsAllDenom = 0, subsNonSynDenom = 0;
-        
+
         String SLine;
         while ((SLine = SReader.readLine()) != null) {
             String QSLine = QSReader.readLine();
@@ -78,9 +79,9 @@ public class DistributionWriter {
             String[] PiParts = PiLine.split("\\s"); // 64 entries
 
             double mutsAllSiteSum = 0, mutsNonSynSiteSum = 0, subsAllSiteSum = 0, subsNonSynSiteSum = 0;
-            
+
             for (int i = 0; i < (GeneticCode.CODON_STATES * GeneticCode.CODON_STATES); i++) {
-                
+
                 int codon = (i - i % GeneticCode.CODON_STATES) / GeneticCode.CODON_STATES;
                 boolean isCodonChange = codon != (i % GeneticCode.CODON_STATES);
                 boolean isNonSynChange = aaCode[codon] != aaCode[i % GeneticCode.CODON_STATES];
@@ -88,7 +89,7 @@ public class DistributionWriter {
                 double piValue = Double.parseDouble(PiParts[codon]);
                 double qValue = Double.parseDouble(QSParts[i]);
                 double deltaS = Double.parseDouble(SParts[i]);
-                
+
                 deltaS = Math.max(deltaS, -S_LIMIT);
                 deltaS = Math.min(deltaS, S_LIMIT);
 
@@ -102,12 +103,12 @@ public class DistributionWriter {
 
                     mutsNonSyn[mutsBin] += piValue * Q0[i];
                     subsNonSyn[subsBin] += piValue * qValue;
-                } 
-                
+                }
+
                 if (isCodonChange) {
                     mutsAllSiteSum += piValue * Q0[i];
                     subsAllSiteSum += piValue * qValue;
-                    
+
                     mutsAll[mutsBin] += piValue * Q0[i];
                     subsAll[subsBin] += piValue * qValue;
                 }
@@ -127,7 +128,7 @@ public class DistributionWriter {
         int mutsEnd = (int) (MUTS_BINS * ((S_LIMIT - LOW) / (HI - LOW))) + 1;
         double bin = -S_LIMIT;
         BufferedWriter mutsWriter = Files.newWriter(new File(MUTATIONS_FILENAME), Charsets.US_ASCII);
-        for (int i = mutsStart ; i < mutsEnd; i++) {
+        for (int i = mutsStart; i < mutsEnd; i++) {
             mutsAll[i] /= mutsAllDenom;
             mutsNonSyn[i] /= mutsNonSynDenom;
             mutsWriter.write(String.format("%s\t%s\t%s\n", bin, mutsAll[i], mutsNonSyn[i]));
@@ -139,7 +140,7 @@ public class DistributionWriter {
         int subsEnd = (int) (SUBS_BINS * ((S_LIMIT - LOW) / (HI - LOW))) + 1;
         bin = -S_LIMIT;
         BufferedWriter subsWriter = Files.newWriter(new File(SUBSTITUTIONS_FILENAME), Charsets.US_ASCII);
-        for (int i = subsStart ; i < subsEnd; i++) {
+        for (int i = subsStart; i < subsEnd; i++) {
             subsAll[i] /= subsAllDenom;
             subsNonSyn[i] /= subsNonSynDenom;
             subsWriter.write(String.format("%s\t%s\t%s\n", bin, subsAll[i], subsNonSyn[i]));

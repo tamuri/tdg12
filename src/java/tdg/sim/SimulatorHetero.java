@@ -1,4 +1,4 @@
-package tdg.model;
+package tdg.sim;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -11,7 +11,9 @@ import tdg.cli.CharArrayConverter;
 import tdg.cli.DoubleArrayConverter;
 import tdg.cli.DoubleConverter;
 import tdg.cli.GeneticCodeConverter;
-import tdg.model.parameters.Fitness;
+import tdg.model.Fitness;
+import tdg.model.TDGCodonModel;
+import tdg.model.TDGGlobals;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -35,7 +37,7 @@ public class SimulatorHetero {
 
         if (args.length == 0) {
             jc.usage();
-            System.out.println("Options preceded by an asterisk are required.");
+            System.out.println("AnalyseOptions preceded by an asterisk are required.");
             System.out.println("Example: -t PB2.tree -sites 10 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -fitness 0,0,0 -characters E,K,R");
             System.exit(0);
         } else {
@@ -113,8 +115,8 @@ public class SimulatorHetero {
             Node child = parent.getChild(i);
 
             // decide on which codon model to use
-            if ((parent.getIdentifier().getName().length() > 0 && parent.getIdentifier().getName().substring(0,2).equals("Hu"))
-                    || child.getIdentifier().getName().substring(0,2).equals("Hu")) {
+            if ((parent.getIdentifier().getName().length() > 0 && parent.getIdentifier().getName().substring(0, 2).equals("Hu"))
+                    || child.getIdentifier().getName().substring(0, 2).equals("Hu")) {
                 codonModel2.getProbabilityMatrix(Pt, child.getBranchLength());
             } else {
                 codonModel1.getProbabilityMatrix(Pt, child.getBranchLength());
@@ -185,5 +187,5 @@ public class SimulatorHetero {
     public GeneticCode gc;
 
     public Map<String, String> seqout;
-    
+
 }

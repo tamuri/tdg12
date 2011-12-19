@@ -1,4 +1,4 @@
-package tdg.model.parameters;
+package tdg.model;
 
 import com.google.common.primitives.Doubles;
 

@@ -1,4 +1,4 @@
-package tdg.model;
+package tdg.sim;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -12,7 +12,9 @@ import tdg.cli.CharArrayConverter;
 import tdg.cli.DoubleArrayConverter;
 import tdg.cli.DoubleConverter;
 import tdg.cli.GeneticCodeConverter;
-import tdg.model.parameters.Fitness;
+import tdg.model.Fitness;
+import tdg.model.TDGCodonModel;
+import tdg.model.TDGGlobals;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -33,11 +35,11 @@ public class Simulator {
     public static void main(String... args) {
         Simulator s = new Simulator();
         JCommander jc = new JCommander(s);
-        jc.setProgramName("tdg.model.Simulator");
+        jc.setProgramName("tdg.sim.Simulator");
 
         if (args.length == 0) {
             jc.usage();
-            System.out.println("Options preceded by an asterisk are required.");
+            System.out.println("AnalyseOptions preceded by an asterisk are required.");
             System.out.println("Example: -t PB2.tree -sites 10 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -fitness 0,0,0 -characters E,K,R");
             System.exit(0);
         } else {
@@ -91,7 +93,6 @@ public class Simulator {
             Identifier n = parsedTree.getExternalNode(i).getIdentifier();
             seqout.put(n.getName(), GeneticCode.getInstance().getCodonTLA(seq.get(n)[0]));
         }
-
 
 
         // Print tips

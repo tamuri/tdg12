@@ -6,8 +6,6 @@ import com.google.common.primitives.Doubles;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
-import tdg.model.parameters.Fitness;
-import tdg.model.parameters.Parameter;
 import tdg.utils.GeneticCode;
 
 import java.util.Arrays;
@@ -21,7 +19,7 @@ import java.util.Map;
  */
 public class LikelihoodCalculator {
     private final Tree tree;
-    private String ROOT_MODEL_NAME; 
+    private String ROOT_MODEL_NAME;
     private final Map<String, Integer> states;
     private final Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
     private final double[] probMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
@@ -41,9 +39,9 @@ public class LikelihoodCalculator {
     public String hostshiftName;
     public double avianToIntermediateSplit;
     public double intermediateToMammalSplit;
-    
+
     public LikelihoodCalculator(Tree tree, Map<String, Integer> states) {
-        this.tree = tree; 
+        this.tree = tree;
         this.states = states;
 
         // set up name lookup
@@ -113,17 +111,17 @@ public class LikelihoodCalculator {
         //double p = calculatePrior();
 
 
-       /* if (!useScaling && l == Double.NEGATIVE_INFINITY) {
+        /* if (!useScaling && l == Double.NEGATIVE_INFINITY) {
             useScaling = true;
             System.out.println("Turning on scaling.");
             l = calculateLogLikelihood();
         }*/
 
-       //System.out.printf("function lnL eval = %s\n", -1.0 * l);
+        //System.out.printf("function lnL eval = %s\n", -1.0 * l);
         //System.out.printf("%s\n", Doubles.join(", ", parameters));
 //        System.out.printf("%s - %s\n", l, p);
 //System.exit(0);
-       return -1.0 * (l); //(l) or (l - p)
+        return -1.0 * (l); //(l) or (l - p)
         //return -1.0 * l;
     }
 
@@ -134,7 +132,7 @@ public class LikelihoodCalculator {
 
     private double calculateTrueFitnessEnt() {
         // MIT
-       double[] baseAApi = new double[]{0.018207581862512204, 0.018207581862512204, 0.11236702136442346, 0.014633089085757604,
+        double[] baseAApi = new double[]{0.018207581862512204, 0.018207581862512204, 0.11236702136442346, 0.014633089085757604,
                 0.0056780258819048, 0.07562774261045106, 0.017241116252006836, 0.004150844977304972,
                 0.06418769404473233, 0.04360137848137165, 0.07418592860773728, 0.13239397825585356,
                 0.05137236783972999, 0.016918488915981182, 0.0798671208133934, 0.06888517921966052,
@@ -160,7 +158,7 @@ public class LikelihoodCalculator {
         for (double F : f) {
             expFSum += Math.exp(F);
         }
-        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES ; i++) {
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
             pi[i] = Math.exp(f[i]) / expFSum;
         }
 
@@ -202,7 +200,7 @@ public class LikelihoodCalculator {
         }
 */
 
-            double sum = 0;
+        double sum = 0;
         //System.out.printf("pi = %s\n", Doubles.join(" ", pi));
         for (double P : pi) {
             if (P > 0) sum += P * Math.log(P);
@@ -223,11 +221,11 @@ public class LikelihoodCalculator {
     private double calculateLogLikelihood() {
         logScaling = 0.0;
         double[] conditionals = downTree();
-  //     System.out.printf("conditionals out = %s\n", Doubles.join(",", conditionals));
+        //     System.out.printf("conditionals out = %s\n", Doubles.join(",", conditionals));
 
         double[] f = cladeModels.get(ROOT_MODEL_NAME).getCodonFrequencies();
-    //    System.out.printf("codon freqs = %s\n", Doubles.join(",", f));
-      //  double sss = 0.;
+        //    System.out.printf("codon freqs = %s\n", Doubles.join(",", f));
+        //  double sss = 0.;
         //for (double dd:f) sss+=dd;
         //System.out.printf("codon sum = %s\n", sss);
 
@@ -312,11 +310,10 @@ public class LikelihoodCalculator {
                         }
 
 
-
                     }
-                } 
-
                 }
+
+            }
 
             if (useScaling) {
                 scaleConditionals(node, partial);
@@ -392,21 +389,21 @@ public class LikelihoodCalculator {
         if (node.getNumber() % Constants.SCALING_NODE_STEP == 0) {
             double scalingFactor = 0;
             for (int i = 0; i < conditionals.length; i++) {
-                 if (conditionals[i] > 0 && conditionals[i] > scalingFactor) {
+                if (conditionals[i] > 0 && conditionals[i] > scalingFactor) {
                     scalingFactor = conditionals[i];
                 }
             }
 
             if (scalingFactor < Constants.SCALING_THRESHOLD) {
-            //    System.out.printf("need to scale, scalingFactor = %s\n", scalingFactor);
-             //   System.out.printf("conditionals before scaling: %s\n", Doubles.join(",", conditionals));
+                //    System.out.printf("need to scale, scalingFactor = %s\n", scalingFactor);
+                //   System.out.printf("conditionals before scaling: %s\n", Doubles.join(",", conditionals));
 
                 for (int i = 0; i < conditionals.length; i++) {
                     conditionals[i] = conditionals[i] / scalingFactor;
                 }
-               // System.out.printf("conditionals after scaling: %s\n", Doubles.join(",", conditionals));
+                // System.out.printf("conditionals after scaling: %s\n", Doubles.join(",", conditionals));
                 logScaling += Math.log(scalingFactor);
-               // System.out.printf("log scaling = %s (total = %s)\n", Math.log(scalingFactor), logScaling);
+                // System.out.printf("log scaling = %s (total = %s)\n", Math.log(scalingFactor), logScaling);
 
             }
         }
@@ -436,7 +433,7 @@ public class LikelihoodCalculator {
             conditionals[i] *= branchProb;
         }
 
-       /* if (CoreUtils.sum(conditionals) == 0) {
+        /* if (CoreUtils.sum(conditionals) == 0) {
             System.exit(0);
         }*/
     }

@@ -11,8 +11,8 @@ import org.simpleframework.transport.connect.SocketConnection;
 import org.simpleframework.util.thread.Scheduler;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
-import tdg.Options;
 import tdg.SiteAnalyser;
+import tdg.cli.AnalyseOptions;
 import tdg.model.TDGGlobals;
 import tdg.utils.Functions;
 import tdg.utils.PhyloUtils;
@@ -34,7 +34,7 @@ public class Server implements Container {
 
     static final int SERVER_PORT = 9090; // TODO: Put in config file
     private Scheduler scheduler;
-    private Options options;
+    private AnalyseOptions options;
     private Tree tree;
     private Alignment alignment;
     private TDGGlobals globals;
@@ -45,7 +45,7 @@ public class Server implements Container {
         private final Request request;
 
         public Task(Request request, Response response) {
-            this.response = response; 
+            this.response = response;
             this.request = request;
         }
 
@@ -74,13 +74,13 @@ public class Server implements Container {
         }
     }
 
-    public Server(Scheduler scheduler, Options options) {
+    public Server(Scheduler scheduler, AnalyseOptions options) {
         this.scheduler = scheduler;
         this.options = options;
 
         this.tree = PhyloUtils.readTree(options.treeFile);
         this.alignment = PhyloUtils.readAlignment(options.alignmentFile);
-        this.globals = new TDGGlobals(options.tau, options.kappa, options.pi, options.mu, options.gamma);
+        this.globals = new TDGGlobals(options.globals.tau, options.globals.kappa, options.globals.pi, options.globals.mu, options.globals.gamma);
     }
 
     @Override
@@ -110,11 +110,11 @@ public class Server implements Container {
     }
 
     public static void main(String... args) throws Exception {
-        Options options = new Options();
+        AnalyseOptions options = new AnalyseOptions();
         JCommander jc = new JCommander(options);
         if (args.length == 0) {
             jc.usage();
-            System.out.println("Options preceded by an asterisk are required.");
+            System.out.println("AnalyseOptions preceded by an asterisk are required.");
             System.exit(0);
         } else {
             jc.parse(args);
@@ -131,7 +131,7 @@ public class Server implements Container {
     }
 
     private static void writeHostnameFile() throws Exception {
-        InetAddress in  = InetAddress.getLocalHost();
+        InetAddress in = InetAddress.getLocalHost();
         InetAddress[] all = InetAddress.getAllByName(in.getHostName());
 
         FileWriter writer = new FileWriter("host" + in.getHostName() + ".txt");

@@ -16,12 +16,8 @@ import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
-import tdg.model.LikelihoodCalculator;
-import tdg.model.MinimisationParameters;
-import tdg.model.TDGCodonModel;
-import tdg.model.TDGGlobals;
-import tdg.model.parameters.Fitness;
-import tdg.model.parameters.Parameter;
+import tdg.cli.AnalyseOptions;
+import tdg.model.*;
 import tdg.optim.LikelihoodFunctionWrapper;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
@@ -33,7 +29,7 @@ import java.util.Map;
 /**
  * Performs the MLE for a single site, calling the likelihood function. (i.e. optimising the fitness parameters for
  * the swMutSel0 model.)
- *
+ * <p/>
  * TODO: Bit of an organic mess. Need to clean/refactor this, Fitness, LikelihoodCalculator, TDGCodonModel + LikelihoodFunctionWrapper...how??
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -45,13 +41,13 @@ public class SiteAnalyser {
     private double homogeneousLikelihood;
     private double heterogeneousLikelihood;
     private final Tree tree;
-    private final Alignment  alignment;
+    private final Alignment alignment;
     private final TDGGlobals globals;
     private final int site;
-    private final Options options;
+    private final AnalyseOptions options;
     private RandomData randomData = new RandomDataImpl(new MersenneTwister());
 
-    public SiteAnalyser(Tree tree, Alignment alignment, TDGGlobals globals, int site, Options options) {
+    public SiteAnalyser(Tree tree, Alignment alignment, TDGGlobals globals, int site, AnalyseOptions options) {
         this.tree = tree;
         this.alignment = alignment;
         this.globals = globals;
@@ -79,7 +75,7 @@ public class SiteAnalyser {
         int observedResidueCount = aminoAcidsAtSite.size();
 
         // If we're not using the approximate method (collapsing the matrix)
-        if (!options.approx) {
+        if (!options.approx.useApprox) {
             // Optimise all 19 Fitness parameters, rather than just the observed amino acids
             // This will add the remaining amino acids at the end of the list of observed residues in canonical order
             for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
@@ -147,7 +143,8 @@ public class SiteAnalyser {
         RealPointValuePair r;
         if (optimiseRuns.size() == 1) {
             r = optimiseRuns.values().iterator().next();
-            if (runs > 1) System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
+            if (runs > 1)
+                System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
         } else {
             System.out.printf("Site %s - %s runs converged to %s different optima. (%s)\n", site, runs, optimiseRuns.size(), Joiner.on(", ").join(optimiseRuns.keySet()));
             // Get the best
@@ -188,7 +185,7 @@ public class SiteAnalyser {
 
         RealPointValuePair r2 = optimise(heterogeneousModel);
         heterogeneousModel.function(r2.getPoint());
-        
+
         System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
         for (int i = 0; i < clades.size(); i++) {
             System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, fitnesses.get(i).get())));
@@ -221,9 +218,9 @@ public class SiteAnalyser {
         try {
             pair = dso.optimize(wrapper, GoalType.MINIMIZE, mp.getParameters());
             System.out.printf("Site %s - Optimisation run (%s evaluations). lnL = %s, params = { %s -> %s }\n",
-                    site, 
-                    dso.getEvaluations(), 
-                    -pair.getValue(), 
+                    site,
+                    dso.getEvaluations(),
+                    -pair.getValue(),
                     Doubles.join(", ", mp.getParameters()), // initial parameters
                     Doubles.join(", ", pair.getPoint()));
         } catch (Exception e) {
@@ -243,17 +240,18 @@ public class SiteAnalyser {
 
         return orderedFitness;
     }
-    
+
     private double[] getInitialFitnessParameters(List<Integer> aminoAcidsAtSite, int observedResidueCount, int run) {
         double[] initialFitness = new double[aminoAcidsAtSite.size()];
         for (int i = 1; i < aminoAcidsAtSite.size(); i++) {
             // First run - all residues have equal fitness = 0
             if (run == 0) {
                 initialFitness[i] = 0;
-            // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
-            } else if (run == 1 && !options.approx) {
-                if (i < observedResidueCount) initialFitness[i] = 0; else initialFitness[i] = -Constants.FITNESS_BOUND;
-            // All other runs - all residues have random fitness picked from uniform distribution in range
+                // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
+            } else if (run == 1 && !options.approx.useApprox) {
+                if (i < observedResidueCount) initialFitness[i] = 0;
+                else initialFitness[i] = -Constants.FITNESS_BOUND;
+                // All other runs - all residues have random fitness picked from uniform distribution in range
             } else {
                 initialFitness[i] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
                 // could also be random observed, unobserved -FITNESS_BOUND e.g.:
