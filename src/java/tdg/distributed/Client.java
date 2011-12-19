@@ -1,4 +1,4 @@
-package tdg.cluster;
+package tdg.distributed;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;

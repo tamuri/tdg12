@@ -1,4 +1,4 @@
-package tdg.cluster;
+package tdg.distributed;
 
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Joiner;

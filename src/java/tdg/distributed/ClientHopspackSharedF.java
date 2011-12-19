@@ -1,4 +1,4 @@
-package tdg.cluster;
+package tdg.distributed;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterators;
@@ -41,12 +41,12 @@ public class ClientHopspackSharedF {
         List<String> lines = Files.readLines(new File(args[0]), Charsets.UTF_8);
 
         double kappa = Double.parseDouble(lines.get(2));
-        double pi1   = Double.parseDouble(lines.get(3));
-        double pi2   = Double.parseDouble(lines.get(4));
-        double pi3   = Double.parseDouble(lines.get(5));
-        double pi4   = Double.parseDouble(lines.get(6));
-        double tau   = Double.parseDouble(lines.get(7));
-        double mu    = Double.parseDouble(lines.get(8));
+        double pi1 = Double.parseDouble(lines.get(3));
+        double pi2 = Double.parseDouble(lines.get(4));
+        double pi3 = Double.parseDouble(lines.get(5));
+        double pi4 = Double.parseDouble(lines.get(6));
+        double tau = Double.parseDouble(lines.get(7));
+        double mu = Double.parseDouble(lines.get(8));
         double gamma = Double.parseDouble(lines.get(9));
         // fitnesses A = 0, R,N,D,C,Q,E,G,H,I,L,K,M,F,P,S,T,W,Y,V
         double fR = Double.parseDouble(lines.get(9));
@@ -95,15 +95,15 @@ public class ClientHopspackSharedF {
         double sumlnL = 0.0;
         for (Future<Response> r : results) {
             String response = null;
-                try {
-                    response = r.get().getResponseBody();
-                } catch (Exception e) {
-                    System.err.println("Error: couldn't read response.");
-                    e.printStackTrace();
-                }
+            try {
+                response = r.get().getResponseBody();
+            } catch (Exception e) {
+                System.err.println("Error: couldn't read response.");
+                e.printStackTrace();
+            }
 
-                sumlnL += Double.parseDouble(response);
-                System.out.printf("%s\n", response);
+            sumlnL += Double.parseDouble(response);
+            System.out.printf("%s\n", response);
         }
 
         // We're done
