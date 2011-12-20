@@ -33,8 +33,8 @@ public class DistributionWriter {
     private static final int SUBS_BINS = 167; // So that the bins are symmetric around zero for substitutions (reversibility)
     private static final int S_LIMIT = 10;
 
-    private static final String MUTATIONS_FILENAME = "distribution.mutations.txt";
-    private static final String SUBSTITUTIONS_FILENAME = "distribution.substitutions.txt";
+    private static final String MUTATIONS_FILENAME = "distribution.mutations.csv";
+    private static final String SUBSTITUTIONS_FILENAME = "distribution.substitutions.csv";
 
     public static void main(String[] args) throws Exception {
         GeneticCodeOption o = new GeneticCodeOption();
@@ -131,7 +131,7 @@ public class DistributionWriter {
         for (int i = mutsStart; i < mutsEnd; i++) {
             mutsAll[i] /= mutsAllDenom;
             mutsNonSyn[i] /= mutsNonSynDenom;
-            mutsWriter.write(String.format("%s\t%s\t%s\n", bin, mutsAll[i], mutsNonSyn[i]));
+            mutsWriter.write(String.format("%s,%s,%s\n", bin, mutsAll[i], mutsNonSyn[i]));
             bin += (HI - LOW) / MUTS_BINS;
         }
         mutsWriter.close();
@@ -143,7 +143,7 @@ public class DistributionWriter {
         for (int i = subsStart; i < subsEnd; i++) {
             subsAll[i] /= subsAllDenom;
             subsNonSyn[i] /= subsNonSynDenom;
-            subsWriter.write(String.format("%s\t%s\t%s\n", bin, subsAll[i], subsNonSyn[i]));
+            subsWriter.write(String.format("%s,%s,%s\n", bin, subsAll[i], subsNonSyn[i]));
             bin += (HI - LOW) / MUTS_BINS; // NOTE: it's still 0.25!
         }
         subsWriter.close();
