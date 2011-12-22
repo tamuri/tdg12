@@ -1,0 +1,562 @@
+tdg.utils.GeneticCode - Initialised with VERTEBRATE_MITOCHONDRIAL_CODE
+tdg.utils.GeneticCode - Stop codons: TAA TAG AGA AGG 
+tdg.utils.GeneticCode - Methionine codon(s): ATA ATG 
+tdg.Analyse - atp8.phy alignment file has 244 sequences, each with 64 codon sites.
+tdg.Analyse - Running with 2 thread(s).
+Site 1 - Residues: [2/2] { 1:(12, M), 2:(19, V) }
+Site 2 - Residues: [2/2] { 1:(14, P), 2:(6, E) }
+Site 2 - Optimisation run (22 evaluations). lnL = -117.28131960283321, params = { 0.0 -> 0.6669921875 }
+Site 2 - Homogeneous model lnL: -117.28131960283321
+Site 2 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.6669921875, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 2 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.436369498673042, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.563630501326958, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 2 - Time: 487 ms
+Site 2 - Done. Homogeneous lnL = -117.28131960283321. Non-homogeneous lnL = 0.0
+Site 3 - Residues: [2/2] { 1:(5, Q), 2:(1, R) }
+Site 1 - Optimisation run (28 evaluations). lnL = -115.30020392655871, params = { 0.0 -> -2.333984375 }
+Site 1 - Homogeneous model lnL: -115.30020392655871
+Site 1 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -2.333984375 }
+Site 1 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9651431967027075, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03485680329729242 }
+Site 1 - Time: 605 ms
+Site 1 - Done. Homogeneous lnL = -115.30020392655871. Non-homogeneous lnL = 0.0
+Site 4 - Residues: [2/2] { 1:(10, L), 2:(12, M) }
+Site 3 - Optimisation run (28 evaluations). lnL = -82.51836791615678, params = { 0.0 -> -3.4267578125 }
+Site 3 - Homogeneous model lnL: -82.51836791615678
+Site 3 - Fitness: { -Infinity, -3.4267578125, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 3 - Pi: { 0.0, 0.011964182161891549, 0.0, 0.0, 0.0, 0.9880358178381083, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 3 - Time: 400 ms
+Site 3 - Done. Homogeneous lnL = -82.51836791615678. Non-homogeneous lnL = 0.0
+Site 5 - Residues: [2/2] { 1:(3, D), 2:(2, N) }
+Site 4 - Optimisation run (28 evaluations). lnL = -184.75992017969037, params = { 0.0 -> -3.978515625 }
+Site 4 - Homogeneous model lnL: -184.75992017969037
+Site 4 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -3.978515625, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 4 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9880348101060586, 0.0, 0.0119651898939413, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 4 - Time: 402 ms
+Site 4 - Done. Homogeneous lnL = -184.75992017969037. Non-homogeneous lnL = 0.0
+Site 6 - Residues: [2/2] { 1:(16, T), 2:(9, I) }
+Site 5 - Optimisation run (32 evaluations). lnL = -204.65183940484354, params = { 0.0 -> -3.7421875 }
+Site 5 - Homogeneous model lnL: -204.65183940484354
+Site 5 - Fitness: { -Infinity, -Infinity, -3.7421875, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 5 - Pi: { 0.0, 0.0, 0.10818147827246191, 0.8918185217275381, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 5 - Time: 426 ms
+Site 5 - Done. Homogeneous lnL = -204.65183940484354. Non-homogeneous lnL = 0.0
+Site 7 - Residues: [6/6] { 1:(15, S), 2:(16, T), 3:(0, A), 4:(2, N), 5:(9, I), 6:(12, M) }
+Site 6 - Optimisation run (28 evaluations). lnL = -116.79368830130477, params = { 0.0 -> -1.970703125 }
+Site 6 - Homogeneous model lnL: -116.79368830130477
+Site 6 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -1.970703125, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity }
+Site 6 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.07003791448860269, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9299620855113975, 0.0, 0.0, 0.0 }
+Site 6 - Time: 357 ms
+Site 6 - Done. Homogeneous lnL = -116.79368830130477. Non-homogeneous lnL = 0.0
+Site 8 - Residues: [7/7] { 1:(16, T), 2:(19, V), 3:(14, P), 4:(9, I), 5:(15, S), 6:(0, A), 7:(12, M) }
+Site 7 - Optimisation run (178 evaluations). lnL = -223.45428274318422, params = { 0.0, 0.0, 0.0, 0.0, 0.0 -> -2.2906652444753637, -3.396400358256654, -2.747187131724637, -3.4035998480453937, -2.632829020507918 }
+Site 7 - Homogeneous model lnL: -223.45428274318422
+Site 7 - Fitness: { -3.396400358256654, -Infinity, -2.747187131724637, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.4035998480453937, -Infinity, -Infinity, -2.632829020507918, -Infinity, -Infinity, 0.0, -2.2906652444753637, -Infinity, -Infinity, -Infinity }
+Site 7 - Pi: { 0.006620722651098519, 0.0, 0.06076094003432285, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01818025445907502, 0.0, 0.0, 0.043309999729371544, 0.0, 0.0, 0.7687497960397248, 0.10237828708640698, 0.0, 0.0, 0.0 }
+Site 7 - Time: 2913 ms
+Site 7 - Done. Homogeneous lnL = -223.45428274318422. Non-homogeneous lnL = 0.0
+Site 9 - Residues: [1/1] { 1:(17, W) }
+Site 9 - Site is conserved.
+Site 9 - Homogeneous model lnL: -80.67663566665416
+Site 9 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity }
+Site 9 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9999999999999999, 0.0, 0.0 }
+Site 9 - Done. Homogeneous lnL = -80.67663566665416. Non-homogeneous lnL = 0.0
+Site 10 - Residues: [6/6] { 1:(13, F), 2:(10, L), 3:(14, P), 4:(15, S), 5:(16, T), 6:(0, A) }
+Site 8 - Optimisation run (213 evaluations). lnL = -173.93255000587297, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.7102739798651134, -1.1051476900204085, -2.2757122842644018, -2.95485411377096, -3.281825670788298, -4.891774255348082 }
+Site 8 - Homogeneous model lnL: -173.93255000587297
+Site 8 - Fitness: { -3.281825670788298, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -2.2757122842644018, -Infinity, -Infinity, -4.891774255348082, -Infinity, -1.1051476900204085, -2.95485411377096, 0.0, -Infinity, -Infinity, -0.7102739798651134 }
+Site 8 - Pi: { 0.005302096353490611, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.04010683291069542, 0.0, 0.0, 0.0032309020853381995, 0.0, 0.12148040938801903, 0.0285950752095012, 0.7224606551154733, 0.0, 0.0, 0.07882402893748208 }
+Site 8 - Time: 5681 ms
+Site 8 - Done. Homogeneous lnL = -173.93255000587297. Non-homogeneous lnL = 0.0
+Site 11 - Residues: [8/8] { 1:(9, I), 2:(16, T), 3:(10, L), 4:(12, M), 5:(19, V), 6:(14, P), 7:(15, S), 8:(17, W) }
+Site 10 - Optimisation run (213 evaluations). lnL = -343.4599856256996, params = { 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.246951943944354, -1.4394375776302766, -1.625945780977127, -2.606392220781044, -1.8820205604835785 }
+Site 10 - Homogeneous model lnL: -343.4599856256996
+Site 10 - Fitness: { -1.8820205604835785, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -1.246951943944354, -Infinity, -Infinity, 0.0, -1.4394375776302766, -1.625945780977127, -2.606392220781044, -Infinity, -Infinity, -Infinity }
+Site 10 - Pi: { 0.03133238906054643, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2785310022298123, 0.0, 0.0, 0.3282598824849492, 0.12674891576280944, 0.15741534253620432, 0.07771246792567814, 0.0, 0.0, 0.0 }
+Site 10 - Time: 5483 ms
+Site 10 - Done. Homogeneous lnL = -343.4599856256996. Non-homogeneous lnL = 0.0
+Site 12 - Residues: [8/8] { 1:(16, T), 2:(12, M), 3:(19, V), 4:(9, I), 5:(0, A), 6:(2, N), 7:(14, P), 8:(15, S) }
+Site 11 - Optimisation run (369 evaluations). lnL = -333.93825211491657, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.6438257043355622, -1.116472819474049, -1.141713468424963, -0.9040936881360656, -3.7053776715938715, -2.63112102983521, 1.4635785365205696 }
+Site 11 - Homogeneous model lnL: -333.93825211491657
+Site 11 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -1.116472819474049, -Infinity, -1.141713468424963, -Infinity, -3.7053776715938715, -2.63112102983521, -0.6438257043355622, 1.4635785365205696, -Infinity, -0.9040936881360656 }
+Site 11 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.24373391431516483, 0.13592206157659187, 0.0, 0.08576751166486037, 0.0, 0.005631304626419774, 0.02467487959748078, 0.23690408910141794, 0.22682919230282889, 0.0, 0.04053704681523537 }
+Site 11 - Time: 12194 ms
+Site 11 - Done. Homogeneous lnL = -333.93825211491657. Non-homogeneous lnL = 0.0
+Site 13 - Residues: [3/3] { 1:(9, I), 2:(19, V), 3:(16, T) }
+Site 13 - Optimisation run (57 evaluations). lnL = -185.26290369294003, params = { 0.0, 0.0 -> -1.704202288399756, -3.753724643552232 }
+Site 12 - Optimisation run (352 evaluations). lnL = -331.4114143193501, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.8942461171024472, 0.49967973151123934, -1.76236640319971, -1.9747118839361646, -3.962360865891454, -3.2798775453953994, -3.4930592579453466 }
+Site 13 - Homogeneous model lnL: -185.26290369294003
+Site 13 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.753724643552232, -Infinity, -Infinity, -1.704202288399756 }
+Site 13 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8943916725606718, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03877683798550479, 0.0, 0.0, 0.06683148945382347 }
+Site 13 - Time: 551 ms
+Site 13 - Done. Homogeneous lnL = -185.26290369294003. Non-homogeneous lnL = 0.0
+Site 14 - Residues: [8/8] { 1:(10, L), 2:(12, M), 3:(9, I), 4:(19, V), 5:(16, T), 6:(13, F), 7:(15, S), 8:(0, A) }
+Site 12 - Homogeneous model lnL: -331.4114143193501
+Site 12 - Fitness: { -1.9747118839361646, -Infinity, -3.962360865891454, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -1.76236640319971, -Infinity, -Infinity, -0.8942461171024472, -Infinity, -3.2798775453953994, -3.4930592579453466, 0.0, -Infinity, -Infinity, 0.49967973151123934 }
+Site 12 - Pi: { 0.015156986286702586, 0.0, 0.009957658775860394, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05183875817169648, 0.0, 0.0, 0.13611975081087263, 0.0, 0.010678887419477938, 0.012913520489442307, 0.5588652904477778, 0.0, 0.0, 0.20446914759817045 }
+Site 12 - Time: 10092 ms
+Site 12 - Done. Homogeneous lnL = -331.4114143193501. Non-homogeneous lnL = 0.0
+Site 15 - Residues: [8/8] { 1:(15, S), 2:(0, A), 3:(16, T), 4:(14, P), 5:(13, F), 6:(9, I), 7:(7, G), 8:(19, V) }
+Site 14 - Optimisation run (276 evaluations). lnL = -469.86590492295716, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.6073173210334514, 1.4415775003091458, 1.6279426531508627, 0.33265149836372443, -0.7126505860815824, -1.6274513559429233, 0.6862099914633224 }
+Site 14 - Homogeneous model lnL: -469.86590492295716
+Site 14 - Fitness: { 0.6862099914633224, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 1.4415775003091458, 0.0, -Infinity, 0.6073173210334514, -0.7126505860815824, -Infinity, -1.6274513559429233, 0.33265149836372443, -Infinity, -Infinity, 1.6279426531508627 }
+Site 14 - Pi: { 0.051650177316691484, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.30405000765695434, 0.12249767320864054, 0.0, 0.1455047371209527, 0.020343587529225667, 0.0, 0.019865666714192456, 0.18561416655927607, 0.0, 0.0, 0.15047398389406666 }
+Site 14 - Time: 9173 ms
+Site 14 - Done. Homogeneous lnL = -469.86590492295716. Non-homogeneous lnL = 0.0
+Site 16 - Residues: [5/5] { 1:(12, M), 2:(16, T), 3:(15, S), 4:(0, A), 5:(19, V) }
+Site 16 - Optimisation run (117 evaluations). lnL = -213.96484040072536, params = { 0.0, 0.0, 0.0, 0.0 -> -1.8876115716368462, -1.4384264311644506, -0.9712857766316776, -1.8993321243190247 }
+Site 16 - Homogeneous model lnL: -213.96484040072536
+Site 16 - Fitness: { -0.9712857766316776, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -1.4384264311644506, -1.8876115716368462, -Infinity, -Infinity, -1.8993321243190247 }
+Site 16 - Pi: { 0.07150222548175647, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5757203486056762, 0.0, 0.0, 0.17429488219785114, 0.14637001869343658, 0.0, 0.0, 0.032112525021279474 }
+Site 16 - Time: 2081 ms
+Site 16 - Done. Homogeneous lnL = -213.96484040072536. Non-homogeneous lnL = 0.0
+Site 17 - Residues: [9/9] { 1:(9, I), 2:(10, L), 3:(13, F), 4:(16, T), 5:(12, M), 6:(19, V), 7:(15, S), 8:(18, Y), 9:(0, A) }
+Site 15 - Optimisation run (415 evaluations). lnL = -324.15382786495195, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.2272975244310082, -2.0495583497768233, -3.3687940499912505, -2.681841769161765, -3.3997548923632857, 0.705035923563484, -2.175614206140339 }
+Site 15 - Homogeneous model lnL: -324.15382786495195
+Site 15 - Fitness: { 0.2272975244310082, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.705035923563484, -Infinity, -3.3997548923632857, -Infinity, -Infinity, -Infinity, -2.681841769161765, -3.3687940499912505, 0.0, -2.0495583497768233, -Infinity, -Infinity, -2.175614206140339 }
+Site 15 - Pi: { 0.17925854742927763, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.11122940866007248, 0.0, 0.013185368861426808, 0.0, 0.0, 0.0, 0.015593007415949125, 0.012777813376158962, 0.5554020734251934, 0.09413296451658074, 0.0, 0.0, 0.01842081631534065 }
+Site 15 - Time: 14074 ms
+Site 15 - Done. Homogeneous lnL = -324.15382786495195. Non-homogeneous lnL = 0.0
+Site 18 - Residues: [8/8] { 1:(10, L), 2:(9, I), 3:(12, M), 4:(14, P), 5:(13, F), 6:(19, V), 7:(16, T), 8:(0, A) }
+Site 18 - Optimisation run (362 evaluations). lnL = -383.88778928952013, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.3339616480967085, -1.6132857573571924, -1.9376817229175083, -1.5113443447368051, -0.9841130847900958, -2.9205334320410454, -0.6445781055250664 }
+Site 18 - Homogeneous model lnL: -383.88778928952013
+Site 18 - Fitness: { -0.6445781055250664, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -0.3339616480967085, 0.0, -Infinity, -1.6132857573571924, -1.5113443447368051, -1.9376817229175083, -Infinity, -2.9205334320410454, -Infinity, -Infinity, -0.9841130847900958 }
+Site 18 - Pi: { 0.05674364853708702, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.21411028586365227, 0.5092455078818676, 0.0, 0.0656569699647703, 0.038050346582716985, 0.040464006934971895, 0.0, 0.029824297508038947, 0.0, 0.0, 0.04590493672689472 }
+Site 18 - Time: 10265 ms
+Site 18 - Done. Homogeneous lnL = -383.88778928952013. Non-homogeneous lnL = 0.0
+Site 19 - Residues: [6/6] { 1:(16, T), 2:(0, A), 3:(15, S), 4:(19, V), 5:(1, R), 6:(12, M) }
+Site 17 - Optimisation run (400 evaluations). lnL = -383.48713600116804, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.179689201839633, 0.09275075958974331, -1.752114443911076, -1.3526812070215664, -0.888449124502112, -1.914237375974753, -0.051829277718259015, -1.7142941873059012 }
+Site 17 - Homogeneous model lnL: -383.48713600116804
+Site 17 - Fitness: { -1.7142941873059012, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, 0.179689201839633, -Infinity, -1.3526812070215664, 0.09275075958974331, -Infinity, -1.914237375974753, -1.752114443911076, -Infinity, -0.051829277718259015, -0.888449124502112 }
+Site 17 - Pi: { 0.01148786468039763, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.17642863664058528, 0.35963262367997895, 0.0, 0.05027519924471518, 0.11166115480270335, 0.0, 0.0365802586636884, 0.056611151388318334, 0.0, 0.16751739421131356, 0.02980571668829957 }
+Site 17 - Time: 15534 ms
+Site 17 - Done. Homogeneous lnL = -383.48713600116804. Non-homogeneous lnL = 0.0
+Site 20 - Residues: [2/2] { 1:(10, L), 2:(9, I) }
+Site 20 - Optimisation run (24 evaluations). lnL = -273.032469161763, params = { 0.0 -> -2.708984375 }
+Site 20 - Homogeneous model lnL: -273.032469161763
+Site 20 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -2.708984375, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 20 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03763491321846127, 0.9623650867815388, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 20 - Time: 251 ms
+Site 20 - Done. Homogeneous lnL = -273.032469161763. Non-homogeneous lnL = 0.0
+Site 21 - Residues: [5/5] { 1:(13, F), 2:(18, Y), 3:(10, L), 4:(12, M), 5:(9, I) }
+Site 19 - Optimisation run (176 evaluations). lnL = -302.8616286314573, params = { 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.8374683593141303, -1.5954237403179854, -1.3854194110378524, 0.7767873756507018, -3.7236024136706805 }
+Site 19 - Homogeneous model lnL: -302.8616286314573
+Site 19 - Fitness: { -0.8374683593141303, 0.7767873756507018, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.7236024136706805, -Infinity, -Infinity, -1.5954237403179854, 0.0, -Infinity, -Infinity, -1.3854194110378524 }
+Site 19 - Pi: { 0.0487843970884274, 0.24509999371814545, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.008296918335863298, 0.0, 0.0, 0.08890921728993885, 0.5768682473579887, 0.0, 0.0, 0.03204122620963615 }
+Site 19 - Time: 4200 ms
+Site 19 - Done. Homogeneous lnL = -302.8616286314573. Non-homogeneous lnL = 0.0
+Site 22 - Residues: [10/10] { 1:(9, I), 2:(10, L), 3:(19, V), 4:(0, A), 5:(16, T), 6:(12, M), 7:(13, F), 8:(18, Y), 9:(15, S), 10:(8, H) }
+Site 21 - Optimisation run (162 evaluations). lnL = -191.57663272999855, params = { 0.0, 0.0, 0.0, 0.0 -> -2.3975543575058724, -3.969404524125167, -2.6079634530314255, -3.976742671770647 }
+Site 21 - Homogeneous model lnL: -191.57663272999855
+Site 21 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.976742671770647, -3.969404524125167, -Infinity, -2.6079634530314255, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -2.3975543575058724, -Infinity }
+Site 21 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.023436246264189456, 0.04020933997665314, 0.0, 0.10152851189973378, 0.7211362795715739, 0.0, 0.0, 0.0, 0.0, 0.11368962228784991, 0.0 }
+Site 21 - Time: 1814 ms
+Site 21 - Done. Homogeneous lnL = -191.57663272999855. Non-homogeneous lnL = 0.0
+Site 23 - Residues: [8/8] { 1:(10, L), 2:(9, I), 3:(19, V), 4:(12, M), 5:(16, T), 6:(0, A), 7:(13, F), 8:(1, R) }
+Site 23 - Optimisation run (336 evaluations). lnL = -396.9140091586395, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 1.1069497920300346, -0.053684275742951724, -0.9507572560413293, -2.203713187678123, -1.6320255188695767, -0.4312028465600849, -0.7852951874593016 }
+Site 23 - Homogeneous model lnL: -396.9140091586395
+Site 23 - Fitness: { -1.6320255188695767, -0.7852951874593016, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 1.1069497920300346, 0.0, -Infinity, -0.9507572560413293, -0.4312028465600849, -Infinity, -Infinity, -2.203713187678123, -Infinity, -Infinity, -0.053684275742951724 }
+Site 23 - Pi: { 0.011119164322418724, 0.02592999655122066, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.47578995952118996, 0.2678706065276287, 0.0, 0.0669901828082902, 0.05894622039496063, 0.0, 0.0, 0.03212766434894193, 0.0, 0.0, 0.06122620552534896 }
+Site 23 - Time: 9232 ms
+Site 23 - Done. Homogeneous lnL = -396.9140091586395. Non-homogeneous lnL = 0.0
+Site 24 - Residues: [5/5] { 1:(13, F), 2:(12, M), 3:(10, L), 4:(16, T), 5:(9, I) }
+Site 24 - Optimisation run (135 evaluations). lnL = -290.6672189277736, params = { 0.0, 0.0, 0.0, 0.0 -> 0.9297684790815621, -1.696119247729611, -1.614955483338167, -2.053597909060238 }
+Site 24 - Homogeneous model lnL: -290.6672189277736
+Site 24 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -2.053597909060238, -1.696119247729611, -Infinity, 0.9297684790815621, 0.0, -Infinity, -Infinity, -1.614955483338167, -Infinity, -Infinity, -Infinity }
+Site 24 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03069969916969406, 0.07475445924866636, 0.0, 0.6684060711536902, 0.13805503600954555, 0.0, 0.0, 0.08808473441840377, 0.0, 0.0, 0.0 }
+Site 24 - Time: 1787 ms
+Site 24 - Done. Homogeneous lnL = -290.6672189277736. Non-homogeneous lnL = 0.0
+Site 25 - Residues: [3/3] { 1:(5, Q), 2:(8, H), 3:(14, P) }
+Site 25 - Optimisation run (55 evaluations). lnL = -112.20183123498938, params = { 0.0, 0.0 -> -3.3184093944655615, -3.6270936893706676 }
+Site 25 - Homogeneous model lnL: -112.20183123498938
+Site 25 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -3.3184093944655615, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.6270936893706676, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 25 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.9446368411597594, 0.0, 0.0, 0.031034966733384177, 0.0, 0.0, 0.0, 0.0, 0.0, 0.024328192106856338, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 25 - Time: 481 ms
+Site 25 - Done. Homogeneous lnL = -112.20183123498938. Non-homogeneous lnL = 0.0
+Site 26 - Residues: [8/8] { 1:(10, L), 2:(9, I), 3:(16, T), 4:(14, P), 5:(12, M), 6:(15, S), 7:(11, K), 8:(19, V) }
+Site 26 - Optimisation run (353 evaluations). lnL = -276.9549265228201, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.4834450238103258, -1.8099700967636945, -2.9459541500893014, -2.811387075407051, -2.939123454539934, -1.703075435543227, -2.631022342868932 }
+Site 26 - Homogeneous model lnL: -276.9549265228201
+Site 26 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -1.4834450238103258, 0.0, -1.703075435543227, -2.811387075407051, -Infinity, -2.9459541500893014, -2.939123454539934, -1.8099700967636945, -Infinity, -Infinity, -2.631022342868932 }
+Site 26 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.08100698742513929, 0.6081720314566513, 0.12426047746845537, 0.023661990870535304, 0.0, 0.017631163479646054, 0.026567445295618167, 0.10813866119531769, 0.0, 0.0, 0.010561242808637008 }
+Site 26 - Time: 11379 ms
+Site 26 - Done. Homogeneous lnL = -276.9549265228201. Non-homogeneous lnL = 0.0
+Site 27 - Residues: [2/2] { 1:(11, K), 2:(2, N) }
+Site 27 - Optimisation run (28 evaluations). lnL = -76.55572880252414, params = { 0.0 -> -2.58740234375 }
+Site 27 - Homogeneous model lnL: -76.55572880252414
+Site 27 - Fitness: { -Infinity, -Infinity, -2.58740234375, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 27 - Pi: { 0.0, 0.0, 0.06388349058569862, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9361165094143015, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 27 - Time: 226 ms
+Site 27 - Done. Homogeneous lnL = -76.55572880252414. Non-homogeneous lnL = 0.0
+Site 28 - Residues: [6/6] { 1:(9, I), 2:(10, L), 3:(19, V), 4:(13, F), 5:(16, T), 6:(12, M) }
+Site 28 - Optimisation run (179 evaluations). lnL = -351.89826084947384, params = { 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.11856689879385862, 0.4383113333988082, -0.2838044130976807, -2.677237001272605, -1.7801050831032974 }
+Site 28 - Homogeneous model lnL: -351.89826084947384
+Site 28 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, 0.11856689879385862, -Infinity, -1.7801050831032974, -0.2838044130976807, -Infinity, -Infinity, -2.677237001272605, -Infinity, -Infinity, 0.4383113333988082 }
+Site 28 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.23247065261051186, 0.4457722804473423, 0.0, 0.04320410633424414, 0.10096371868599707, 0.0, 0.0, 0.029575045594979792, 0.0, 0.0, 0.14801419632692467 }
+Site 28 - Time: 2719 ms
+Site 28 - Done. Homogeneous lnL = -351.89826084947384. Non-homogeneous lnL = 0.0
+Site 29 - Residues: [9/9] { 1:(15, S), 2:(10, L), 3:(0, A), 4:(8, H), 5:(16, T), 6:(9, I), 7:(2, N), 8:(12, M), 9:(18, Y) }
+Site 22 - Optimisation run (688 evaluations). lnL = -307.847114445539, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.1302387280415416, -1.6512778880823031, -1.893231199544582, -2.5198780267098977, -1.9407993944139812, -2.508076914960304, -0.7174574485616465, -3.862720897677642, -2.3536916856242738 }
+Site 22 - Homogeneous model lnL: -307.847114445539
+Site 22 - Fitness: { -1.893231199544582, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -2.3536916856242738, 0.0, -1.1302387280415416, -Infinity, -1.9407993944139812, -2.508076914960304, -Infinity, -3.862720897677642, -2.5198780267098977, -Infinity, -0.7174574485616465, -1.6512778880823031 }
+Site 22 - Pi: { 0.020634306452755987, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03169825719065175, 0.37899283551427027, 0.20846182320825987, 0.0, 0.05997900252007385, 0.017800775771749523, 0.0, 0.011196777615822596, 0.056432387244686535, 0.0, 0.18494525320955638, 0.029858581272173442 }
+Site 22 - Time: 30367 ms
+Site 22 - Done. Homogeneous lnL = -307.847114445539. Non-homogeneous lnL = 0.0
+Site 30 - Sequence Erinaceus_europaeus has unknown/stop codon (???). Treating as gap.
+Site 30 - Sequence Hemiechinus_auritus has unknown/stop codon (???). Treating as gap.
+Site 30 - Residues: [9/9] { 1:(11, K), 2:(2, N), 3:(15, S), 4:(10, L), 5:(16, T), 6:(12, M), 7:(3, D), 8:(6, E), 9:(13, F) }
+Site 29 - Optimisation run (489 evaluations). lnL = -283.7141969242525, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.500307338422261, -0.20918631412024524, -0.6037105512384532, -2.293768765036514, -1.1153750811149907, -1.832449728954236, -3.166085662402346, -2.1479913179132106 }
+Site 29 - Homogeneous model lnL: -283.7141969242525
+Site 29 - Fitness: { -0.20918631412024524, -Infinity, -1.832449728954236, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -0.6037105512384532, -1.1153750811149907, -1.500307338422261, -Infinity, -3.166085662402346, -Infinity, -Infinity, 0.0, -2.293768765036514, -Infinity, -2.1479913179132106, -Infinity }
+Site 29 - Pi: { 0.08342913536036861, 0.0, 0.0789064974519216, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1368985979636378, 0.09323655590338019, 0.10805982050578791, 0.0, 0.013219670772446235, 0.0, 0.0, 0.39995201487048754, 0.053098578235865584, 0.0, 0.03319912893610447, 0.0 }
+Site 29 - Time: 15964 ms
+Site 29 - Done. Homogeneous lnL = -283.7141969242525. Non-homogeneous lnL = 0.0
+Site 31 - Sequence Erinaceus_europaeus has unknown/stop codon (???). Treating as gap.
+Site 31 - Sequence Hemiechinus_auritus has unknown/stop codon (???). Treating as gap.
+Site 31 - Residues: [10/10] { 1:(8, H), 2:(18, Y), 3:(13, F), 4:(16, T), 5:(12, M), 6:(5, Q), 7:(10, L), 8:(15, S), 9:(9, I), 10:(2, N) }
+Site 30 - Optimisation run (611 evaluations). lnL = -273.1350926154201, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.7224879432078044, 0.3025584409194376, 0.10312023943548242, -1.6806508608558384, -2.394112959374092, -2.2222534420199365, -3.141650418712117, -0.6827997420231521 }
+Site 30 - Homogeneous model lnL: -273.1350926154201
+Site 30 - Fitness: { -Infinity, -Infinity, -0.7224879432078044, -2.2222534420199365, -Infinity, -Infinity, -3.141650418712117, -Infinity, -Infinity, -Infinity, 0.10312023943548242, 0.0, -2.394112959374092, -0.6827997420231521, -Infinity, 0.3025584409194376, -1.6806508608558384, -Infinity, -Infinity, -Infinity }
+Site 30 - Pi: { 0.0, 0.0, 0.1147874822815157, 0.005005723357956741, 0.0, 0.0, 0.0022000093026585932, 0.0, 0.0, 0.0, 0.2574871003489365, 0.2605636105946962, 0.013715625238704792, 0.039740624245952094, 0.0, 0.2595008805645574, 0.046998944065022294, 0.0, 0.0, 0.0 }
+Site 30 - Time: 17395 ms
+Site 30 - Done. Homogeneous lnL = -273.1350926154201. Non-homogeneous lnL = 0.0
+Site 32 - Sequence Eubalaena_australis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Eschrichtius_robustus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Stenella_attenuata has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Kogia_breviceps has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Megaptera_novaeangliae has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_acutorostrata has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Tursiops_truncatus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Pontoporia_blainvillei has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaena_mysticetus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Inia_geoffrensis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Physeter_catodon has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Tursiops_aduncus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_edeni has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Monodon_monoceros has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Phocoena_phocoena has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_musculus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Platanista_minor has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Caperea_marginata has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Berardius_bairdii has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Lipotes_vexillifer has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_borealis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_bonaerensis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Sousa_chinensis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Lagenorhynchus_albirostris has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Stenella_coeruleoalba has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Hyperoodon_ampullatus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_brydei has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Delphinus_capensis has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_physalus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Eubalaena_japonica has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Grampus_griseus has unknown/stop codon (???). Treating as gap.
+Site 32 - Sequence Balaenoptera_omurai has unknown/stop codon (???). Treating as gap.
+Site 32 - Residues: [14/14] { 1:(2, N), 2:(15, S), 3:(16, T), 4:(8, H), 5:(18, Y), 6:(10, L), 7:(9, I), 8:(11, K), 9:(19, V), 10:(3, D), 11:(4, C), 12:(12, M), 13:(1, R), 14:(6, E) }
+Site 31 - Optimisation run (355 evaluations). lnL = -317.6714283653751, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.08605075740518076, 2.26351327940998, -0.9514481960973462, -0.5994724818052453, -2.5044771458633432, -0.9801706533352765, -0.7284526921969015, 0.34782112037040896, -3.5630968508244907 }
+Site 31 - Homogeneous model lnL: -317.6714283653751
+Site 31 - Fitness: { -Infinity, -Infinity, -3.5630968508244907, -Infinity, -Infinity, -2.5044771458633432, -Infinity, -Infinity, 0.0, 0.34782112037040896, -0.9801706533352765, -Infinity, -0.5994724818052453, 2.26351327940998, -Infinity, -0.7284526921969015, -0.9514481960973462, -Infinity, -0.08605075740518076, -Infinity }
+Site 31 - Pi: { 0.0, 0.0, 0.004263789295613527, 0.0, 0.0, 0.006877755410898512, 0.0, 0.0, 0.07636258568228213, 0.12283941028144044, 0.05544344378573674, 0.0, 0.052502507419107586, 0.4812426951798595, 0.0, 0.05887600973925356, 0.06199244603446269, 0.0, 0.07959935717134492, 0.0 }
+Site 31 - Time: 11333 ms
+Site 31 - Done. Homogeneous lnL = -317.6714283653751. Non-homogeneous lnL = 0.0
+Site 33 - Residues: [10/10] { 1:(13, F), 2:(18, Y), 3:(15, S), 4:(10, L), 5:(8, H), 6:(1, R), 7:(2, N), 8:(4, C), 9:(9, I), 10:(16, T) }
+Site 33 - Optimisation run (494 evaluations). lnL = -297.4247860500343, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.2205815966208409, -2.4245393050270105, -1.8230943971638136, -3.4212487254535704, -1.6200923028873433, -4.656718663695052, -3.845416569522676, -3.6482852560427865, -3.4797401839015354 }
+Site 33 - Homogeneous model lnL: -297.4247860500343
+Site 33 - Fitness: { -Infinity, -1.6200923028873433, -4.656718663695052, -Infinity, -3.845416569522676, -Infinity, -Infinity, -Infinity, -3.4212487254535704, -3.6482852560427865, -1.8230943971638136, -Infinity, -Infinity, 0.0, -Infinity, -2.4245393050270105, -3.4797401839015354, -Infinity, -1.2205815966208409, -Infinity }
+Site 33 - Pi: { 0.0, 0.04849004361872229, 0.011159169386009306, 0.0, 0.002831000727036647, 0.0, 0.0, 0.0, 0.019491319311210842, 0.01764577868529861, 0.18645031476618254, 0.0, 0.0, 0.3909514938299704, 0.0, 0.08435821181206586, 0.038646090556591246, 0.0, 0.1999765773069123, 0.0 }
+Site 33 - Time: 18065 ms
+Site 33 - Done. Homogeneous lnL = -297.4247860500343. Non-homogeneous lnL = 0.0
+Site 34 - Residues: [11/11] { 1:(14, P), 2:(18, Y), 3:(8, H), 4:(10, L), 5:(13, F), 6:(15, S), 7:(16, T), 8:(9, I), 9:(11, K), 10:(2, N), 11:(5, Q) }
+Site 34 - Optimisation run (867 evaluations). lnL = -362.7644551891247, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.33440385729127686, -0.3063071685647313, -2.361616500597324, -1.0655060194782442, -2.9177361004446016, -2.0957443172080428, -1.1467973862582317, -1.0007118809928932, -2.4166805127472935, -3.0496922329388454 }
+Site 34 - Homogeneous model lnL: -362.7644551891247
+Site 34 - Fitness: { -Infinity, -Infinity, -2.4166805127472935, -Infinity, -Infinity, -3.0496922329388454, -Infinity, -Infinity, -0.3063071685647313, -1.1467973862582317, -2.361616500597324, -1.0007118809928932, -Infinity, -1.0655060194782442, 0.0, -2.9177361004446016, -2.0957443172080428, -Infinity, 0.33440385729127686, -Infinity }
+Site 34 - Pi: { 0.0, 0.0, 0.03177076837409622, 0.0, 0.0, 0.009440880864685586, 0.0, 0.0, 0.13310758566154635, 0.06525035016786457, 0.03297961513963564, 0.14428520072003617, 0.0, 0.04082621633420114, 0.1929961997628659, 0.015613287570078462, 0.046744118618821995, 0.0, 0.28698577678616805, 0.0 }
+Site 34 - Time: 37492 ms
+Site 34 - Done. Homogeneous lnL = -362.7644551891247. Non-homogeneous lnL = 0.0
+Site 35 - Residues: [15/15] { 1:(14, P), 2:(10, L), 3:(15, S), 4:(16, T), 5:(6, E), 6:(12, M), 7:(5, Q), 8:(13, F), 9:(8, H), 10:(18, Y), 11:(2, N), 12:(0, A), 13:(11, K), 14:(3, D), 15:(19, V) }
+Site 32 - Optimisation run (1060 evaluations). lnL = -496.3030216005101, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.27136017889876374, -0.28705765985515597, -0.33901529865959457, 0.34356764509894144, 0.3689833366379791, -0.005243869363974855, -1.2368394051800071, 0.9229501381441866, -0.4684153544037434, 1.3303003142611467, -0.4636602324174284, -0.8353298844373911, 0.10993717922966106 }
+Site 32 - Homogeneous model lnL: -496.3030216005101
+Site 32 - Fitness: { -Infinity, -0.8353298844373911, 0.0, -0.4684153544037434, 1.3303003142611467, -Infinity, 0.10993717922966106, -Infinity, -0.33901529865959457, -0.005243869363974855, 0.3689833366379791, -1.2368394051800071, -0.4636602324174284, -Infinity, -Infinity, -0.27136017889876374, -0.28705765985515597, -Infinity, 0.34356764509894144, 0.9229501381441866 }
+Site 32 - Pi: { 0.0, 0.011620074164380137, 0.1284568968349828, 0.01571228750832114, 0.054760020320276666, 0.0, 0.030878872737142207, 0.0, 0.046470414114474695, 0.07371093782218366, 0.18251926943700325, 0.041100925760481, 0.05136779765408949, 0.0, 0.0, 0.07942907691240354, 0.10289832541927907, 0.0, 0.10447655714700527, 0.076598544167977 }
+Site 32 - Time: 76875 ms
+Site 32 - Done. Homogeneous lnL = -496.3030216005101. Non-homogeneous lnL = 0.0
+Site 36 - Residues: [14/14] { 1:(2, N), 2:(15, S), 3:(14, P), 4:(16, T), 5:(3, D), 6:(0, A), 7:(8, H), 8:(9, I), 9:(13, F), 10:(6, E), 11:(11, K), 12:(18, Y), 13:(7, G), 14:(10, L) }
+Site 36 - Optimisation run (985 evaluations). lnL = -457.2491254714544, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.9973111511814551, 1.8144427559319434, 0.24973333504309358, 0.691098331917385, 0.9987404486138889, -1.0171251497285416, -1.047736527231885, 0.4764152496992788, 0.5730067075953885, -2.1509638586829607, -1.4813656359511391, -0.11245876209404965, -1.2479705069559603 }
+Site 36 - Homogeneous model lnL: -457.2491254714544
+Site 36 - Fitness: { 0.9987404486138889, -Infinity, 0.0, 0.691098331917385, -Infinity, -Infinity, 0.5730067075953885, -0.11245876209404965, -1.0171251497285416, -1.047736527231885, -1.2479705069559603, -2.1509638586829607, -Infinity, 0.4764152496992788, 1.8144427559319434, 0.9973111511814551, 0.24973333504309358, -Infinity, -1.4813656359511391, -Infinity }
+Site 36 - Pi: { 0.05258037113773732, 0.0, 0.09286360704609137, 0.03621578767192206, 0.0, 0.0, 0.03546974782068809, 0.006660342558526024, 0.017051606365977592, 0.018787597623610895, 0.026191641173680513, 0.011910788704455787, 0.0, 0.04975696137446651, 0.3089001031307005, 0.20419476119562177, 0.12723945385394758, 0.0, 0.012177230342574197, 0.0 }
+Site 36 - Time: 79195 ms
+Site 36 - Done. Homogeneous lnL = -457.2491254714544. Non-homogeneous lnL = 0.0
+Site 37 - Residues: [9/9] { 1:(14, P), 2:(10, L), 3:(0, A), 4:(16, T), 5:(9, I), 6:(2, N), 7:(6, E), 8:(12, M), 9:(15, S) }
+Site 37 - Optimisation run (520 evaluations). lnL = -265.9500883949813, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -3.193962210502929, -1.341324504547404, -2.949268331841715, -1.1876957051395032, -1.6196463216676469, 0.4841182168600279, -2.8575627302489757, -4.748910790968925 }
+Site 37 - Homogeneous model lnL: -265.9500883949813
+Site 37 - Fitness: { -1.341324504547404, -Infinity, -1.6196463216676469, -Infinity, -Infinity, -Infinity, 0.4841182168600279, -Infinity, -Infinity, -1.1876957051395032, -3.193962210502929, -Infinity, -2.8575627302489757, -Infinity, 0.0, -4.748910790968925, -2.949268331841715, -Infinity, -Infinity, -Infinity }
+Site 37 - Pi: { 0.037366466424098264, 0.0, 0.13563687281774117, 0.0, 0.0, 0.0, 0.2394363037261873, 0.0, 0.0, 0.12051009571017232, 0.027603549652021685, 0.0, 0.02500668382858564, 0.0, 0.3713224920168545, 0.0048131322416817696, 0.038304403582657354, 0.0, 0.0, 0.0 }
+Site 37 - Time: 19344 ms
+Site 37 - Done. Homogeneous lnL = -265.9500883949813. Non-homogeneous lnL = 0.0
+Site 38 - Residues: [14/14] { 1:(6, E), 2:(11, K), 3:(15, S), 4:(16, T), 5:(10, L), 6:(5, Q), 7:(14, P), 8:(0, A), 9:(12, M), 10:(2, N), 11:(7, G), 12:(9, I), 13:(19, V), 14:(4, C) }
+Site 35 - Optimisation run (1324 evaluations). lnL = -502.56742952160647, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.6882519349268129, -0.8612476082113447, -0.11090216405581968, 2.0520150876058296, -0.7160962843993277, 0.46815138706180914, -0.5501171271258236, 0.19475072384976366, -0.3060781278120829, 1.8388685135410097, 0.21732104294936114, -0.7294321431853388, 1.7429705080045543, -1.3112577754367178 }
+Site 35 - Homogeneous model lnL: -502.56742952160647
+Site 35 - Fitness: { 0.21732104294936114, -Infinity, 1.8388685135410097, 1.7429705080045543, -Infinity, 0.46815138706180914, 2.0520150876058296, -Infinity, 0.19475072384976366, -Infinity, -0.6882519349268129, -0.7294321431853388, -0.7160962843993277, -0.5501171271258236, 0.0, -0.8612476082113447, -0.11090216405581968, -Infinity, -0.3060781278120829, -1.3112577754367178 }
+Site 35 - Pi: { 0.017621602512207707, 0.0, 0.4276060945617872, 0.0759115932199736, 0.0, 0.06076413195496284, 0.11396491431135485, 0.0, 0.04194345411574024, 0.0, 0.03356087605583843, 0.03613198237215835, 0.021122016298154214, 0.013050417124496231, 0.03684711298659969, 0.023306157206525357, 0.06495127466341348, 0.0, 0.028877346897968545, 0.004341025718819364 }
+Site 35 - Time: 120089 ms
+Site 35 - Done. Homogeneous lnL = -502.56742952160647. Non-homogeneous lnL = 0.0
+Site 39 - Sequence Hyperoodon_ampullatus has unknown/stop codon (???). Treating as gap.
+Site 39 - Residues: [15/15] { 1:(14, P), 2:(10, L), 3:(5, Q), 4:(15, S), 5:(16, T), 6:(9, I), 7:(0, A), 8:(2, N), 9:(19, V), 10:(11, K), 11:(12, M), 12:(4, C), 13:(6, E), 14:(8, H), 15:(13, F) }
+Site 38 - Optimisation run (995 evaluations). lnL = -389.69970008948525, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.7373068098346844, 1.6391284429457844, 0.13661622140293742, -0.18275442487482318, -1.190476520753851, -0.4518352776214279, -0.5031871167846654, -1.4558039262462201, -1.2147142953329815, -1.62607014962405, -0.3754101976306294, -1.6047450151724811, 2.6502970870564084 }
+Site 38 - Homogeneous model lnL: -389.69970008948525
+Site 38 - Fitness: { -0.5031871167846654, -Infinity, -1.2147142953329815, -Infinity, 2.6502970870564084, -1.190476520753851, 0.0, -1.62607014962405, -Infinity, -0.3754101976306294, -0.18275442487482318, -1.7373068098346844, -1.4558039262462201, -Infinity, -0.4518352776214279, 1.6391284429457844, 0.13661622140293742, -Infinity, -Infinity, -1.6047450151724811 }
+Site 38 - Pi: { 0.012905418628057393, 0.0, 0.030375898755055974, 0.0, 0.16332262100790873, 0.017416214478201866, 0.022041023267676024, 0.0016157374702283065, 0.0, 0.04055890006948942, 0.08375437115324277, 0.0198525728135074, 0.015174830206235695, 0.0, 0.03530313815917742, 0.42757234466679545, 0.12523420452384226, 0.0, 0.0, 0.004872724800581342 }
+Site 38 - Time: 88066 ms
+Site 38 - Done. Homogeneous lnL = -389.69970008948525. Non-homogeneous lnL = 0.0
+Site 40 - Residues: [11/11] { 1:(11, K), 2:(16, T), 3:(12, M), 4:(19, V), 5:(10, L), 6:(0, A), 7:(2, N), 8:(9, I), 9:(15, S), 10:(6, E), 11:(8, H) }
+Site 40 - Optimisation run (663 evaluations). lnL = -293.8187070262332, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.42981327014463266, -2.1312669795417714, -2.952150620368712, -2.0813172424882773, -0.8531120422081768, -2.3437477355503096, -1.4964219615365666, -0.8642159224957534, -2.310497190297416, 0.30661001664055276 }
+Site 40 - Homogeneous model lnL: -293.8187070262332
+Site 40 - Fitness: { -0.8531120422081768, -Infinity, -2.3437477355503096, -Infinity, -Infinity, -Infinity, -2.310497190297416, -Infinity, 0.30661001664055276, -1.4964219615365666, -2.0813172424882773, 0.0, -2.1312669795417714, -Infinity, -Infinity, -0.8642159224957534, -0.42981327014463266, -Infinity, -Infinity, -2.952150620368712 }
+Site 40 - Pi: { 0.026337048208829393, 0.0, 0.02844209676936682, 0.0, 0.0, 0.0, 0.0063322935410975185, 0.0, 0.20447911001631103, 0.038282686908461504, 0.036327674119114264, 0.32665177655257954, 0.022363482279689637, 0.0, 0.0, 0.10129463157550801, 0.2058217303578973, 0.0, 0.0, 0.0036674696711449174 }
+Site 40 - Time: 31615 ms
+Site 40 - Done. Homogeneous lnL = -293.8187070262332. Non-homogeneous lnL = 0.0
+Site 41 - Sequence Tamandua_tetradactyla has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Hylobates_agilis has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Pan_paniscus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Nasalis_larvatus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Macaca_thibetana has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Macaca_sylvanus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Pongo_abelii has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Procolobus_badius has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Pygathrix_nemaeus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Hylobates_pileatus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Chlorocebus_sabaeus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Chlorocebus_tantalus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Presbytis_melalophos has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Macaca_mulatta has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Trachypithecus_obscurus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Chlorocebus_pygerythrus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Papio_hamadryas has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Nomascus_siki has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Capra_hircus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Chlorocebus_aethiops has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Hylobates_lar has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Colobus_guereza has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Homo_sapiens has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Hylomys_suillus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Macaca_fascicularis has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Pongo_pygmaeus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Semnopithecus_entellus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Symphalangus_syndactylus has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Gorilla_gorilla has unknown/stop codon (???). Treating as gap.
+Site 41 - Sequence Pan_troglodytes has unknown/stop codon (???). Treating as gap.
+Site 41 - Residues: [15/15] { 1:(15, S), 2:(14, P), 3:(10, L), 4:(16, T), 5:(3, D), 6:(8, H), 7:(13, F), 8:(5, Q), 9:(6, E), 10:(9, I), 11:(2, N), 12:(18, Y), 13:(0, A), 14:(7, G), 15:(19, V) }
+Site 39 - Optimisation run (1357 evaluations). lnL = -455.657715963834, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.7929201808697233, -1.8130386555802382, -1.7277906887566585, -1.354153625290653, -0.5378193984807268, -0.9049520942746363, -0.20125452233152263, -1.393416479381072, -2.024464257453457, -3.042213677048743, 1.6493110624876957, -0.8236067360581705, -3.3558592218478753, -3.11540854553698 }
+Site 39 - Homogeneous model lnL: -455.657715963834
+Site 39 - Fitness: { -0.9049520942746363, -Infinity, -0.20125452233152263, -Infinity, 1.6493110624876957, -1.8130386555802382, -0.8236067360581705, -Infinity, -3.3558592218478753, -0.5378193984807268, -1.7929201808697233, -2.024464257453457, -3.042213677048743, -3.11540854553698, 0.0, -1.7277906887566585, -1.354153625290653, -Infinity, -Infinity, -1.393416479381072 }
+Site 39 - Pi: { 0.024789793937640855, 0.0, 0.24024494383436237, 0.0, 0.1723093192428456, 0.02682647420432483, 0.027767004137101342, 0.0, 0.005203294803304656, 0.09897781942189304, 0.048051451618803295, 0.042765251979820895, 0.008915382328384073, 0.004336676556967333, 0.1592311430781541, 0.042340924854037225, 0.08096083450108742, 0.0, 0.0, 0.017279685501273106 }
+Site 39 - Time: 120378 ms
+Site 39 - Done. Homogeneous lnL = -455.657715963834. Non-homogeneous lnL = 0.0
+Site 42 - Sequence Tamandua_tetradactyla has unknown/stop codon (???). Treating as gap.
+Site 42 - Residues: [12/12] { 1:(16, T), 2:(10, L), 3:(12, M), 4:(9, I), 5:(14, P), 6:(19, V), 7:(2, N), 8:(13, F), 9:(15, S), 10:(0, A), 11:(11, K), 12:(6, E) }
+Site 42 - Optimisation run (767 evaluations). lnL = -488.7329101717395, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.32574448402710643, -0.14290783801663468, -0.6874118469709796, -0.3668157335633394, -0.29022452917018193, -1.5609256751866099, -0.5515124014593134, -1.5911561484959096, -0.6645443048991831, -1.5112387667645288, -0.7006461326140303 }
+Site 42 - Homogeneous model lnL: -488.7329101717395
+Site 42 - Fitness: { -0.6645443048991831, -Infinity, -1.5609256751866099, -Infinity, -Infinity, -Infinity, -0.7006461326140303, -Infinity, -Infinity, -0.6874118469709796, 0.32574448402710643, -1.5112387667645288, -0.14290783801663468, -0.5515124014593134, -0.3668157335633394, -1.5911561484959096, 0.0, -Infinity, -Infinity, -0.29022452917018193 }
+Site 42 - Pi: { 0.02214183945357325, 0.0, 0.04332011309926401, 0.0, 0.0, 0.0, 0.022052769639720665, 0.0, 0.0, 0.05985545149824771, 0.28077852576241236, 0.05017819538601603, 0.1137170287839074, 0.03955268624483106, 0.07749166069560891, 0.03409046862690423, 0.22024670885295106, 0.0, 0.0, 0.03657455195656337 }
+Site 42 - Time: 47560 ms
+Site 42 - Done. Homogeneous lnL = -488.7329101717395. Non-homogeneous lnL = 0.0
+Site 43 - Sequence Tamandua_tetradactyla has unknown/stop codon (???). Treating as gap.
+Site 43 - Residues: [15/15] { 1:(11, K), 2:(15, S), 3:(10, L), 4:(2, N), 5:(14, P), 6:(16, T), 7:(0, A), 8:(6, E), 9:(12, M), 10:(7, G), 11:(9, I), 12:(3, D), 13:(13, F), 14:(18, Y), 15:(19, V) }
+Site 41 - Optimisation run (1302 evaluations). lnL = -515.3634450820268, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.16359107743512252, -1.0180434798248683, -0.1165417226042667, 2.6692700871722765, 0.14852778254569357, -0.7648907753524874, -0.25450669587544916, 3.5951222116386856, -0.9390762262957583, 0.589322984504541, -0.19727887572970032, -0.2019307187472417, 1.7110365226124566, -1.41740451489226 }
+Site 41 - Homogeneous model lnL: -515.3634450820268
+Site 41 - Fitness: { -0.2019307187472417, -Infinity, 0.589322984504541, 2.6692700871722765, -Infinity, -0.25450669587544916, 3.5951222116386856, 1.7110365226124566, 0.14852778254569357, -0.9390762262957583, -1.0180434798248683, -Infinity, -Infinity, -0.7648907753524874, -0.16359107743512252, 0.0, -0.1165417226042667, -Infinity, -0.19727887572970032, -1.41740451489226 }
+Site 41 - Pi: { 0.00968838457624211, 0.0, 0.10248442147474357, 0.16028009743984495, 0.0, 0.024665253083173574, 0.4458808011526162, 0.025252425090734724, 0.03348686718817695, 0.01282136914482926, 0.020178614166979025, 0.0, 0.0, 0.008803068439778367, 0.02616022406108564, 0.04610950403874631, 0.0540036538481522, 0.0, 0.02692110614259423, 0.0032642101523030196 }
+Site 41 - Time: 130366 ms
+Site 41 - Done. Homogeneous lnL = -515.3634450820268. Non-homogeneous lnL = 0.0
+Site 44 - Sequence Tamandua_tetradactyla has unknown/stop codon (???). Treating as gap.
+Site 44 - Sequence Chlorocebus_sabaeus has unknown/stop codon (???). Treating as gap.
+Site 44 - Residues: [14/14] { 1:(16, T), 2:(10, L), 3:(15, S), 4:(12, M), 5:(11, K), 6:(0, A), 7:(2, N), 8:(14, P), 9:(9, I), 10:(8, H), 11:(19, V), 12:(3, D), 13:(5, Q), 14:(18, Y) }
+Site 43 - Optimisation run (1117 evaluations). lnL = -372.81345347186027, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.4644737274156199, -0.27717921066271234, -0.9596553377838941, -0.271166187470936, -1.2615810722261513, 0.9599161662275357, -0.335599215219223, -1.4703118693405655, 1.1327088294882501, -1.883414955161335, -0.8547073705064447, -1.9685897849652907, -1.7916472264281214, -1.0679595577158274 }
+Site 43 - Homogeneous model lnL: -372.81345347186027
+Site 43 - Fitness: { 0.9599161662275357, -Infinity, -0.9596553377838941, -0.8547073705064447, -Infinity, -Infinity, -0.335599215219223, 1.1327088294882501, -Infinity, -1.883414955161335, -0.27717921066271234, 0.0, -1.4703118693405655, -1.9685897849652907, -0.271166187470936, -0.4644737274156199, -1.2615810722261513, -Infinity, -1.7916472264281214, -1.0679595577158274 }
+Site 43 - Pi: { 0.11016727545632878, 0.0, 0.07747519256887372, 0.01681330851184388, 0.0, 0.0, 0.03114194229821926, 0.05039136400499353, 0.0, 0.017743155299073273, 0.15061289234558056, 0.22293712101486832, 0.029558742262931953, 0.009399219440075483, 0.08358719108357303, 0.10310734941368328, 0.06114436262613136, 0.0, 0.019448453461036262, 0.016472430212787062 }
+Site 43 - Time: 111833 ms
+Site 43 - Done. Homogeneous lnL = -372.81345347186027. Non-homogeneous lnL = 0.0
+Site 45 - Sequence Tamandua_tetradactyla has unknown/stop codon (???). Treating as gap.
+Site 45 - Residues: [17/17] { 1:(10, L), 2:(5, Q), 3:(16, T), 4:(15, S), 5:(14, P), 6:(12, M), 7:(11, K), 8:(8, H), 9:(6, E), 10:(9, I), 11:(1, R), 12:(18, Y), 13:(2, N), 14:(13, F), 15:(0, A), 16:(3, D), 17:(7, G) }
+Site 44 - Optimisation run (1698 evaluations). lnL = -457.41410525426755, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.43446204687550016, 0.9992275809614295, -0.8072468134470163, -0.5275182502331347, 0.24982169008179025, 0.3123145763067895, -0.17440973223840725, -0.5186510456883338, 0.6809246392375812, -0.3428512275604611, 1.3936123695938083, -1.7777709273132603, -0.021731640893366932 }
+Site 44 - Homogeneous model lnL: -457.41410525426755
+Site 44 - Fitness: { 0.24982169008179025, -Infinity, 0.3123145763067895, 1.3936123695938083, -Infinity, -1.7777709273132603, -Infinity, -Infinity, 0.6809246392375812, -0.5186510456883338, 0.43446204687550016, -0.5275182502331347, -0.8072468134470163, -Infinity, -0.17440973223840725, 0.9992275809614295, 0.0, -Infinity, -0.021731640893366932, -0.3428512275604611 }
+Site 44 - Pi: { 0.02485581463894447, 0.0, 0.12686379079099397, 0.07308891987390359, 0.0, 0.00878058354346298, 0.0, 0.0, 0.09312678074939539, 0.03187908104911026, 0.14082816650380997, 0.06037395522421238, 0.026327944314676787, 0.0, 0.04225966313917406, 0.20451846714782526, 0.09908767209542864, 0.0, 0.052398052939384834, 0.015611107989677225 }
+Site 44 - Time: 133504 ms
+Site 44 - Done. Homogeneous lnL = -457.41410525426755. Non-homogeneous lnL = 0.0
+Site 46 - Residues: [13/13] { 1:(11, K), 2:(16, T), 3:(15, S), 4:(2, N), 5:(14, P), 6:(10, L), 7:(6, E), 8:(12, M), 9:(0, A), 10:(7, G), 11:(9, I), 12:(13, F), 13:(18, Y) }
+Site 46 - Optimisation run (1158 evaluations). lnL = -321.1811036426555, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.14945422505466377, 2.0051048691074214, -0.9693356918245504, 1.3662036536943947, 1.3361791598256718, -1.119489770147629, -0.9114481151073482, 0.9686147540294355, 3.238335910235291, -0.6103931282765196, 1.2617286343353715, 0.2586242356735716 }
+Site 46 - Homogeneous model lnL: -321.1811036426555
+Site 46 - Fitness: { 0.9686147540294355, -Infinity, -0.9693356918245504, -Infinity, -Infinity, -Infinity, -1.119489770147629, 3.238335910235291, -Infinity, -0.6103931282765196, 1.3361791598256718, 0.0, -0.9114481151073482, 1.2617286343353715, 1.3662036536943947, 2.0051048691074214, 0.14945422505466377, -Infinity, 0.2586242356735716, -Infinity }
+Site 46 - Pi: { 0.02779862308964404, 0.0, 0.0191933802516322, 0.0, 0.0, 0.0, 0.0035571262597126887, 0.10351690139403365, 0.0, 0.015852221644002594, 0.18911575626069807, 0.05576674750961266, 0.012929755804264144, 0.05945579365706941, 0.10750615896723685, 0.30479434642308456, 0.06271251140837045, 0.0, 0.037800677330638945, 0.0 }
+Site 46 - Time: 80893 ms
+Site 46 - Done. Homogeneous lnL = -321.1811036426555. Non-homogeneous lnL = 0.0
+Site 47 - Residues: [14/14] { 1:(5, Q), 2:(8, H), 3:(16, T), 4:(11, K), 5:(15, S), 6:(2, N), 7:(18, Y), 8:(13, F), 9:(14, P), 10:(1, R), 11:(10, L), 12:(4, C), 13:(9, I), 14:(19, V) }
+Site 45 - Optimisation run (2052 evaluations). lnL = -496.15191062376897, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -0.9006777527693725, 1.1247912395876825, 0.2734456831935904, -0.04383487201253932, -0.20915075466734823, -0.7901970244182488, -1.102631028601693, 0.5590734076486782, -0.35315776479004046, -1.735185220842544, -0.9912146768223269, -0.5376734913612226, 0.35982614417511866, 4.1435115026510296E-4, 0.02614909369497209, 1.9643737228634928 }
+Site 45 - Homogeneous model lnL: -496.15191062376897
+Site 45 - Fitness: { 4.1435115026510296E-4, -1.735185220842544, -0.5376734913612226, 0.02614909369497209, -Infinity, -0.9006777527693725, 0.5590734076486782, 1.9643737228634928, -1.102631028601693, -0.35315776479004046, 0.0, -0.7901970244182488, -0.20915075466734823, 0.35982614417511866, -0.04383487201253932, 0.2734456831935904, 1.1247912395876825, -Infinity, -0.9912146768223269, -Infinity }
+Site 45 - Pi: { 0.020175777525703, 0.003556877952611692, 0.05648213008971373, 0.019394933675246126, 0.0, 0.02198662732189567, 0.03642345121335863, 0.05533852804068733, 0.01630064222862861, 0.039182949319888555, 0.09499999127712684, 0.048360212004101996, 0.049875272163364015, 0.04610988017557544, 0.05015941722714117, 0.10309745998374696, 0.31785479255197213, 0.0, 0.02070105724923799, 0.0 }
+Site 45 - Time: 253619 ms
+Site 45 - Done. Homogeneous lnL = -496.15191062376897. Non-homogeneous lnL = 0.0
+Site 48 - Residues: [17/17] { 1:(2, N), 2:(5, Q), 3:(16, T), 4:(15, S), 5:(11, K), 6:(14, P), 7:(10, L), 8:(8, H), 9:(3, D), 10:(9, I), 11:(19, V), 12:(6, E), 13:(0, A), 14:(1, R), 15:(4, C), 16:(7, G), 17:(18, Y) }
+Site 47 - Optimisation run (1240 evaluations). lnL = -380.8665759375088, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.033093316423539, -0.3510172524912263, -1.353593045572548, -0.803424484758037, -3.1481511696394575, -2.0414651435714495, 0.2718794146153616, -1.1417729901919151, -1.794690293704313, -1.9695279757506512, -1.5473036586661548, -2.660292921640737, 0.7446855259583373 }
+Site 47 - Homogeneous model lnL: -380.8665759375088
+Site 47 - Fitness: { -Infinity, -1.794690293704313, -3.1481511696394575, -Infinity, -1.5473036586661548, 0.0, -Infinity, -Infinity, -1.033093316423539, -2.660292921640737, -1.9695279757506512, -1.353593045572548, -Infinity, 0.2718794146153616, -1.1417729901919151, -0.803424484758037, -0.3510172524912263, -Infinity, -2.0414651435714495, 0.7446855259583373 }
+Site 47 - Pi: { 0.0, 0.009621461072198896, 0.011918176269105917, 0.0, 0.00665906314481393, 0.15535769942904581, 0.0, 0.0, 0.05016714066104497, 0.011197880878430568, 0.03805250239668117, 0.07903568130451039, 0.0, 0.12123108796623515, 0.04803289957444449, 0.10082865695885317, 0.2085970046879315, 0.0, 0.020791668034380435, 0.13850907762232326 }
+Site 47 - Time: 96962 ms
+Site 47 - Done. Homogeneous lnL = -380.8665759375088. Non-homogeneous lnL = 0.0
+Site 49 - Residues: [12/12] { 1:(16, T), 2:(2, N), 3:(0, A), 4:(15, S), 5:(9, I), 6:(12, M), 7:(11, K), 8:(19, V), 9:(10, L), 10:(13, F), 11:(4, C), 12:(8, H) }
+Site 49 - Optimisation run (730 evaluations). lnL = -398.37941446176103, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.2801309548676246, 0.7400624481741476, 0.026510325477506806, -2.1906885897007466, -1.0437054915578676, -2.712230976645918, -1.023665248033538, -0.8139036760979799, -0.41414074713269733, 1.0371686433085023, -1.6096793540037886 }
+Site 49 - Homogeneous model lnL: -398.37941446176103
+Site 49 - Fitness: { 0.7400624481741476, -Infinity, 0.2801309548676246, -Infinity, 1.0371686433085023, -Infinity, -Infinity, -Infinity, -1.6096793540037886, -2.1906885897007466, -0.8139036760979799, -2.712230976645918, -1.0437054915578676, -0.41414074713269733, -Infinity, 0.026510325477506806, 0.0, -Infinity, -Infinity, -1.023665248033538 }
+Site 49 - Pi: { 0.08435749156008895, 0.0, 0.255356733765448, 0.0, 0.06136047230321944, 0.0, 0.0, 0.0, 0.01959136588055171, 0.012449041495696814, 0.08400748436027898, 0.014119774025833353, 0.043202716098868346, 0.04243583315743446, 0.0, 0.16072135757254358, 0.2059711648282327, 0.0, 0.0, 0.01642656495180366 }
+Site 49 - Time: 39809 ms
+Site 49 - Done. Homogeneous lnL = -398.37941446176103. Non-homogeneous lnL = 0.0
+Site 50 - Residues: [7/7] { 1:(14, P), 2:(8, H), 3:(15, S), 4:(16, T), 5:(1, R), 6:(4, C), 7:(18, Y) }
+Site 50 - Optimisation run (249 evaluations). lnL = -229.04919477067952, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -3.5364951099475967, -3.8232065143599323, -3.54531903035621, -3.650274761446372, -4.116342269411255, -4.941050308718911 }
+Site 50 - Homogeneous model lnL: -229.04919477067952
+Site 50 - Fitness: { -Infinity, -3.650274761446372, -Infinity, -Infinity, -4.116342269411255, -Infinity, -Infinity, -Infinity, -3.5364951099475967, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -3.8232065143599323, -3.54531903035621, -Infinity, -4.941050308718911, -Infinity }
+Site 50 - Pi: { 0.0, 0.008788028787568515, 0.0, 0.0, 0.0029799870690233577, 0.0, 0.0, 0.0, 0.02397321622720034, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8788708340414892, 0.0287494704270874, 0.04995293048633791, 0.0, 0.006685532961293077, 0.0 }
+Site 50 - Time: 4947 ms
+Site 50 - Done. Homogeneous lnL = -229.04919477067952. Non-homogeneous lnL = 0.0
+Site 51 - Residues: [1/1] { 1:(17, W) }
+Site 51 - Site is conserved.
+Site 51 - Homogeneous model lnL: -23.032728682338803
+Site 51 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity }
+Site 51 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9999999999999999, 0.0, 0.0 }
+Site 51 - Done. Homogeneous lnL = -23.032728682338803. Non-homogeneous lnL = 0.0
+Site 52 - Residues: [8/8] { 1:(6, E), 2:(2, N), 3:(5, Q), 4:(3, D), 5:(11, K), 6:(1, R), 7:(7, G), 8:(16, T) }
+Site 52 - Optimisation run (397 evaluations). lnL = -159.3863095213468, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> -1.0358646921075816, -2.8662009936223702, -1.472851074695003, -3.7350121728501957, -3.47974172493155, -3.463647498810465, -2.9528229174513676 }
+Site 52 - Homogeneous model lnL: -159.3863095213468
+Site 52 - Fitness: { -Infinity, -3.47974172493155, -1.0358646921075816, -1.472851074695003, -Infinity, -2.8662009936223702, 0.0, -3.463647498810465, -Infinity, -Infinity, -Infinity, -3.7350121728501957, -Infinity, -Infinity, -Infinity, -Infinity, -2.9528229174513676, -Infinity, -Infinity, -Infinity }
+Site 52 - Pi: { 0.0, 0.00870980656083141, 0.4809945844672862, 0.06071158995675752, 0.0, 0.04316517707856511, 0.2918565250674615, 0.0034061106183868165, 0.0, 0.0, 0.0, 0.03565841509447215, 0.0, 0.0, 0.0, 0.0, 0.07549779115623939, 0.0, 0.0, 0.0 }
+Site 52 - Time: 6831 ms
+Site 52 - Done. Homogeneous lnL = -159.3863095213468. Non-homogeneous lnL = 0.0
+Site 53 - Residues: [16/16] { 1:(16, T), 2:(11, K), 3:(6, E), 4:(15, S), 5:(10, L), 6:(8, H), 7:(2, N), 8:(12, M), 9:(14, P), 10:(9, I), 11:(0, A), 12:(3, D), 13:(5, Q), 14:(4, C), 15:(18, Y), 16:(19, V) }
+Site 48 - Optimisation run (1181 evaluations). lnL = -516.3280040000705, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 1.2871274833498583, -0.42205608098441316, 0.41557101421797593, 0.0742261174680815, 1.2786824848132106, 1.0934281447284149, 0.6817131009980244, 0.007067824658109498, -1.2071020753302573, 1.4336732378500503, 0.7530718441584872, -0.6701810186571135, -0.264212309406466, 0.25641321322366517, -0.2860068606743515, -2.2830760072477467 }
+Site 48 - Homogeneous model lnL: -516.3280040000705
+Site 48 - Fitness: { -0.6701810186571135, -0.264212309406466, 0.0, 0.007067824658109498, 0.25641321322366517, 1.2871274833498583, 0.7530718441584872, -0.2860068606743515, 0.6817131009980244, -1.2071020753302573, 1.0934281447284149, 0.0742261174680815, -Infinity, -Infinity, 1.2786824848132106, 0.41557101421797593, -0.42205608098441316, -Infinity, -2.2830760072477467, 1.4336732378500503 }
+Site 48 - Pi: { 0.007421349027818765, 0.01113763105335803, 0.06955176291852161, 0.013686419719027947, 0.010130504515671362, 0.1409934059984782, 0.03180694733138063, 0.004193611348186986, 0.069827094292146, 0.011998370428722333, 0.2039303292378367, 0.08256402220831909, 0.0, 0.0, 0.13539509075373254, 0.08547924115624392, 0.048677689228215575, 0.0, 0.00409103056845668, 0.06911550021388399 }
+Site 48 - Time: 162542 ms
+Site 48 - Done. Homogeneous lnL = -516.3280040000705. Non-homogeneous lnL = 0.0
+Site 54 - Residues: [5/5] { 1:(11, K), 2:(16, T), 3:(0, A), 4:(6, E), 5:(19, V) }
+Site 54 - Optimisation run (138 evaluations). lnL = -57.6711397499395, params = { 0.0, 0.0, 0.0, 0.0 -> -2.179869092476907, -1.0308762501247952, -3.6176842491060284, 0.09382257557962098 }
+Site 54 - Homogeneous model lnL: -57.6711397499395
+Site 54 - Fitness: { -1.0308762501247952, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.6176842491060284, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -2.179869092476907, -Infinity, -Infinity, 0.09382257557962098 }
+Site 54 - Pi: { 0.04758795814893078, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0036981872697556635, 0.0, 0.0, 0.0, 0.0, 0.7050452830243229, 0.0, 0.0, 0.0, 0.0, 0.0771940141568311, 0.0, 0.0, 0.16647455740015968 }
+Site 54 - Time: 1687 ms
+Site 54 - Done. Homogeneous lnL = -57.6711397499395. Non-homogeneous lnL = 0.0
+Site 55 - Residues: [2/2] { 1:(17, W), 2:(4, C) }
+Site 55 - Optimisation run (26 evaluations). lnL = -27.06038720222717, params = { 0.0 -> -4.443359375 }
+Site 55 - Homogeneous model lnL: -27.06038720222717
+Site 55 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -4.443359375, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity }
+Site 55 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.010554044322855395, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9894459556771447, 0.0, 0.0 }
+Site 55 - Time: 204 ms
+Site 55 - Done. Homogeneous lnL = -27.06038720222717. Non-homogeneous lnL = 0.0
+Site 56 - Residues: [3/3] { 1:(16, T), 2:(11, K), 3:(14, P) }
+Site 56 - Optimisation run (54 evaluations). lnL = -147.2523971482456, params = { 0.0, 0.0 -> -4.426064468731056, -3.5065925641538342 }
+Site 56 - Homogeneous model lnL: -147.2523971482456
+Site 56 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -4.426064468731056, -Infinity, -Infinity, -3.5065925641538342, -Infinity, 0.0, -Infinity, -Infinity, -Infinity }
+Site 56 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.012019761205477127, 0.0, 0.0, 0.014823157932273796, 0.0, 0.9731570808622492, 0.0, 0.0, 0.0 }
+Site 56 - Time: 472 ms
+Site 56 - Done. Homogeneous lnL = -147.2523971482456. Non-homogeneous lnL = 0.0
+Site 57 - Residues: [1/1] { 1:(11, K) }
+Site 57 - Site is conserved.
+Site 57 - Homogeneous model lnL: -22.91597882911849
+Site 57 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 57 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }
+Site 57 - Done. Homogeneous lnL = -22.91597882911849. Non-homogeneous lnL = 0.0
+Site 58 - Residues: [5/5] { 1:(9, I), 2:(16, T), 3:(2, N), 4:(19, V), 5:(15, S) }
+Site 58 - Optimisation run (134 evaluations). lnL = -219.25156672452192, params = { 0.0, 0.0, 0.0, 0.0 -> -1.3878550955034714, -4.397061234738215, -2.7966910283811117, -3.3154092934298047 }
+Site 58 - Homogeneous model lnL: -219.25156672452192
+Site 58 - Fitness: { -Infinity, -Infinity, -4.397061234738215, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.3154092934298047, -1.3878550955034714, -Infinity, -Infinity, -2.7966910283811117 }
+Site 58 - Pi: { 0.0, 0.0, 0.013689371113662672, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6412905228930831, 0.0, 0.0, 0.0, 0.0, 0.0, 0.032749998461853114, 0.2961989786527206, 0.0, 0.0, 0.016071128878680663 }
+Site 58 - Time: 1862 ms
+Site 58 - Done. Homogeneous lnL = -219.25156672452192. Non-homogeneous lnL = 0.0
+Site 59 - Residues: [3/3] { 1:(18, Y), 2:(4, C), 3:(13, F) }
+Site 59 - Optimisation run (57 evaluations). lnL = -100.23248123484665, params = { 0.0, 0.0 -> -1.017608230235055, -3.7760859817499295 }
+Site 59 - Homogeneous model lnL: -100.23248123484665
+Site 59 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -1.017608230235055, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.7760859817499295, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity }
+Site 59 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.06516343438407976, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.012194163076405215, 0.0, 0.0, 0.0, 0.0, 0.922642402539515, 0.0 }
+Site 59 - Time: 421 ms
+Site 59 - Done. Homogeneous lnL = -100.23248123484665. Non-homogeneous lnL = 0.0
+Site 60 - Residues: [4/4] { 1:(10, L), 2:(15, S), 3:(13, F), 4:(14, P) }
+Site 60 - Optimisation run (83 evaluations). lnL = -282.8044086162132, params = { 0.0, 0.0, 0.0 -> -0.9757925273034771, -2.6600058668353808, -4.984127178667259 }
+Site 60 - Homogeneous model lnL: -282.8044086162132
+Site 60 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -2.6600058668353808, -4.984127178667259, -0.9757925273034771, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 60 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7470327544107239, 0.0, 0.0, 0.01769757224495326, 0.0028211545150110063, 0.23244851882931197, 0.0, 0.0, 0.0, 0.0 }
+Site 60 - Time: 1108 ms
+Site 60 - Done. Homogeneous lnL = -282.8044086162132. Non-homogeneous lnL = 0.0
+Site 61 - Residues: [3/3] { 1:(14, P), 2:(10, L), 3:(16, T) }
+Site 61 - Optimisation run (51 evaluations). lnL = -131.15121321108145, params = { 0.0, 0.0 -> -3.3695442151947645, -4.4637033818798955 }
+Site 61 - Homogeneous model lnL: -131.15121321108145
+Site 61 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -3.3695442151947645, -Infinity, -Infinity, -Infinity, 0.0, -Infinity, -4.4637033818798955, -Infinity, -Infinity, -Infinity }
+Site 61 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.057478783510306115, 0.0, 0.0, 0.0, 0.9216121400830639, 0.0, 0.02090907640662987, 0.0, 0.0, 0.0 }
+Site 61 - Time: 515 ms
+Site 61 - Done. Homogeneous lnL = -131.15121321108145. Non-homogeneous lnL = 0.0
+Site 62 - Sequence Echinosorex_gymnura has unknown/stop codon (???). Treating as gap.
+Site 62 - Residues: [5/5] { 1:(10, L), 2:(8, H), 3:(14, P), 4:(15, S), 5:(18, Y) }
+Site 62 - Optimisation run (136 evaluations). lnL = -156.5549719524984, params = { 0.0, 0.0, 0.0, 0.0 -> -1.0675589758361717, -2.1465061428185273, -2.096841574868228, -4.129494718324082 }
+Site 62 - Homogeneous model lnL: -156.5549719524984
+Site 62 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -1.0675589758361717, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -2.1465061428185273, -2.096841574868228, -Infinity, -Infinity, -4.129494718324082, -Infinity }
+Site 62 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.13133945587169918, 0.0, 0.7390647069804261, 0.0, 0.0, 0.0, 0.04765767486954425, 0.07495561765306699, 0.0, 0.0, 0.006982544625263425, 0.0 }
+Site 62 - Time: 2036 ms
+Site 62 - Done. Homogeneous lnL = -156.5549719524984. Non-homogeneous lnL = 0.0
+Site 63 - Sequence Pygathrix_roxellana has unknown/stop codon (???). Treating as gap.
+Site 63 - Sequence Physeter_catodon has unknown/stop codon (???). Treating as gap.
+Site 63 - Sequence Echinosorex_gymnura has unknown/stop codon (???). Treating as gap.
+Site 63 - Residues: [4/4] { 1:(15, S), 2:(10, L), 3:(12, M), 4:(5, Q) }
+Site 63 - Optimisation run (90 evaluations). lnL = -194.03421020853892, params = { 0.0, 0.0, 0.0 -> -1.2796318118091436, -1.5562752057818787, -0.3052842641000817 }
+Site 63 - Homogeneous model lnL: -194.03421020853892
+Site 63 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -0.3052842641000817, -Infinity, -Infinity, -Infinity, -Infinity, -1.2796318118091436, -Infinity, -1.5562752057818787, -Infinity, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity }
+Site 63 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.2528732118532977, 0.0, 0.0, 0.0, 0.0, 0.16755393575823843, 0.0, 0.0822251484082792, 0.0, 0.0, 0.4973477039801848, 0.0, 0.0, 0.0, 0.0 }
+Site 63 - Time: 1072 ms
+Site 63 - Done. Homogeneous lnL = -194.03421020853892. Non-homogeneous lnL = 0.0
+Site 64 - Sequence Eubalaena_australis has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Eschrichtius_robustus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Stenella_attenuata has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Megaptera_novaeangliae has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_acutorostrata has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Bradypus_tridactylus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Tursiops_truncatus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Pygathrix_roxellana has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Thryonomys_swinderianus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Pontoporia_blainvillei has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaena_mysticetus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Procolobus_badius has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Physeter_catodon has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Tursiops_aduncus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Echinosorex_gymnura has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_edeni has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Phocoena_phocoena has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_musculus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Caperea_marginata has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Lipotes_vexillifer has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_borealis has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_bonaerensis has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Sousa_chinensis has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Choloepus_didactylus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Lagenorhynchus_albirostris has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Stenella_coeruleoalba has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_brydei has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Delphinus_capensis has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_physalus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Eubalaena_japonica has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Grampus_griseus has unknown/stop codon (???). Treating as gap.
+Site 64 - Sequence Balaenoptera_omurai has unknown/stop codon (???). Treating as gap.
+Site 64 - Residues: [5/5] { 1:(10, L), 2:(5, Q), 3:(15, S), 4:(18, Y), 5:(8, H) }
+Site 64 - Optimisation run (132 evaluations). lnL = -210.25758854891046, params = { 0.0, 0.0, 0.0, 0.0 -> -0.8099248878391594, -1.6663368826604823, 0.08380021730306038, -1.809772578845029 }
+Site 64 - Homogeneous model lnL: -210.25758854891046
+Site 64 - Fitness: { -Infinity, -Infinity, -Infinity, -Infinity, -Infinity, -0.8099248878391594, -Infinity, -Infinity, -1.809772578845029, -Infinity, 0.0, -Infinity, -Infinity, -Infinity, -Infinity, -1.6663368826604823, -Infinity, -Infinity, 0.08380021730306038, -Infinity }
+Site 64 - Pi: { 0.0, 0.0, 0.0, 0.0, 0.0, 0.1188400281280465, 0.0, 0.0, 0.039672329713370605, 0.0, 0.4689367052871068, 0.0, 0.0, 0.0, 0.0, 0.07314788334614523, 0.0, 0.0, 0.29940305352533086, 0.0 }
+Site 64 - Time: 1755 ms
+Site 64 - Done. Homogeneous lnL = -210.25758854891046. Non-homogeneous lnL = 0.0
+Site 53 - Optimisation run (1232 evaluations). lnL = -352.49224139591627, params = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 -> 0.5714896147797898, 1.5593566251652382, 0.1842131585786843, -0.32674491459377364, 1.6311672330500455, 0.26061043762925984, -0.9455248932632094, -0.812335159424831, -0.9805779487847328, -1.1548077164811215, 0.09482899397927227, -1.0764309700998633, 3.1341761168820454, -0.1175435287317651, -1.712370330958513 }
+Site 53 - Homogeneous model lnL: -352.49224139591627
+Site 53 - Fitness: { -1.1548077164811215, -Infinity, 0.26061043762925984, 0.09482899397927227, 3.1341761168820454, -1.0764309700998633, 1.5593566251652382, -Infinity, 1.6311672330500455, -0.9805779487847328, -0.32674491459377364, 0.5714896147797898, -0.9455248932632094, -Infinity, -0.812335159424831, 0.1842131585786843, 0.0, -Infinity, -0.1175435287317651, -1.712370330958513 }
+Site 53 - Pi: { 0.004714864224037277, 0.0, 0.09309939349793847, 0.015412073807399678, 0.1857311116264128, 0.013682814597045477, 0.07347575464578539, 0.0, 0.18613313615483862, 0.015522350236723478, 0.05083531648351569, 0.14002535075382358, 0.017718523676354195, 0.0, 0.017256095179201448, 0.0699584618583571, 0.07657440219773061, 0.0, 0.03679328501557175, 0.003067066045264644 }
+Site 53 - Time: 123036 ms
+Site 53 - Done. Homogeneous lnL = -352.49224139591627. Non-homogeneous lnL = 0.0
+tdg.Analyse - Done!
+tdg.Analyse - Total homogeneous lnL: -17505.644170098705
+tdg.Analyse - Total non-homogeneous lnL: 0.0
+tdg.Analyse - Total time: 1007698 ms (16.79 m).
