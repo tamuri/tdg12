@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="tdg10">
-    <output-path>$PROJECT_DIR$/out/artifacts/tdg10</output-path>
-    <root id="archive" name="tdg10.jar">
-      <element id="module-output" name="tdg10" />
-    </root>
-  </artifact>
-</component>
