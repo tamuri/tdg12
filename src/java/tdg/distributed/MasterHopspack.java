@@ -229,12 +229,13 @@ public class MasterHopspack {
     }
 
     private void loadConfiguration() throws Exception {
-        Configuration config = new PropertiesConfiguration("client.properties");
+        // TODO remove use of commons configuration - not really needed
+        /*Configuration config = new PropertiesConfiguration("client.properties");
         alignmentFile = config.getString("alignment");
         hostnameFilesPath = config.getString("hostname.file.path");
         maxConnectionsPerHost = config.getInt("http.host.max.connections");
         requestTimeout = config.getInt("http.request.timeout");
-        threadPoolSize = config.getInt("http.thread.pool.size");
+        threadPoolSize = config.getInt("http.thread.pool.size");*/
     }
 
     public static void main(String[] args) throws Exception {

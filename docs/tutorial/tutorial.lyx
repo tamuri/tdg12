@@ -123,13 +123,15 @@ Citation
 Tamuri AU, dos Reis, M and Goldstein RA (2012) Using Site-wise Mutation-Selectio
 n Models to Estimate the Distribution of Selection Coefficients from Phylogeneti
 c Data.
- 
-\series bold
-XX
-\series default
-:YY
+
 \emph on
- GENETICS.
+ 
+\emph default
+(in press, 
+\emph on
+GENETICS
+\emph default
+)
 \end_layout
 
 \begin_layout Section
@@ -279,20 +281,36 @@ mlc
 
 \begin_layout Standard
 Therefore, the estimates for the global parameters for the ATP8 gene alignment
- are: 
+ are:
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
 \begin_inset Formula $\kappa=4.93022$
 \end_inset
 
-; 
+
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
 \begin_inset Formula $\pi=\{0.25299,0.22268,0.43860,0.08572\}$
 \end_inset
 
-; 
+
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
 \begin_inset Formula $\mu=3\times T_{dS}/T=3\times70.7207/113.24814=1.8734$
 \end_inset
 
 .
- We choose a small number for 
+ 
+\end_layout
+
+\begin_layout Standard
+We choose a small number for 
 \begin_inset Formula $\tau$
 \end_inset
 
@@ -360,7 +378,7 @@ vertebrate_mit
 \end_layout
 
 \begin_layout Description
--useApprox Use the approximation for unobserved residues which allows for
+-useapprox Use the approximation for unobserved residues which allows for
  faster computation (optional).
 \end_layout
 

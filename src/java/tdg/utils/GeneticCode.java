@@ -7,24 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Copied some of the Nucleotide and Codon functions we're using from PAL because
- * PAL uses { A, C, G, T } for nucleotide states, but we want { T, C, A, G } !!
- *
- * From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi:
- *
- * Standard Code:
- *     AAs  = FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
- *   Starts = ---M---------------M---------------M----------------------------
- *   Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
- *   Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
- *   Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
- *
- * Vertebrate Mitochondrial Code:
- *     AAs  = FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG
- *   Starts = --------------------------------MMMM---------------M------------
- *   Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
- *   Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
- *   Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
+ * Copied some of the Nucleotide and Codon functions we're using from PAL. Added some extra utility functions and
+ * changed nucleotide order from ACGT to TCAG.
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
@@ -38,8 +22,23 @@ public class GeneticCode {
     private static final int A_STATE  = 2;
     private static final int G_STATE  = 3;
 
+    /*
+        From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi:
 
+        Standard Code:
+          AAs  = FFLLSSSSYYCCWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
+        Starts = ---M---------------M---------------M----------------------------
+        Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
+        Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
+        Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
 
+        Vertebrate Mitochondrial Code:
+          AAs  = FFLLSSSSYYCCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSVVVVAAAADDEEGGGG
+        Starts = --------------------------------MMMM---------------M------------
+        Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
+        Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
+        Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
+    */
 
     private static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
 
@@ -185,28 +184,16 @@ public class GeneticCode {
     public boolean isTransitionByState(int firstState, int secondState) {
         switch(firstState) {
             case A_STATE: {
-                if(secondState==G_STATE) {
-                    return true;
-                }
-                return false;
+                return secondState == G_STATE;
             }
             case C_STATE : {
-                if(secondState==UT_STATE) {
-                    return true;
-                }
-                return false;
+                return secondState == UT_STATE;
             }
             case G_STATE : {
-                if(secondState==A_STATE) {
-                    return true;
-                }
-                return false;
+                return secondState == A_STATE;
             }
             case UT_STATE : {
-                if(secondState==C_STATE) {
-                    return true;
-                }
-                return false;
+                return secondState == C_STATE;
             }
             default:
                 return false;

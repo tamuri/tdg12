@@ -95,7 +95,7 @@ public class ModelWriter {
 
             TDGCodonModel tdg;
 
-            if (o.approx.useApprox) {
+            if (o.approx.useapprox) {
                 List<Integer> aa = Lists.newArrayList();
                 List<Double> ff = Lists.newArrayList();
                 int pos = 0;

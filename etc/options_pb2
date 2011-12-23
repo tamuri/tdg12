@@ -1,5 +1,5 @@
 -t
-etc/PB2_FMutSel0.tree
+etc/PB2_FMutSel0.tree.out
 -s
 etc/PB2.co
 -tau
@@ -13,6 +13,9 @@ etc/PB2.co
 -gc
 standard
 -site
-1
+4
 -approx
--homogonly
+-optimruns
+2
+-heteroclades
+Av,Hu

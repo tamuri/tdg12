@@ -64,7 +64,7 @@ public class SiteAnalyser {
         // Remove any stop codons and treat them as gaps
         for (Map.Entry<String, Integer> e : sitePattern.entrySet()) {
             if (GeneticCode.getInstance().isUnknownCodonState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(e.getValue()))) {
-                System.out.printf("Site %s - Sequence %s has stop codon (%s) - removing.\n",
+                System.out.printf("Site %s - Sequence %s has unknown/stop codon (%s). Treating as gap.\n",
                         site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
                 sitePattern.put(e.getKey(), GeneticCode.UNKNOWN_STATE);
             }
@@ -75,7 +75,7 @@ public class SiteAnalyser {
         int observedResidueCount = aminoAcidsAtSite.size();
 
         // If we're not using the approximate method (collapsing the matrix)
-        if (!options.approx.useApprox) {
+        if (!options.approx.useapprox) {
             // Optimise all 19 Fitness parameters, rather than just the observed amino acids
             // This will add the remaining amino acids at the end of the list of observed residues in canonical order
             for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) {
@@ -119,7 +119,7 @@ public class SiteAnalyser {
                 System.out.printf("Site %s - Site is conserved.\n", site);
                 homogeneousLikelihood = -homogeneousModel.function(new double[]{});
 
-                if (options.heteroClades.length() > 0) {
+                if (options.heteroClades != null && options.heteroClades.length() > 0) {
                     heterogeneousLikelihood = homogeneousLikelihood;
                 }
 
@@ -167,6 +167,7 @@ public class SiteAnalyser {
         homogeneousLikelihood = -r.getValue();
 
         if (options.heteroClades == null) {
+            System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
             return;
         }
 
@@ -248,7 +249,7 @@ public class SiteAnalyser {
             if (run == 0) {
                 initialFitness[i] = 0;
                 // Second run - observed residues have equal fitness (= 0), unobserved have equal fitness (= 20)
-            } else if (run == 1 && !options.approx.useApprox) {
+            } else if (run == 1 && !options.approx.useapprox) {
                 if (i < observedResidueCount) initialFitness[i] = 0;
                 else initialFitness[i] = -Constants.FITNESS_BOUND;
                 // All other runs - all residues have random fitness picked from uniform distribution in range
