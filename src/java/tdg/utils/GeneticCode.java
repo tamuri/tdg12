@@ -1,9 +1,9 @@
 package tdg.utils;
 
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Chars;
 import com.google.common.primitives.Ints;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,41 +12,32 @@ import java.util.List;
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class GeneticCode {
+public final class GeneticCode {
+    private static final GeneticCode INSTANCE = new GeneticCode();
+
+    private GeneticCode() {
+        if (INSTANCE != null) {
+            throw new IllegalStateException("Can't instantiate singleton.");
+        }
+    }
+
+    public static GeneticCode getInstance() {
+        return INSTANCE;
+    }
+
     public static final int UNKNOWN_STATE = -1;
     private static final char UNKNOWN_CHARACTER = '?';
     private static final String UNKNOWN_TLA = "???";
     private static final char[] NUCLEOTIDES = "TCAG".toCharArray();
     private static final int UT_STATE = 0;
-    private static final int C_STATE  = 1;
-    private static final int A_STATE  = 2;
-    private static final int G_STATE  = 3;
-
-    /*
-        From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi:
-
-        Standard Code:
-          AAs  = FFLLSSSSYYCCWLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
-        Starts = ---M---------------M---------------M----------------------------
-        Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
-        Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
-        Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
-
-        Vertebrate Mitochondrial Code:
-          AAs  = FFLLSSSSYYCCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSSVVVVAAAADDEEGGGG
-        Starts = --------------------------------MMMM---------------M------------
-        Base1  = TTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCAAAAAAAAAAAAAAAAGGGGGGGGGGGGGGGG
-        Base2  = TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
-        Base3  = TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
-    */
-
+    private static final int C_STATE = 1;
+    private static final int A_STATE = 2;
+    private static final int G_STATE = 3;
     private static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
 
     // From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
-    public static final String STANDARD_CODE                 = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
+    public static final String STANDARD_CODE = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
     public static final String VERTEBRATE_MITOCHONDRIAL_CODE = "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG";
-    
-    public static String CURRENT_CODE;
 
     public static final int CODON_STATES = 64;
     public static final int AMINO_ACID_STATES = AMINO_ACIDS.length;
@@ -65,6 +56,7 @@ public class GeneticCode {
     }
 
     private static final String[] CODONS_TLA = new String[CODON_STATES];
+
     static {
         int i = 0;
         for (char[] c : CODONS_TLA_CHAR_ARRAY) {
@@ -72,55 +64,53 @@ public class GeneticCode {
         }
     }
 
-    // TODO: Stop codons should map to a 'stop' amino acid, 20, rather than -1!
-    // so they can be assigned a fitness for analyses (MdR)
+    static {
+        // By default, this instance uses the standard genetic code
+        // Set your own code by calling setCode(String code)
+        setCode(GeneticCode.STANDARD_CODE);
+    }
+
+    // TODO: Stop codons should map to a 'stop' amino acid, 20, rather than -1! with fitness for analyses (MdR)
     private static final int[] CODONS_TO_AMINO_ACIDS = new int[CODON_STATES];
     private static final int[][] AMINO_ACIDS_TO_CODONS = new int[AMINO_ACID_STATES][];
 
-    public synchronized static void initialise(String code) {
-        if (initialised)
-            throw new RuntimeException("Genetic code already initialised!");
-
-        GeneticCode gc = new GeneticCode();
-        CURRENT_CODE = code;
-
+    public synchronized static void setCode(String code) {
+        // For each codon state, set the amino acid state
         for (int i = 0; i < CODON_STATES; i++) {
             if (code.charAt(i) == '*') {
                 CODONS_TO_AMINO_ACIDS[i] = UNKNOWN_STATE; // stop codon
             } else {
-                CODONS_TO_AMINO_ACIDS[i] = gc.getAminoAcidIndexByChar(code.charAt(i));
+                CODONS_TO_AMINO_ACIDS[i] = INSTANCE.getAminoAcidIndexByChar(code.charAt(i));
             }
         }
 
+        // For each amino acid state, set all possible translating codon states
         for (int i = 0; i < AMINO_ACID_STATES; i++) {
-            List<Integer> l = new ArrayList<Integer>();
+            List<Integer> codonStates = Lists.newArrayList();
+
+            // Search for this amino acid in the genetic code string
             int pos = 0;
             while (true) {
                 pos = code.indexOf(AMINO_ACIDS[i], pos);
                 if (pos == -1) {
                     break;
                 } else {
-                    l.add(pos);
+                    codonStates.add(pos);
                 }
                 pos++;
             }
-            AMINO_ACIDS_TO_CODONS[i] = Ints.toArray(l);
+            AMINO_ACIDS_TO_CODONS[i] = Ints.toArray(codonStates);
         }
 
-        System.out.printf("tdg.utils.GeneticCode - Initialised with %s\n", code.equals(VERTEBRATE_MITOCHONDRIAL_CODE) ? "VERTEBRATE_MITOCHONDRIAL_CODE" : "STANDARD_CODE");
-
+        /*
         System.out.printf("tdg.utils.GeneticCode - Stop codons: ");
-        for (int i = 0; i < CODON_STATES; i++) if (gc.isUnknownAminoAcidState(gc.getAminoAcidIndexFromCodonIndex(i))) System.out.printf("%s ", gc.getCodonTLA(i));
+        for (int i = 0; i < CODON_STATES; i++) if (INSTANCE.isUnknownAminoAcidState(INSTANCE.getAminoAcidIndexFromCodonIndex(i))) System.out.printf("%s ", INSTANCE.getCodonTLA(i));
         System.out.println();
         System.out.printf("tdg.utils.GeneticCode - Methionine codon(s): ");
-        for (int i : gc.getCodonIndexFromAminoAcidIndex(gc.getAminoAcidIndexByChar('M'))) System.out.printf("%s ", gc.getCodonTLA(i));
+        for (int i : INSTANCE.getCodonIndexFromAminoAcidIndex(INSTANCE.getAminoAcidIndexByChar('M'))) System.out.printf("%s ", INSTANCE.getCodonTLA(i));
         System.out.println();
-
-        initialised = true;
-        INSTANCE = gc;
+        */
     }
-
-    private GeneticCode(){}
 
     public int getNucleotideIndexByChar(char c) {
         return Chars.indexOf(NUCLEOTIDES, c);
@@ -182,29 +172,21 @@ public class GeneticCode {
     }
 
     public boolean isTransitionByState(int firstState, int secondState) {
-        switch(firstState) {
+        switch (firstState) {
             case A_STATE: {
                 return secondState == G_STATE;
             }
-            case C_STATE : {
+            case C_STATE: {
                 return secondState == UT_STATE;
             }
-            case G_STATE : {
+            case G_STATE: {
                 return secondState == A_STATE;
             }
-            case UT_STATE : {
+            case UT_STATE: {
                 return secondState == C_STATE;
             }
             default:
                 return false;
         }
-    }
-
-    private static GeneticCode INSTANCE;
-    private static boolean initialised = false;
-
-    public static GeneticCode getInstance() {
-        //  if (!initialised) throw new RuntimeException("Must initialise GeneticCode!");
-        return INSTANCE;
     }
 }

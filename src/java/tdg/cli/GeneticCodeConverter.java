@@ -11,13 +11,15 @@ import tdg.utils.GeneticCode;
 public class GeneticCodeConverter implements IStringConverter<GeneticCode> {
     @Override
     public GeneticCode convert(String value) {
-        if (value.equals("vertebrate_mit")) {
-            GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
-        } else if (value.equals("standard")) {
-            GeneticCode.initialise(GeneticCode.STANDARD_CODE);
+        if ("vertebrate_mit".equals(value)) {
+            GeneticCode.setCode(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
+        } else if ("standard".equals(value)) {
+            GeneticCode.setCode(GeneticCode.STANDARD_CODE);
         } else {
-            throw new RuntimeException("Unknown genetic code table '"+value+"'. Valid tables are 'standard' and 'vertebrate_mit'.\n");
+            throw new RuntimeException("Unknown genetic code table '" + value + "'. Valid tables are 'standard' and 'vertebrate_mit'.\n");
         }
+
+        System.out.printf("tdg.cli.GeneticCodeConverter - Set code to %s\n", value.equals(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE) ? "VERTEBRATE_MITOCHONDRIAL_CODE" : "STANDARD_CODE");
 
         return GeneticCode.getInstance();
     }

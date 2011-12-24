@@ -10,6 +10,9 @@ import tdg.model.TDGGlobals;
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class All {
+    private All() {
+    }
+
     public static void main(String[] args) throws Exception {
         // Parse command-line options
         Options options = new Options();

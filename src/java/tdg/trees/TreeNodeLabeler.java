@@ -31,14 +31,14 @@ public class TreeNodeLabeler {
         List<Node> knownNodes = Lists.newArrayList();
 
         // to begin with all internal nodes are unnamed
-        for (int i=0; i< st.getInternalNodeCount(); i++) {
+        for (int i = 0; i < st.getInternalNodeCount(); i++) {
             unknownNodes.add(st.getInternalNode(i));
         }
 
         int preUnknownNodeCount = unknownNodes.size();
         int postUnknownNodeCount = -1;
 
-        while (unknownNodes.size() > 0 && preUnknownNodeCount != postUnknownNodeCount) {
+        while (!unknownNodes.isEmpty() && preUnknownNodeCount != postUnknownNodeCount) {
             System.out.printf("%s != %s\n", preUnknownNodeCount, postUnknownNodeCount);
             preUnknownNodeCount = unknownNodes.size();
             // loop through each of the unknown nodes
@@ -47,15 +47,15 @@ public class TreeNodeLabeler {
                 Set<String> s = Sets.newHashSet();
 
                 // loop over every child node
-                for (int j=0; j<n.getChildCount(); j++) {
+                for (int j = 0; j < n.getChildCount(); j++) {
                     Node c = n.getChild(j);
                     String childNodeName = c.getIdentifier().getName();
                     if (c.isLeaf()) {
-                        s.add(childNodeName.substring(0,2));
+                        s.add(childNodeName.substring(0, 2));
                     } else {
                         // one of the children is an internal node with a name
                         if (childNodeName != null && childNodeName.length() > 0) {
-                            s.add(childNodeName.substring(0,2));
+                            s.add(childNodeName.substring(0, 2));
                         }
                     }
                 }
@@ -82,13 +82,13 @@ public class TreeNodeLabeler {
         // now the only remaining unknown nodes are those that neighbour two different clades (and the root node)
         for (Node n : unknownNodes) {
             // the name of this hostshift node = parent node name (remember, could be the root node = leave unlabelled)
-            if (n.getParent() != null) {
+            if (n.getParent() == null) {
+                n.getIdentifier().setName("ROOT");
+            } else {
                 String parentNodeName = n.getParent().getIdentifier().getName();
                 if (parentNodeName != null && parentNodeName.length() > 0) {
-                    n.getIdentifier().setName(parentNodeName.substring(0,2) + "_HS");
+                    n.getIdentifier().setName(parentNodeName.substring(0, 2) + "_HS");
                 }
-            } else {
-                n.getIdentifier().setName("ROOT");
             }
         }
 
@@ -97,7 +97,7 @@ public class TreeNodeLabeler {
             fw = new FileWriter(fileIn + ".out");
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         PrintWriter pw = new PrintWriter(fw);

@@ -33,7 +33,6 @@ import java.util.Map;
  * TODO: Bit of an organic mess. Need to clean/refactor this, Fitness, LikelihoodCalculator, TDGCodonModel + LikelihoodFunctionWrapper...how??
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  * @see LikelihoodCalculator
  * @see TDGCodonModel
  */
@@ -45,7 +44,7 @@ public class SiteAnalyser {
     private final TDGGlobals globals;
     private final int site;
     private final AnalyseOptions options;
-    private RandomData randomData = new RandomDataImpl(new MersenneTwister());
+    private final RandomData randomData = new RandomDataImpl(new MersenneTwister());
 
     public SiteAnalyser(Tree tree, Alignment alignment, TDGGlobals globals, int site, AnalyseOptions options) {
         this.tree = tree;

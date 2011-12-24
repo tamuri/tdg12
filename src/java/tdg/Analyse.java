@@ -20,7 +20,6 @@ import java.util.concurrent.Future;
  * analyse.
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  * @see SiteAnalyser
  */
 public class Analyse {
@@ -108,7 +107,7 @@ public class Analyse {
         private final Tree tree;
         private final AnalyseOptions options;
 
-        private SiteAnalyserThread(int site, Tree tree, Alignment alignment, TDGGlobals globals, AnalyseOptions options) {
+        SiteAnalyserThread(int site, Tree tree, Alignment alignment, TDGGlobals globals, AnalyseOptions options) {
             this.site = site;
             this.tree = tree;
             this.alignment = alignment;

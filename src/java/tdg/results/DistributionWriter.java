@@ -47,7 +47,7 @@ public class DistributionWriter {
 
     public void run() throws Exception {
         // We need to know the genetic code to determine non-synonymous changes
-        char[] aaCode = GeneticCode.CURRENT_CODE.toCharArray();
+        //char[] aaCode = GeneticCode.CURRENT_CODE.toCharArray();
 
         double[] mutsAll = new double[MUTS_BINS];
         double[] mutsNonSyn = new double[MUTS_BINS];
@@ -84,7 +84,9 @@ public class DistributionWriter {
 
                 int codon = (i - i % GeneticCode.CODON_STATES) / GeneticCode.CODON_STATES;
                 boolean isCodonChange = codon != (i % GeneticCode.CODON_STATES);
-                boolean isNonSynChange = aaCode[codon] != aaCode[i % GeneticCode.CODON_STATES];
+                // boolean isNonSynChange = aaCode[codon] != aaCode[i % GeneticCode.CODON_STATES];
+                boolean isNonSynChange = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codon) !=
+                        GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i % GeneticCode.CODON_STATES);
 
                 double piValue = Double.parseDouble(PiParts[codon]);
                 double qValue = Double.parseDouble(QSParts[i]);

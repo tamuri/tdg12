@@ -25,7 +25,7 @@ public class SimulatePB2 {
         List<String> hufitnesses = Files.readLines(new File(hupath), Charsets.UTF_8);
         List<String> avfitnesses = Files.readLines(new File(avpath), Charsets.UTF_8);
 
-        GeneticCode.initialise(GeneticCode.STANDARD_CODE);
+        GeneticCode.setCode(GeneticCode.STANDARD_CODE);
 
         Map<String, StringBuffer> seqout = Maps.newHashMap();
 
@@ -75,7 +75,7 @@ public class SimulatePB2 {
 
         List<String> homogFitness = Files.readLines(new File(homogpath + "fitness.sorted.txt"), Charsets.UTF_8);
 
-        GeneticCode.initialise(GeneticCode.STANDARD_CODE);
+        GeneticCode.setCode(GeneticCode.STANDARD_CODE);
 
         Map<String, StringBuffer> seqout = Maps.newHashMap();
 

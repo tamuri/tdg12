@@ -8,7 +8,6 @@ import com.beust.jcommander.ParametersDelegate;
  * TODO: Different options for different tasks. Using JCommander sub-classing/delegates?
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
- * @version 1.0
  */
 public class AnalyseOptions {
     @Parameter(names = "-t", description = "Tree file in Newick format", required = true)

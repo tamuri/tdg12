@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class SimulatorTest {
     public static void main(String[] args) throws Exception {
-        GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
+        GeneticCode.setCode(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
 
         Map<String, StringBuffer> seqout = Maps.newHashMap();
 
