@@ -326,64 +326,6 @@ public class LikelihoodCalculator {
         return internalConditionals[tree.getRoot().getNumber()];
     }
 
-    private double[] downTree(Node parent) {
-        double[] conditionals = new double[GeneticCode.CODON_STATES];
-        String parentName, childName;
-        double[] lowerConditional;
-
-        parentName = getNodeLabel(parent);
-
-        if (parent.isLeaf()) {
-            int codon = states.get(parentName);
-
-            if (GeneticCode.getInstance().isUnknownCodonState(codon)) {
-                Arrays.fill(conditionals, 1.0);
-            } else {
-                conditionals[codon] = 1.0;
-            }
-        } else {
-            // this is an internal node - initialise the conditionals array for this node
-            Arrays.fill(conditionals, 1.0);
-
-            // for each child from this node
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                Node child = parent.getChild(i);
-
-                // recurse down the tree to get the conditionals for this child
-                lowerConditional = downTree(child);
-
-                // if we have a single clade model
-                if (cladeModels.size() == 1) {
-                    // homogeneous model
-                    cladeModels.get(ROOT_MODEL_NAME).getProbabilityMatrix(probMatrix, child.getBranchLength());
-                    updateIntraCladeConditionals(lowerConditional, conditionals, probMatrix);
-                } else {
-                    // clade-specific model
-                    childName = getNodeLabel(child);
-
-                    if (parentName.length() == 0 // the root of the tree is a parent without a label
-                            || childName.substring(0, 2).equals(parentName.substring(0, 2))) {
-                        // we're on a branch in a common clade
-                        cladeModels.get(childName.substring(0, 2)).getProbabilityMatrix(probMatrix, child.getBranchLength());
-                        updateIntraCladeConditionals(lowerConditional, conditionals, probMatrix);
-
-                    } else {
-                        // we're on a branch switching clades
-                        cladeModels.get(parentName.substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[0]);
-                        cladeModels.get(childName.substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[1]);
-                        updateInterCladeConditionals(lowerConditional, conditionals, probMatrix0, probMatrix1);
-                    }
-                }
-            }
-        }
-
-        if (useScaling) {
-            scaleConditionals(parent, conditionals);
-        }
-
-        return conditionals;
-    }
-
     private void scaleConditionals(Node node, double[] conditionals) {
 
         if (node.getNumber() % Constants.SCALING_NODE_STEP == 0) {
