@@ -10,13 +10,12 @@ import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.Response;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import pal.alignment.Alignment;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -229,20 +228,24 @@ public class MasterHopspack {
     }
 
     private void loadConfiguration() throws Exception {
-        // TODO remove use of commons configuration - not really needed
-        /*Configuration config = new PropertiesConfiguration("client.properties");
-        alignmentFile = config.getString("alignment");
-        hostnameFilesPath = config.getString("hostname.file.path");
-        maxConnectionsPerHost = config.getInt("http.host.max.connections");
-        requestTimeout = config.getInt("http.request.timeout");
-        threadPoolSize = config.getInt("http.thread.pool.size");*/
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("client.properties"));
+            alignmentFile = properties.getProperty("alignment");
+            hostnameFilesPath = properties.getProperty("hostname.file.path");
+            maxConnectionsPerHost = Integer.parseInt(properties.getProperty("http.host.max.connections"));
+            requestTimeout = Integer.parseInt(properties.getProperty("http.request.timeout"));
+            threadPoolSize = Integer.parseInt(properties.getProperty("http.thread.pool.size"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) throws Exception {
         // TODO: There should be a 'BaseClient' and then implementations of 'run', or task etc.
         // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
         // TODO: This needs to be a config item - should use same JCommander option configuration!
-        GeneticCode.initialise(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
+        GeneticCode.setCode(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
         MasterHopspack c = new MasterHopspack();
         c.loadConfiguration();
         c.run(args);
