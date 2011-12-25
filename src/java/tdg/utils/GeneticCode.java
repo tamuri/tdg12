@@ -64,15 +64,15 @@ public final class GeneticCode {
         }
     }
 
+    // TODO: Stop codons should map to a 'stop' amino acid, 20, rather than -1! with fitness for analyses (MdR)
+    private static final int[] CODONS_TO_AMINO_ACIDS = new int[CODON_STATES];
+    private static final int[][] AMINO_ACIDS_TO_CODONS = new int[AMINO_ACID_STATES][];
+
     static {
         // By default, this instance uses the standard genetic code
         // Set your own code by calling setCode(String code)
         setCode(GeneticCode.STANDARD_CODE);
     }
-
-    // TODO: Stop codons should map to a 'stop' amino acid, 20, rather than -1! with fitness for analyses (MdR)
-    private static final int[] CODONS_TO_AMINO_ACIDS = new int[CODON_STATES];
-    private static final int[][] AMINO_ACIDS_TO_CODONS = new int[AMINO_ACID_STATES][];
 
     public synchronized static void setCode(String code) {
         // For each codon state, set the amino acid state
@@ -80,7 +80,7 @@ public final class GeneticCode {
             if (code.charAt(i) == '*') {
                 CODONS_TO_AMINO_ACIDS[i] = UNKNOWN_STATE; // stop codon
             } else {
-                CODONS_TO_AMINO_ACIDS[i] = INSTANCE.getAminoAcidIndexByChar(code.charAt(i));
+                CODONS_TO_AMINO_ACIDS[i] = Chars.indexOf(AMINO_ACIDS, code.charAt(i)); // INSTANCE.getAminoAcidIndexByChar(code.charAt(i));
             }
         }
 

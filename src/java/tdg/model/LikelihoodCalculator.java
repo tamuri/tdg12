@@ -107,9 +107,8 @@ public class LikelihoodCalculator {
 
     public double function(double[] parameters) {
         updateParameters(parameters);
-        double l = calculateLogLikelihood();
+        double lnL = calculateLogLikelihood();
         //double p = calculatePrior();
-
 
         /* if (!useScaling && l == Double.NEGATIVE_INFINITY) {
             useScaling = true;
@@ -117,12 +116,7 @@ public class LikelihoodCalculator {
             l = calculateLogLikelihood();
         }*/
 
-        //System.out.printf("function lnL eval = %s\n", -1.0 * l);
-        //System.out.printf("%s\n", Doubles.join(", ", parameters));
-//        System.out.printf("%s - %s\n", l, p);
-//System.exit(0);
-        return -1.0 * (l); //(l) or (l - p)
-        //return -1.0 * l;
+        return lnL; //(l) or (l - p)
     }
 
     private double calculatePrior() {

@@ -116,7 +116,7 @@ public class SiteAnalyser {
             // Single residue observed at this site
             if (aminoAcidsAtSite.size() == 1) {
                 System.out.printf("Site %s - Site is conserved.\n", site);
-                homogeneousLikelihood = -homogeneousModel.function(new double[]{});
+                homogeneousLikelihood = homogeneousModel.function(new double[]{});
 
                 if (options.heteroClades != null && options.heteroClades.length() > 0) {
                     heterogeneousLikelihood = homogeneousLikelihood;
@@ -133,7 +133,7 @@ public class SiteAnalyser {
             RealPointValuePair r = optimise(homogeneousModel);
 
             // Store the log-likelihood, to 3 decimal places, and point for this run
-            String key = String.format("%.3f", -r.getValue());
+            String key = String.format("%.3f", r.getValue());
             if (!optimiseRuns.containsKey(key)) optimiseRuns.put(key, r);
 
         }
@@ -143,7 +143,7 @@ public class SiteAnalyser {
         if (optimiseRuns.size() == 1) {
             r = optimiseRuns.values().iterator().next();
             if (runs > 1)
-                System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, -r.getValue());
+                System.out.printf("Site %s - %s runs converged to the same optima. (%s)\n", site, runs, r.getValue());
         } else {
             System.out.printf("Site %s - %s runs converged to %s different optima. (%s)\n", site, runs, optimiseRuns.size(), Joiner.on(", ").join(optimiseRuns.keySet()));
             // Get the best
@@ -160,10 +160,10 @@ public class SiteAnalyser {
         }
 
         homogeneousModel.function(r.getPoint());
-        System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, -r.getValue());
+        System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, r.getValue());
         System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
         System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
-        homogeneousLikelihood = -r.getValue();
+        homogeneousLikelihood = r.getValue();
 
         if (options.heteroClades == null) {
             System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
@@ -186,12 +186,12 @@ public class SiteAnalyser {
         RealPointValuePair r2 = optimise(heterogeneousModel);
         heterogeneousModel.function(r2.getPoint());
 
-        System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, -r2.getValue());
+        System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, r2.getValue());
         for (int i = 0; i < clades.size(); i++) {
             System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, fitnesses.get(i).get())));
             System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(i), Doubles.join(", ", tdgModels.get(i).getAminoAcidFrequencies()));
         }
-        heterogeneousLikelihood = -r2.getValue();
+        heterogeneousLikelihood = r2.getValue();
 
         System.out.printf("Site %s - Time: %s ms\n", site, System.currentTimeMillis() - startTime);
     }
@@ -216,11 +216,11 @@ public class SiteAnalyser {
 
         RealPointValuePair pair;
         try {
-            pair = dso.optimize(wrapper, GoalType.MINIMIZE, mp.getParameters());
+            pair = dso.optimize(wrapper, GoalType.MAXIMIZE, mp.getParameters());
             System.out.printf("Site %s - Optimisation run (%s evaluations). lnL = %s, params = { %s -> %s }\n",
                     site,
                     dso.getEvaluations(),
-                    -pair.getValue(),
+                    pair.getValue(),
                     Doubles.join(", ", mp.getParameters()), // initial parameters
                     Doubles.join(", ", pair.getPoint()));
         } catch (Exception e) {
