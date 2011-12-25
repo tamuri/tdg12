@@ -74,7 +74,6 @@ public class TDGCodonModel {
         this.U = new double[matrixSize * matrixSize];
         this.UInv = new double[matrixSize * matrixSize];
         this.PtTemp = new double[matrixSize * matrixSize];
-
     }
 
     public void updateModel() {
@@ -159,7 +158,7 @@ public class TDGCodonModel {
     private void makeB() {
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
-                B.setQuick(i, j, Q[i * matrixSize + j] * Math.sqrt(codonPi[i]) * 1 / (Math.sqrt(codonPi[j])));
+                B.setQuick(i, j, Q[i * matrixSize + j] * Math.sqrt(codonPi[i]) / Math.sqrt(codonPi[j]));
             }
         }
     }
@@ -301,6 +300,17 @@ public class TDGCodonModel {
         return fullF;
     }
 
+    public double[] getAminoAcidFrequencies() {
+        double[] freqs = new double[GeneticCode.AMINO_ACID_STATES];
+        double[] codonPis = getCodonFrequencies();
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            if (GeneticCode.getInstance().isUnknownAminoAcidState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)))
+                continue;
+            freqs[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)] += codonPis[i];
+        }
+        return freqs;
+    }
+
     public int[] getSiteCodons() {
         return siteCodons;
     }
@@ -344,12 +354,14 @@ public class TDGCodonModel {
         return fullQ;
     }
 
+    /**
+     * Given the fitness parameters for each amino acid, and hence every codon (STOP codons have a "very bad fitness"),
+     * this method constructs a 64*64 matrix of selection coefficients i.e. (Fj - Fi).
+     *
+     * @return a 64*64 matrix stored as 1D array of doubles
+     */
     public double[] getS() {
         double[] fullS = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
-//        System.out.printf("siteCodons = %s\n", Ints.join(" ", siteCodons));
-        //       System.out.printf("aminoAcidsAtSite = %s\n", Joiner.on(" ").join(aminoAcidsAtSite));
-        //       System.out.printf("aminoAcidsToFitness = %s\n", Ints.join(" ", aminoAcidsToFitness));
-        //       System.out.printf("fitness = %s\n", Doubles.join(" ", fitness.get()));
 
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
@@ -361,21 +373,17 @@ public class TDGCodonModel {
                     if (aa_to < 0) {
                         // going to STOP codon
                         fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
-                        //} else if (aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aa_from < 0) {
                         // going from a STOP codon to any non-STOP codon
                         fullS[i * GeneticCode.CODON_STATES + j] = Constants.FITNESS_BOUND;
                     } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // both amino acids that occur at this site
                         fullS[i * GeneticCode.CODON_STATES + j] = fitness.get()[aminoAcidsToFitness[aa_to]] - fitness.get()[aminoAcidsToFitness[aa_from]];
-                        //} else if (aminoAcidsAtSite.contains(aa_from) && !aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aminoAcidsToFitness[aa_from] > -1 && aminoAcidsToFitness[aa_to] == -1) {
                         // from observed to unobserved
                         fullS[i * GeneticCode.CODON_STATES + j] = -Constants.FITNESS_BOUND;
-                        // } else if (!aminoAcidsAtSite.contains(aa_from) && aminoAcidsAtSite.contains(aa_to)) {
                     } else if (aminoAcidsToFitness[aa_from] == -1 && aminoAcidsToFitness[aa_to] > -1) {
                         // from unobserved to observed
-                        //System.out.printf("%s -> %s\n", aa_from, aa_to);
                         fullS[i * GeneticCode.CODON_STATES + j] = Constants.FITNESS_BOUND;
                     } else {
                         // neither of these amino acids are observed at this site
@@ -385,17 +393,6 @@ public class TDGCodonModel {
             }
         }
         return fullS;
-    }
-
-    public double[] getAminoAcidFrequencies() {
-        double[] freqs = new double[GeneticCode.AMINO_ACID_STATES];
-        double[] codonPis = getCodonFrequencies();
-        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
-            if (GeneticCode.getInstance().isUnknownAminoAcidState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)))
-                continue;
-            freqs[GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(i)] += codonPis[i];
-        }
-        return freqs;
     }
 
 }

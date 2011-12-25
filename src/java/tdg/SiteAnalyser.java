@@ -91,8 +91,7 @@ public class SiteAnalyser {
         LikelihoodCalculator homogeneousModel = new LikelihoodCalculator(tree, sitePattern);
 
         // An object for the fitnesses we want to estimate
-        double[] f = new double[aminoAcidsAtSite.size()];
-        Fitness homogeneousFitness = new Fitness(f, true);
+        Fitness homogeneousFitness = new Fitness(new double[aminoAcidsAtSite.size()], true);
 
         // Create an instance of the swMutSel0 model, homogeneous model only has one model for the entire tree
         TDGCodonModel tcm1 = new TDGCodonModel(globals, homogeneousFitness, aminoAcidsAtSite);

@@ -12,7 +12,7 @@ import tdg.model.LikelihoodCalculator;
  * @author Asif Tamuri
  * @see LikelihoodCalculator
  */
-public class LikelihoodFunctionWrapper implements MultivariateRealFunction{
+public class LikelihoodFunctionWrapper implements MultivariateRealFunction {
     private static final double CONSTRAINT = Constants.FITNESS_BOUND + 1;
     private LikelihoodCalculator lc;
     // private Map<DoubleArrayKey, Double> cache = Maps.newHashMap();
@@ -26,7 +26,7 @@ public class LikelihoodFunctionWrapper implements MultivariateRealFunction{
         // TODO: I guess we should be using something like Powell's COBYLA with proper handling of constraints
         // Keep fitness parameters within our constraints - if any point is outside constraint, return a very bad likelihood value
         for (double d : point) {
-            if (d < -(CONSTRAINT + 1) || d > (CONSTRAINT + 1)) {
+            if (d < -CONSTRAINT || d > CONSTRAINT) {
                 return Constants.VERY_BAD_LIKELIHOOD;
             }
         }
