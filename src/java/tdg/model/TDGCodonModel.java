@@ -5,15 +5,12 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import cern.jet.math.Functions;
-import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 import tdg.Constants;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * TDG10 codon selection model.
@@ -51,6 +48,7 @@ public class TDGCodonModel {
     private final double[] UInv;
     private final double[] PtTemp;
 
+    // Map<Double, double[]> probMatrixStore = Maps.newHashMap();
 
     public TDGCodonModel(TDGGlobals globals, Fitness fitness, List<Integer> aminoAcids) {
         this.globals = globals;
@@ -84,11 +82,7 @@ public class TDGCodonModel {
         makeQ();
         makeB();
         doEigenValueDecomposition();
-        probMatrixStore.clear();
-    }
-
-    public double[] getQ() {
-        return Q;
+        // probMatrixStore.clear();
     }
 
     /**
@@ -226,55 +220,54 @@ public class TDGCodonModel {
         */
     }
 
-    Map<Double, double[]> probMatrixStore = Maps.newHashMap();
 
     public void getProbabilityMatrix(final double[] matrix, final double branchLength) {
 
-        if (probMatrixStore.containsKey(branchLength)) {
+        /*if (probMatrixStore.containsKey(branchLength)) {
             double[] ref = probMatrixStore.get(branchLength);
             for (int i = 0; i < matrix.length; i++) {
                 matrix[i] = ref[i];
             }
-        } else {
-            //long start = CodeTimer.start();
-            // NOTE: If matrixSize were a final static int, then there would be some
-            // performance improvement. Java doesn't array bounds check
-            // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
-            // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
-            // More improvement using jdk1.7.0 ~58secs to ~42secs!!
-            for (int i = 0; i < matrixSize; i++) {
-                double temp = Math.exp(branchLength * lambda.getQuick(i));
-                for (int j = 0; j < matrixSize; j++) {
-                    PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
-                }
-            }
-
-
-            /*
-            * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
-            * when we do the eigenvalue decomposition above i.e.:
-            * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
-            */
-
-            //CodeTimer.store("getProbabilityMatrix_1", start);
-
-            //long start2 = CodeTimer.start();x
+        } else {*/
+        //long start = CodeTimer.start();
+        // NOTE: If matrixSize were a final static int, then there would be some
+        // performance improvement. Java doesn't array bounds check
+        // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
+        // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
+        // More improvement using jdk1.7.0 ~58secs to ~42secs!!
+        for (int i = 0; i < matrixSize; i++) {
+            double temp = Math.exp(branchLength * lambda.getQuick(i));
             for (int j = 0; j < matrixSize; j++) {
-                for (int i = 0; i < matrixSize; i++) {
-                    double temp = 0;
-                    for (int k = 0; k < matrixSize; k++) {
-                        temp += PtTemp[i * matrixSize + k] * UInv[k * matrixSize + j];
-                    }
-                    if (temp < 0) temp = 0;
-                    matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = temp;
-                }
+                PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
             }
+        }
 
 
+        /*
+        * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
+        * when we do the eigenvalue decomposition above i.e.:
+        * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
+        */
+
+        //CodeTimer.store("getProbabilityMatrix_1", start);
+
+        //long start2 = CodeTimer.start();x
+        for (int j = 0; j < matrixSize; j++) {
+            for (int i = 0; i < matrixSize; i++) {
+                double temp = 0;
+                for (int k = 0; k < matrixSize; k++) {
+                    temp += PtTemp[i * matrixSize + k] * UInv[k * matrixSize + j];
+                }
+                if (temp < 0) temp = 0;
+                matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = temp;
+            }
+        }
+
+/*
             probMatrixStore.put(branchLength, Arrays.copyOf(matrix, GeneticCode.CODON_STATES * GeneticCode.CODON_STATES));
 
             //CodeTimer.store("getProbabilityMatrix_2", start2);
-        }
+        }*/
 // */
         /* This works, but would be horrible to have all these classes though...wouldn't it!?
 
@@ -394,10 +387,6 @@ public class TDGCodonModel {
         return fullS;
     }
 
-    public double[] getErrorMatrix() {
-        return globals.getErrorMatrix();
-    }
-
     public double[] getAminoAcidFrequencies() {
         double[] freqs = new double[GeneticCode.AMINO_ACID_STATES];
         double[] codonPis = getCodonFrequencies();
@@ -409,8 +398,5 @@ public class TDGCodonModel {
         return freqs;
     }
 
-    public double[] getFitness() {
-        return fitness.get();
-    }
 }
 
