@@ -12,6 +12,7 @@ public class Constants {
     public static final double FITNESS_BOUND = 20; // effectively -20 = -Infinity and 20 = Infinity for fitness parameter
     public static final int MAX_EVALUATIONS = 10000;
     public static final double VERY_BAD_LIKELIHOOD = Double.NEGATIVE_INFINITY;
+    public static final boolean USE_SCALING = true;
     public static final double[] CLADE_BRANCH_SPLIT = {0.5, 0.5};
     public static final double SCALING_THRESHOLD = 1e-15;
     public static final int SCALING_NODE_STEP = 5;
