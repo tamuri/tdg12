@@ -125,8 +125,8 @@ public class LikelihoodCalculator {
 
                     } else { // this is a hostshift!
 
-                        cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[0]);
-                        cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT[1]);
+                        cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT);
+                        cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * (1 - Constants.CLADE_BRANCH_SPLIT));
                         updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
 
                     }
@@ -191,7 +191,7 @@ public class LikelihoodCalculator {
         for (Parameter p : parameters) {
             if (p.getClass() == Fitness.class) {
                 int len = ((double[]) p.get()).length; // number of fitness coefficient parameters
-                double[] tmp = Doubles.concat(new double[]{Constants.FITNESS_INITIAL_VALUE}, Arrays.copyOfRange(params, offset, offset + len - 1));
+                double[] tmp = Doubles.concat(new double[]{Constants.FITNESS_FIXED_FOR_RELATIVE}, Arrays.copyOfRange(params, offset, offset + len - 1));
                 p.set(tmp);
                 offset = offset + len - 1;
             }
@@ -222,7 +222,7 @@ public class LikelihoodCalculator {
             // TODO: currently only optimising fitness parameters
             if (p.getClass() == Fitness.class) {
                 double[] fitness = (double[]) p.get();
-                // First fitness is fixed to FITNESS_INITIAL_VALUE ( = 0.0)
+                // First fitness is fixed to FITNESS_FIXED_FOR_RELATIVE ( = 0.0)
                 minParams.addAll(Doubles.asList(fitness).subList(1, fitness.length));
             } else {
                 throw new RuntimeException("NOT IMPLEMENTED!");

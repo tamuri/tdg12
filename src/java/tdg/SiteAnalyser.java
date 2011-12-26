@@ -252,9 +252,9 @@ public class SiteAnalyser {
                 else initialFitness[i] = -Constants.FITNESS_BOUND;
                 // All other runs - all residues have random fitness picked from uniform distribution in range
             } else {
-                initialFitness[i] = randomData.nextUniform(-Constants.INITIAL_PARAM_RANGE, Constants.INITIAL_PARAM_RANGE);
+                initialFitness[i] = randomData.nextUniform(-Constants.RANDOM_INITIAL_FITNESS_RANGE, Constants.RANDOM_INITIAL_FITNESS_RANGE);
                 // could also be random observed, unobserved -FITNESS_BOUND e.g.:
-                // if (i < observedResidueCount) { initialFitness[i] = randomData.nextUniform(-INITIAL_PARAM_RANGE, INITIAL_PARAM_RANGE); else initialFitness[i] = -FITNESS_BOUND;
+                // if (i < observedResidueCount) { initialFitness[i] = randomData.nextUniform(-RANDOM_INITIAL_FITNESS_RANGE, RANDOM_INITIAL_FITNESS_RANGE); else initialFitness[i] = -FITNESS_BOUND;
             }
         }
         return initialFitness;
