@@ -44,7 +44,7 @@
 		</jar>
 	</target>
 
-	<target name="dist" depends="compile, jar, docs">
+	<target name="dist" depends="compile, jar">
 		<description>Build everything</description>
 	</target>
 
