@@ -93,20 +93,20 @@ public class SimulatePB2 {
             List<Double> fitnesses = Lists.transform(Arrays.asList(fs), Functions.stringToDouble());
             Simulator s = new Simulator();
             s.fitness = Doubles.toArray(fitnesses);
-            s.gamma = 0;
-            s.gc = GeneticCode.getInstance();
+            s.globalOptions.gamma = 0;
+            s.gc.geneticCode = GeneticCode.getInstance();
 
-            s.kappa = 7.8640425;
-            s.mu = 3.132626667;
-            s.pi = new double[]{2.36114375000000e-01, 1.95774375000000e-01, 3.65944375000000e-01, 2.02166875000000e-01};
-            s.tau = 1.25010000000000e-02;
+            s.globalOptions.kappa = 7.8640425;
+            s.globalOptions.mu = 3.132626667;
+            s.globalOptions.pi = new double[]{2.36114375000000e-01, 1.95774375000000e-01, 3.65944375000000e-01, 2.02166875000000e-01};
+            s.globalOptions.tau = 1.25010000000000e-02;
 
             s.residues = new char[]{'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V'};
             s.sites = 1;
             s.tree = "/Users/atamuri/Documents/work/tdg10/etc/PB2_FMutSel0.tree.out";
 
             s.readTree(s.tree);
-            s.run(s.tau, s.kappa, s.pi, s.fitness, s.residues, 1, s.mu);
+            s.run(s.globalOptions.tau, s.globalOptions.kappa, s.globalOptions.pi, s.fitness, s.residues, 1, s.globalOptions.mu);
 
             for (Map.Entry<String, String> x : s.seqout.entrySet()) {
                 if (!seqout.containsKey(x.getKey())) {

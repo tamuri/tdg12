@@ -2,16 +2,19 @@ package tdg.sim;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
 import pal.misc.Identifier;
 import pal.tree.Node;
 import pal.tree.Tree;
+import tdg.Constants;
 import tdg.cli.CharArrayConverter;
 import tdg.cli.DoubleArrayConverter;
-import tdg.cli.DoubleConverter;
-import tdg.cli.GeneticCodeConverter;
+import tdg.cli.GeneticCodeOption;
+import tdg.cli.GlobalsOptions;
 import tdg.model.Fitness;
 import tdg.model.TDGCodonModel;
 import tdg.model.TDGGlobals;
@@ -35,19 +38,20 @@ public class Simulator {
     public static void main(String... args) {
         Simulator s = new Simulator();
         JCommander jc = new JCommander(s);
-        jc.setProgramName("tdg.sim.Simulator");
+        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + " tdg.sim.Simulator ");
 
-        if (args.length == 0) {
+        try {
+            jc.parse(args);
+        } catch (ParameterException pe) {
+            System.out.printf("Error: %s\n\n", pe.getMessage());
             jc.usage();
-            System.out.println("AnalyseOptions preceded by an asterisk are required.");
+            System.out.println("Options preceded by an asterisk are required.");
             System.out.println("Example: -t PB2.tree -sites 10 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -fitness 0,0,0 -characters E,K,R");
             System.exit(0);
-        } else {
-            jc.parse(args);
         }
 
         s.readTree(s.tree);
-        s.run(s.tau, s.kappa, s.pi, s.fitness, s.residues, s.sites, s.mu);
+        s.run(s.globalOptions.tau, s.globalOptions.kappa, s.globalOptions.pi, s.fitness, s.residues, s.sites, s.globalOptions.mu);
     }
 
     public void readTree(String treeFile) {
@@ -67,7 +71,7 @@ public class Simulator {
             seq.put(parsedTree.getInternalNode(i).getIdentifier(), store);
         }
 
-        TDGGlobals globals = new TDGGlobals(tau, kappa, pi, mu, gamma);
+        TDGGlobals globals = new TDGGlobals(tau, kappa, pi, mu, 0); // gamma = 0
 
         List<Integer> aa = Lists.newArrayList();
         for (char c : residues) {
@@ -144,16 +148,7 @@ public class Simulator {
     public String tree;
 
     @Parameter(names = "-sites", description = "Number of sites to simulate.", required = true)
-    public int sites;
-
-    @Parameter(names = "-tau", description = "Rate for multiple substitutions.", converter = DoubleConverter.class, required = true)
-    public double tau;
-
-    @Parameter(names = "-kappa", description = "Transition/transversion bias.", converter = DoubleConverter.class, required = true)
-    public double kappa;
-
-    @Parameter(names = "-pi", description = "Comma-separated base nucleotide frequencies (T,C,A,G).", converter = DoubleArrayConverter.class, required = true)
-    public double[] pi;
+    public int sites = 1;
 
     @Parameter(names = "-fitness", description = "Comma-separated fitness coefficients.", converter = DoubleArrayConverter.class, required = true)
     public double[] fitness;
@@ -161,14 +156,11 @@ public class Simulator {
     @Parameter(names = "-characters", description = "Comma-separated amino acids (matching fitness coefficents).", converter = CharArrayConverter.class, required = true)
     public char[] residues;
 
-    @Parameter(names = "-mu", description = "Branch/rate scaling factor.", converter = DoubleConverter.class, required = true)
-    public double mu;
+    @ParametersDelegate
+    public GlobalsOptions globalOptions = new GlobalsOptions();
 
-    @Parameter(names = "-gamma", description = "Error rate,", converter = DoubleConverter.class)
-    public double gamma = 0.;
-
-    @Parameter(names = "-gc", description = "Genetic code. 'standard' or 'vertebrate_mit'.", converter = GeneticCodeConverter.class, required = true)
-    public GeneticCode gc;
+    @ParametersDelegate
+    public GeneticCodeOption gc = new GeneticCodeOption();
 
     public Map<String, String> seqout;
 }

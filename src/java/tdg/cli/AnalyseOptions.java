@@ -5,7 +5,6 @@ import com.beust.jcommander.ParametersDelegate;
 
 /**
  * AnalyseOptions class used by JCommander to display and load command-line options.
- * TODO: Different options for different tasks. Using JCommander sub-classing/delegates?
  *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */

@@ -7,7 +7,9 @@ import tdg.model.LikelihoodCalculator;
 
 /**
  * Wraps the likelihood function in a MultivariateRealFunction, as needed by the Apache Commons Math optimisation
- * routines.
+ * routines. We also implement a type of constraint on the fitness parameters by returning a very poor log-likelihood
+ * (Constants.VERY_BAD_LIKELIHOOD) if the optimiser moves to a parameter space outside the bounds (as defined by
+ * Constants.FITNESS_BOUND)
  *
  * @author Asif Tamuri
  * @see LikelihoodCalculator

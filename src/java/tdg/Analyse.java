@@ -1,6 +1,7 @@
 package tdg;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Sets;
 import pal.alignment.Alignment;
 import pal.tree.Tree;
@@ -32,14 +33,16 @@ public class Analyse {
     public static void main(String... args) {
         AnalyseOptions options = new AnalyseOptions();
         JCommander jc = new JCommander(options);
+        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + " tdg.Analyse ");
 
-        if (args.length == 0) {
-            jc.usage();
-            System.out.println("AnalyseOptions preceded by an asterisk are required.");
-            System.out.println("Example: -t HA.tree -s HA.co -site 123 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0 -heteroClades");
-            System.exit(0);
-        } else {
+        try {
             jc.parse(args);
+        } catch (ParameterException pe) {
+            System.out.printf("Error: %s\n\n", pe.getMessage());
+            jc.usage();
+            System.out.println("Options preceded by an asterisk are required.");
+            System.out.println("Example: -t HA.tree -s HA.co -site 123 -tau 1e-6 -kappa 8.0004 -pi 0.21051,0.19380,0.40010,0.19559 -mu 3.0");
+            System.exit(0);
         }
 
         Analyse analyse = new Analyse(options);
