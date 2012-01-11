@@ -14,7 +14,7 @@ etc/PB2.co
 standard
 -site
 4
--approx
+-useapprox
 -optimruns
 2
 -heteroclades
