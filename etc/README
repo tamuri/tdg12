@@ -1,0 +1,12 @@
+11/01/2012 - Asif Tamuri
+
+To reproduce results from the paper, run:
+
+java -cp tdg12.jar tdg.Analyse @options_mit
+
+for mitochondrial data and
+
+java -cp tdg12.jar tdg.Analyse @options_pb2
+
+for influenza PB2.
+

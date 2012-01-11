@@ -1,7 +1,7 @@
 -t
-etc/all.but.ND6.AUT.FMutSel0.tree
+all.but.ND6.AUT.FMutSel0.tree
 -s
-etc/all.but.ND6.AUT.phys
+all.but.ND6.AUT.phys
 -tau
 1.25000000000000e-02
 -kappa
@@ -10,13 +10,8 @@ etc/all.but.ND6.AUT.phys
 1.85704375000000e-01,2.73384375000000e-01,4.78586875000000e-01,6.23243750000000e-02
 -mu
 2.41435441700000e+00
--gamma
-0
 -homogonly
 -gc
 vertebrate_mit
 -optimruns
-1
--approx
--site
-2
+3
