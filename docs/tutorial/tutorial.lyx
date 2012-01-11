@@ -616,19 +616,19 @@ target "http://www.cebl.auckland.ac.nz/pal-project/"
 \end_inset
 
 ).
- reading/traversing/writing NEWICK trees and PHYLIP alignments.
+ Reading/traversing/writing NEWICK trees and PHYLIP alignments.
 \end_layout
 
 \begin_layout Enumerate
-Apache Commons (
+Apache Commons Math (
 \begin_inset CommandInset href
 LatexCommand href
-target "http://commons.apache.org/"
+target "http://commons.apache.org/math/"
 
 \end_inset
 
 ).
- Specifically: collections, configuration, lang, logging and math.
+ For optimisation.
 \end_layout
 
 \begin_layout Enumerate
