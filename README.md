@@ -9,6 +9,8 @@ This is an implementation of the model described in "Tamuri AU, dos Reis M, Gold
 
 The data used in the manuscript is available in [etc/](https://github.com/tamuri/tdg12/tree/master/etc).
 
+[Binary download](https://github.com/downloads/tamuri/tdg12/tdg12_mathbio.zip) of v1.0. Includes tdg12.jar (with dependencies) and the tutorial. 
+
 [Tutorial](https://github.com/tamuri/tdg12/blob/master/docs/tutorial/tutorial.pdf?raw=true) for end-users.
 
 
