@@ -31,7 +31,7 @@ public class SimulatorTest {
 
             d = Doubles.toArray(Lists.transform(Arrays.asList(fits.get(i).split(" ")), Functions.stringToDouble()));
 
-            Simulator s = new Simulator();
+            SimulatorOld s = new SimulatorOld();
             //s.readTree("./all.but.ND6.FMutSel0.tree");
             s.readTree("./tree.4096.tree");
 

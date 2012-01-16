@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Original Simulator renamed to SimulatorOld
+ *
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class Simulator {
+public class SimulatorOld {
 
     private TDGCodonModel codonModel;
     private Map<Identifier, int[]> seq;
@@ -36,9 +38,9 @@ public class Simulator {
     private Tree parsedTree;
 
     public static void main(String... args) {
-        Simulator s = new Simulator();
+        SimulatorOld s = new SimulatorOld();
         JCommander jc = new JCommander(s);
-        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + " tdg.sim.Simulator ");
+        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + " tdg.sim.SimulatorOld ");
 
         try {
             jc.parse(args);
