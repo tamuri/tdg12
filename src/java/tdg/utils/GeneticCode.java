@@ -33,7 +33,7 @@ public final class GeneticCode {
     private static final int C_STATE = 1;
     private static final int A_STATE = 2;
     private static final int G_STATE = 3;
-    private static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
+    public static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
 
     // From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
     public static final String STANDARD_CODE = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
