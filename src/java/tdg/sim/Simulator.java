@@ -70,8 +70,8 @@ public class Simulator {
             // if we're using a homogeneous model
             if (this.heteroClades.size() == 1) {
                 model = "ALL";
-                // this is a heterogeneous model
             } else {
+                // this is a heterogeneous model - get the model for this particular branch
                 model = (parent.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : parent.getIdentifier().getName().substring(0, 2);
             }
 
@@ -117,7 +117,7 @@ public class Simulator {
     }
 
     public void setCladeModel(String model, List<Double> fitness) {
-        System.out.printf("Setting clade %s with fitness %s for residues %s.\n", model, fitness, aminoAcids);
+        System.out.printf("%s has fitness %s for residues %s.\n", model, fitness, aminoAcids);
         TDGCodonModel codonModel = new TDGCodonModel(this.globals, new Fitness(Doubles.toArray(fitness), false), aminoAcids);
         codonModel.updateModel();
         this.cladeModels.put(model, codonModel);

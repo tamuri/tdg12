@@ -5,12 +5,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import com.google.common.io.Files;
+import com.google.common.primitives.Ints;
 import tdg.Constants;
 import tdg.cli.CharArrayConverter;
 import tdg.cli.GeneticCodeOption;
@@ -19,6 +17,7 @@ import tdg.utils.Functions;
 import tdg.utils.GeneticCode;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +39,14 @@ public class SingleSiteSimulator {
             jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-heteroclades", "Av,Hu",
                     "-fitnessfile", "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/results.nonhomog/fitness.av.sorted.txt",
                     "-fitnessfile", "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/results.nonhomog/fitness.hu.sorted.txt",
-                    "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "2.0", "-gc", "standard");
+                    "-tau", "1.25010000000000e-02", "-kappa", "7.77498", "-pi", "0.22988,0.18954,0.37371,0.20687", "-mu", "2.902626667", "-gc", "standard",
+                    "-output", "test.phylip");
+            /*jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-heteroclades", "Av,Hu",
+                     "-fitness", "0.0, -15.319489016871987, -16.801001904423703, -16.526000568844385, -16.286280170254813, -19.729902687996834, -20.2977063058265, -20.974519424520118, -20.840313189353573, -18.284226997419616, -4.8233322459177455, -18.49536764263169, -19.943683230808453, -17.187213042879524, -18.63223866369517, -1.9348574797996214, -19.541364497586194, -17.540749030863793, -18.16927682552228, -18.698346806595154",
+                     "-fitness", "0.0, 2.021057149653928, 0.19484651960663274, -3.064854162224571, -3.3316698123374264, -5.0690529846974295, -4.072399564874824, -6.814501440320555, -8.004932174701963, -9.135355785393472, 20.723108568839045, -15.931545405979719, -14.82133926454409, -16.616690992557334, -17.010476746771904, 20.44479597180679, -19.08063735172478, -15.120089935889876, -16.432255062972438, -17.699794989982887",
+                     "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "3.2", "-gc", "standard",
+                     "-output", "test.phylip",
+                     "-sites", "100");*/
             //jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree", "-sites", "10", "-fitness", "1,2,3,4,5,6,7,8", "-characters", "A,R,N,D,C,Q,E,H", "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "2.0", "-gc", "standard");
         } catch (ParameterException pe) {
             System.out.printf("Error: %s\n\n", pe.getMessage());
@@ -56,74 +62,84 @@ public class SingleSiteSimulator {
 
     private void run() throws Exception {
         Simulator s = new Simulator();
+        s.setClades(heteroClades);
+        s.setAminoAcids(residues);
 
-
-        // If were simulating a single set of fitnesses
+        // If were simulating a single set of fitnesses, specified using the -fitness option
         if (this.fitness.size() > 0) {
             s.initialise(tree, sites, globalOptions);
-            s.setClades(heteroClades);
-            s.setAminoAcids(residues);
+
             for (int i = 0; i < heteroClades.size(); i++) {
                 s.setCladeModel(heteroClades.get(i), fitness.subList(i * residues.length, (i + 1) * residues.length));
             }
 
             s.simulate();
 
-            s.writeSimulatedData();
+            Map<String, int[]> allSites = s.getSimulatedData();
+            Map<String, Collection<Integer>> transformed = Maps.newHashMap();
+            for (Map.Entry<String, int[]> e : allSites.entrySet()) {
+                transformed.put(e.getKey(), Ints.asList(e.getValue()));
+            }
+            writeOutput(transformed);
         } else {
+            // We're reading fitnesses for each site from a file. We only simulate each site once.
             s.initialise(tree, 1, globalOptions);
-            s.setClades(heteroClades);
-            s.setAminoAcids(residues);
 
+            // Fitnesses will be read from file(s). Hold each file reader by the clade key.
             Map<String, BufferedReader> cladeFitnessReaders = Maps.newHashMap();
-
             for (int i = 0; i < heteroClades.size(); i++) {
                 cladeFitnessReaders.put(heteroClades.get(i), Files.newReader(new File(this.fitnessFiles.get(i)), Charsets.US_ASCII));
             }
 
             // Collect each simulated site here
-            // Map<String, int[]> allSimulatedSites = Maps.newHashMap();
-            ArrayListMultimap<String, Integer> allSimulatedSites = ArrayListMultimap.create();
-            Map<String, int[]> thisSite;
+            ListMultimap<String, Integer> allSimulatedSites = ArrayListMultimap.create();
 
+            // Start reading the fitnesses from the fitness file(s)
+            int site = 1;
             String line;
             while ((line = cladeFitnessReaders.get(heteroClades.get(0)).readLine()) != null) {
-                // line is the fitness for the first clade
+                System.out.printf("Site %s:\n", site++);
+                // "line" holds the fitnesses for the first clade - set the clade model for the simulator
                 s.setCladeModel(heteroClades.get(0), Lists.transform(Arrays.asList(line.split(" ")), Functions.stringToDouble()));
 
+                // there may be multiple clades - read a line from the corresponding fitness file and set the clade model
                 for (int i = 1; i < heteroClades.size(); i++) {
                     s.setCladeModel(heteroClades.get(i), Lists.transform(Arrays.asList(cladeFitnessReaders.get(heteroClades.get(i)).readLine().split(" ")), Functions.stringToDouble()));
                 }
 
+                // finally, simulate the site
                 s.simulate();
-                thisSite = s.getSimulatedData();
 
-                for (Map.Entry<String, int[]> e : thisSite.entrySet()) {
-                    allSimulatedSites.put(e.getKey(), e.getValue()[0]);
+                // we want to save the simulated site in our own set to create an alignment on many sites
+                for (Map.Entry<String, int[]> e : s.getSimulatedData().entrySet()) {
+                    allSimulatedSites.put(e.getKey(), e.getValue()[0]); // remember, only one site
                 }
 
             }
 
-            // close all buffers
+            // close all readers
             for (BufferedReader br : cladeFitnessReaders.values()) {
                 br.close();
             }
 
-            // print the full simulated data
-            Map<String, Collection<Integer>> c = allSimulatedSites.asMap();
-            for (Map.Entry<String, Collection<Integer>> e : c.entrySet()) {
-                List<String> codons = Lists.transform(allSimulatedSites.get(e.getKey()), new Function<Integer, String>() {
-                    @Override
-                    public String apply(Integer o) {
-                        return GeneticCode.getInstance().getCodonTLA(o);
-                    }
-                });
-                System.out.printf("%s     %s\n", e.getKey(), Joiner.on("").join(codons));
-            }
-            System.out.println();
+            writeOutput(allSimulatedSites.asMap());
+        }
+    }
+
+    public void writeOutput(Map<String, Collection<Integer>> sequences) throws Exception {
+        BufferedWriter out = Files.newWriter(new File(outputFile), Charsets.US_ASCII);
+
+        // The PHYLIP header: <taxa>   <seq_length>
+        out.write(sequences.keySet().size() + "   " + sequences.values().iterator().next().size());
+        out.newLine();
+
+        for (Map.Entry<String, Collection<Integer>> e : sequences.entrySet()) {
+            Collection<String> codons = Collections2.transform(e.getValue(), Functions.codonIndexToTLA());
+            out.write(e.getKey() + "     " + Joiner.on("").join(codons));
+            out.newLine();
         }
 
-
+        out.close();
     }
 
     public void validate() {
@@ -186,6 +202,9 @@ public class SingleSiteSimulator {
     // You must specify this for heterogeneous models
     @Parameter(names = "-heteroclades", description = "If simulating heterogeneous model, specify the clade labels.", required = false)
     public List<String> heteroClades = Lists.newArrayList("ALL");
+
+    @Parameter(names = "-output", description = "The name of the file to save the simulated alignment.", required = true)
+    public String outputFile;
 
     @ParametersDelegate
     public GlobalsOptions globalOptions = new GlobalsOptions();
