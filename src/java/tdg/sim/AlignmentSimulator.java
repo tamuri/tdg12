@@ -27,10 +27,10 @@ import java.util.Map;
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class SingleSiteSimulator {
+public class AlignmentSimulator {
 
     public static void main(String[] args) throws Exception {
-        SingleSiteSimulator sss = new SingleSiteSimulator();
+        AlignmentSimulator sss = new AlignmentSimulator();
         JCommander jc = new JCommander(sss);
         jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + "tdg.sim.Simulator ");
 
