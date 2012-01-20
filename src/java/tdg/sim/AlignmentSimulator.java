@@ -48,6 +48,7 @@ public class AlignmentSimulator {
                      "-output", "test.phylip",
                      "-sites", "100");*/
             //jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree", "-sites", "10", "-fitness", "1,2,3,4,5,6,7,8", "-characters", "A,R,N,D,C,Q,E,H", "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "2.0", "-gc", "standard");
+            //jc.parse(args);
         } catch (ParameterException pe) {
             System.out.printf("Error: %s\n\n", pe.getMessage());
             jc.usage();
@@ -57,17 +58,18 @@ public class AlignmentSimulator {
         // fitnesses should have same size as characters (homogenous model) or size of characters * heteroclades (heterogeneous model)
         sss.validate();
         sss.run();
-
     }
 
     private void run() throws Exception {
         Simulator s = new Simulator();
+        s.setTree(tree);
+        s.setGlobals(globalOptions);
         s.setClades(heteroClades);
         s.setAminoAcids(residues);
 
         // If were simulating a single set of fitnesses, specified using the -fitness option
         if (this.fitness.size() > 0) {
-            s.initialise(tree, sites, globalOptions);
+            s.initialise(sites);
 
             for (int i = 0; i < heteroClades.size(); i++) {
                 s.setCladeModel(heteroClades.get(i), fitness.subList(i * residues.length, (i + 1) * residues.length));
@@ -83,7 +85,7 @@ public class AlignmentSimulator {
             writeOutput(transformed);
         } else {
             // We're reading fitnesses for each site from a file. We only simulate each site once.
-            s.initialise(tree, 1, globalOptions);
+            s.initialise(1);
 
             // Fitnesses will be read from file(s). Hold each file reader by the clade key.
             Map<String, BufferedReader> cladeFitnessReaders = Maps.newHashMap();

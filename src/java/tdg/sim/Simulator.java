@@ -31,8 +31,7 @@ public class Simulator {
     private Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
     private double[] Pt = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
-    public void initialise(String tree, int sites, GlobalsOptions globalsOptions) {
-        parsedTree = PhyloUtils.readTree(tree);
+    public void initialise(int sites) {
         this.sites = sites;
 
         // Initialise sequence store
@@ -46,7 +45,13 @@ public class Simulator {
             int[] store = new int[sites];
             seqout.put(parsedTree.getInternalNode(i).getIdentifier(), store);
         }
+    }
 
+    public void setTree(String tree) {
+        parsedTree = PhyloUtils.readTree(tree);
+    }
+
+    public void setGlobals(GlobalsOptions globalsOptions) {
         globals = new TDGGlobals(globalsOptions.tau, globalsOptions.kappa, globalsOptions.pi, globalsOptions.mu, globalsOptions.gamma);
     }
 
@@ -132,7 +137,7 @@ public class Simulator {
         return data;
     }
 
-    public void writeSimulatedData() {
+    public void printSimulatedData() {
         Map<String, int[]> data = getSimulatedData();
 
         for (Map.Entry<String, int[]> e : data.entrySet()) {
