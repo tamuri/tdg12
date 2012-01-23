@@ -5,7 +5,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.collect.*;
 import com.google.common.io.Files;
 import com.google.common.primitives.Ints;
@@ -30,17 +29,17 @@ import java.util.Map;
 public class AlignmentSimulator {
 
     public static void main(String[] args) throws Exception {
-        AlignmentSimulator sss = new AlignmentSimulator();
-        JCommander jc = new JCommander(sss);
-        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + "tdg.sim.Simulator ");
+        AlignmentSimulator as = new AlignmentSimulator();
+        JCommander jc = new JCommander(as);
+        jc.setProgramName("java -cp " + Constants.PROGRAM_JAR + "tdg.sim.AlignmentSimulator ");
 
         try {
             //jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-sites", "10", "-heteroclades", "Av,Hu", "-fitness", "1,2,3,4,5,6,7,8", "-fitness", "1,2,3,4,5,6,7,8", "-characters", "A,R,N,D,C,Q,E,H", "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "2.0", "-gc", "standard");
-            jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-heteroclades", "Av,Hu",
+            /*jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-heteroclades", "Av,Hu",
                     "-fitnessfile", "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/results.nonhomog/fitness.av.sorted.txt",
                     "-fitnessfile", "/Users/atamuri/Documents/work/mitochondria/paper/response/pb2.no.pen/results.nonhomog/fitness.hu.sorted.txt",
                     "-tau", "1.25010000000000e-02", "-kappa", "7.77498", "-pi", "0.22988,0.18954,0.37371,0.20687", "-mu", "2.902626667", "-gc", "standard",
-                    "-output", "test.phylip");
+                    "-output", "test.phylip");*/
             /*jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree.out", "-heteroclades", "Av,Hu",
                      "-fitness", "0.0, -15.319489016871987, -16.801001904423703, -16.526000568844385, -16.286280170254813, -19.729902687996834, -20.2977063058265, -20.974519424520118, -20.840313189353573, -18.284226997419616, -4.8233322459177455, -18.49536764263169, -19.943683230808453, -17.187213042879524, -18.63223866369517, -1.9348574797996214, -19.541364497586194, -17.540749030863793, -18.16927682552228, -18.698346806595154",
                      "-fitness", "0.0, 2.021057149653928, 0.19484651960663274, -3.064854162224571, -3.3316698123374264, -5.0690529846974295, -4.072399564874824, -6.814501440320555, -8.004932174701963, -9.135355785393472, 20.723108568839045, -15.931545405979719, -14.82133926454409, -16.616690992557334, -17.010476746771904, 20.44479597180679, -19.08063735172478, -15.120089935889876, -16.432255062972438, -17.699794989982887",
@@ -48,7 +47,7 @@ public class AlignmentSimulator {
                      "-output", "test.phylip",
                      "-sites", "100");*/
             //jc.parse("-tree", "/Users/atamuri/Documents/work/tdg12/etc/PB2_FMutSel0.tree", "-sites", "10", "-fitness", "1,2,3,4,5,6,7,8", "-characters", "A,R,N,D,C,Q,E,H", "-tau", "1e-2", "-kappa", "7.5", "-pi", "0.25,0.25,0.25,0.25", "-mu", "2.0", "-gc", "standard");
-            //jc.parse(args);
+            jc.parse(args);
         } catch (ParameterException pe) {
             System.out.printf("Error: %s\n\n", pe.getMessage());
             jc.usage();
@@ -56,8 +55,8 @@ public class AlignmentSimulator {
         }
 
         // fitnesses should have same size as characters (homogenous model) or size of characters * heteroclades (heterogeneous model)
-        sss.validate();
-        sss.run();
+        as.validate();
+        as.run();
     }
 
     private void run() throws Exception {
@@ -77,12 +76,12 @@ public class AlignmentSimulator {
 
             s.simulate();
 
-            Map<String, int[]> allSites = s.getSimulatedData();
-            Map<String, Collection<Integer>> transformed = Maps.newHashMap();
-            for (Map.Entry<String, int[]> e : allSites.entrySet()) {
-                transformed.put(e.getKey(), Ints.asList(e.getValue()));
+            Map<String, Collection<Integer>> simSites = Maps.newHashMap();
+            for (Map.Entry<String, int[]> e : s.getSimulatedData().entrySet()) {
+                simSites.put(e.getKey(), Ints.asList(e.getValue()));
             }
-            writeOutput(transformed);
+
+            writeOutput(simSites);
         } else {
             // We're reading fitnesses for each site from a file. We only simulate each site once.
             s.initialise(1);
@@ -94,14 +93,14 @@ public class AlignmentSimulator {
             }
 
             // Collect each simulated site here
-            ListMultimap<String, Integer> allSimulatedSites = ArrayListMultimap.create();
+            ListMultimap<String, Integer> simSites = ArrayListMultimap.create();
 
             // Start reading the fitnesses from the fitness file(s)
             int site = 1;
             String line;
             while ((line = cladeFitnessReaders.get(heteroClades.get(0)).readLine()) != null) {
                 System.out.printf("Site %s:\n", site++);
-                // "line" holds the fitnesses for the first clade - set the clade model for the simulator
+                // "line" now holds the fitnesses for the first clade - set the clade model for the simulator
                 s.setCladeModel(heteroClades.get(0), Lists.transform(Arrays.asList(line.split(" ")), Functions.stringToDouble()));
 
                 // there may be multiple clades - read a line from the corresponding fitness file and set the clade model
@@ -112,9 +111,9 @@ public class AlignmentSimulator {
                 // finally, simulate the site
                 s.simulate();
 
-                // we want to save the simulated site in our own set to create an alignment on many sites
+                // we want to save this simulated site in our own set to have an alignment of multiple sites
                 for (Map.Entry<String, int[]> e : s.getSimulatedData().entrySet()) {
-                    allSimulatedSites.put(e.getKey(), e.getValue()[0]); // remember, only one site
+                    simSites.put(e.getKey(), e.getValue()[0]); // remember, only one site
                 }
 
             }
@@ -124,7 +123,7 @@ public class AlignmentSimulator {
                 br.close();
             }
 
-            writeOutput(allSimulatedSites.asMap());
+            writeOutput(simSites.asMap());
         }
     }
 
@@ -137,7 +136,8 @@ public class AlignmentSimulator {
 
         for (Map.Entry<String, Collection<Integer>> e : sequences.entrySet()) {
             Collection<String> codons = Collections2.transform(e.getValue(), Functions.codonIndexToTLA());
-            out.write(e.getKey() + "     " + Joiner.on("").join(codons));
+            out.write(e.getKey() + "     ");
+            for (String c : codons) out.write(c);
             out.newLine();
         }
 
@@ -145,6 +145,7 @@ public class AlignmentSimulator {
     }
 
     public void validate() {
+        // Should have specified either -fitness or a file or fitness values using -fitnessfile
         if (this.fitness.size() == 0 && this.fitnessFiles.size() == 0) {
             throw new RuntimeException("You must specify either -fitness or -fitnessfile.");
         }
@@ -153,7 +154,6 @@ public class AlignmentSimulator {
         if (this.fitness.size() > 0 && this.fitnessFiles.size() > 0) {
             throw new RuntimeException("You can only use -fitness or -fitnessfile, not both together.");
         }
-
 
         // If user has specified fitness using the -fitness parameter
         if (this.fitness.size() > 0) {
@@ -175,7 +175,7 @@ public class AlignmentSimulator {
                 }
             }
         } else {
-            // we're using fitness files - check that we have the right number of files
+            // we're using fitness files via -fitnessfile option. Check that we have the right number of files
             if (this.heteroClades.size() != this.fitnessFiles.size()) {
                 throw new RuntimeException("You have defined " + this.heteroClades.size() + " clades but have " + this.fitnessFiles.size() + " fitness file(s).");
             }
