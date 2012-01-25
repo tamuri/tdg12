@@ -26,6 +26,14 @@ public final class GeneticCode {
     }
 
     public static final int UNKNOWN_STATE = -1;
+    public static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
+
+    // From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
+    public static final String STANDARD_CODE = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
+    public static final String VERTEBRATE_MITOCHONDRIAL_CODE = "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG";
+    public static final int CODON_STATES = 64;
+    public static final int AMINO_ACID_STATES = AMINO_ACIDS.length;
+
     private static final char UNKNOWN_CHARACTER = '?';
     private static final String UNKNOWN_TLA = "???";
     private static final char[] NUCLEOTIDES = "TCAG".toCharArray();
@@ -33,15 +41,6 @@ public final class GeneticCode {
     private static final int C_STATE = 1;
     private static final int A_STATE = 2;
     private static final int G_STATE = 3;
-    public static final char[] AMINO_ACIDS = "ARNDCQEGHILKMFPSTWYV".toCharArray();
-
-    // From http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
-    public static final String STANDARD_CODE = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
-    public static final String VERTEBRATE_MITOCHONDRIAL_CODE = "FFLLSSSSYY**CCWWLLLLPPPPHHQQRRRRIIMMTTTTNNKKSS**VVVVAAAADDEEGGGG";
-
-    public static final int CODON_STATES = 64;
-    public static final int AMINO_ACID_STATES = AMINO_ACIDS.length;
-
     private static final char[][] CODONS_TLA_CHAR_ARRAY = new char[CODON_STATES][CODON_STATES];
 
     static {
