@@ -66,7 +66,7 @@ public class AlignmentSimulator {
         s.setClades(heteroClades);
         s.setAminoAcids(residues);
 
-        // If were simulating a single set of fitnesses, specified using the -fitness option
+        // If we're simulating a single set of fitnesses, specified using the -fitness option
         if (this.fitness.size() > 0) {
             s.initialise(sites);
 
@@ -83,7 +83,7 @@ public class AlignmentSimulator {
 
             writeOutput(simSites);
         } else {
-            // We're reading fitnesses for each site from a file. We only simulate each site once.
+            // We're reading fitnesses for each site from a file. We simulate each site once.
             s.initialise(1);
 
             // Fitnesses will be read from file(s). Hold each file reader by the clade key.

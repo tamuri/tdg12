@@ -27,7 +27,7 @@ public class Simulator {
     private Map<Identifier, int[]> seqout;
     private TDGGlobals globals;
     private List<String> heteroClades;
-    List<Integer> aminoAcids = Lists.newArrayList();
+    private List<Integer> aminoAcids = Lists.newArrayList();
     private Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
     private double[] Pt = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
