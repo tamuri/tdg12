@@ -19,7 +19,7 @@ public class GeneticCodeConverter implements IStringConverter<GeneticCode> {
             throw new RuntimeException("Unknown genetic code table '" + value + "'. Valid tables are 'standard' and 'vertebrate_mit'.\n");
         }
 
-        System.out.printf("tdg.cli.GeneticCodeConverter - Set code to %s\n", value.equals(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE) ? "VERTEBRATE_MITOCHONDRIAL_CODE" : "STANDARD_CODE");
+        System.out.printf("tdg.cli.GeneticCodeConverter - Set code to %s\n", value);
 
         return GeneticCode.getInstance();
     }
