@@ -3,6 +3,7 @@ package tdg.model;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
+import org.apache.commons.math.util.MathUtils;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
@@ -63,6 +64,13 @@ public class LikelihoodCalculator {
                 Arrays.fill(tipConditionals[i], 1.0);
             } else {
                 tipConditionals[i][codon] = 1.0;
+
+/*                int aai = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codon);
+                int[] codoni = GeneticCode.getInstance().getCodonIndexFromAminoAcidIndex(aai);
+
+                for (int j : codoni) {
+                    tipConditionals[i][j] = 1.0;
+                }*/
             }
         }
     }
@@ -73,7 +81,24 @@ public class LikelihoodCalculator {
 
     public double function(double[] parameters) {
         updateParameters(parameters);
-        return calculateLogLikelihood();
+        double l = calculateLogLikelihood();
+        //double p = calculatePrior(parameters);
+        double p = 0.0;
+        //System.out.printf("lnL: %s\n", l - p);
+        return l - p;
+    }
+
+    private double calculatePrior(double[] fitness) {
+        //System.out.printf("Param: %s -> ", Doubles.asList(fitness));
+        double SIGMA = 100;
+        double sig = 1 / Math.pow(SIGMA, 2);
+        double sum = 0;
+        for (double f : fitness) {
+            sum += Math.pow(f, 2);
+        }
+        //System.out.printf("%s\n", sig * sum);
+        return sig * sum;
+        //return 0;
     }
 
     private double calculateLogLikelihood() {

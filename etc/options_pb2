@@ -1,7 +1,7 @@
 -t
-PB2_FMutSel0.tree.out
+etc/PB2_FMutSel0.tree
 -s
-PB2.co
+etc/PB2.co
 -tau
 1.25010000000000e-02
 -kappa
@@ -13,6 +13,6 @@ PB2.co
 -gc
 standard
 -optimruns
-3
--heteroclades
-Av,Hu
+1
+-site
+2
