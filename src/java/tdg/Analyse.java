@@ -66,12 +66,17 @@ public class Analyse {
         int startSite = 1;
         int endSite = sites;
 
-        // Option to only analyse a single site, not the entire alignment
-        if (options.site != 0) {
-            startSite = endSite = options.site;
-            // We parallelise on sites, so for one site we only need one thread
-            options.threads = 1;
+        // Analyse some specific site(s) in the alignment
+        if (options.site != null) {
+            if (options.site.first.equals(options.site.second)) {
+                startSite = endSite = options.site.first;
+            } else {
+                startSite = options.site.first;
+                endSite = options.site.second;
+            }
         }
+
+        System.out.printf("tdg.Analyse - Analysing location(s) %s to %s\n", startSite, endSite);
 
         final int threads = options.threads; // Runtime.getRuntime().availableProcessors();
         final ExecutorService threadPool = Executors.newFixedThreadPool(threads);
