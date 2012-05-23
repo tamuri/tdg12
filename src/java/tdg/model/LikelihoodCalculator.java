@@ -7,6 +7,7 @@ import org.apache.commons.math.util.MathUtils;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
+import tdg.cli.AnalyseOptions;
 import tdg.utils.GeneticCode;
 
 import java.util.Arrays;
@@ -36,9 +37,12 @@ public class LikelihoodCalculator {
     private final double[][] tipConditionals;
     private final double[][] internalConditionals;
 
-    public LikelihoodCalculator(Tree tree, Map<String, Integer> states) {
+    private final AnalyseOptions options;
+
+    public LikelihoodCalculator(Tree tree, Map<String, Integer> states, AnalyseOptions options) {
         this.tree = tree;
         this.states = states;
+        this.options = options;
 
         // set up name lookup
         for (int i = 0; i < tree.getExternalNodeCount(); i++) {
@@ -84,20 +88,31 @@ public class LikelihoodCalculator {
         double l = calculateLogLikelihood();
         //double p = calculatePrior(parameters);
         double p = 0.0;
-        //System.out.printf("lnL: %s\n", l - p);
-        return l - p;
+
+        // If prior has been specified
+        if (options.prior != null && options.prior.size() > 0) {
+            if (options.prior.get(0).equals("normal")) {
+                p = calculatePrior(parameters, Double.parseDouble(options.prior.get(1)));
+            } else if (options.prior.get(0).equals("dirichlet")) {
+                DirichletPrior prior = new DirichletPrior();
+                p = prior.getLogPrior(parameters, Double.parseDouble(options.prior.get(1)));
+            }
+        }
+
+        //System.out.printf("F = %s\n", Doubles.join(",", parameters));
+        //System.out.printf("lnL: %s + %s = %s\n", l, p, l + p);
+        return l + p;
     }
 
-    private double calculatePrior(double[] fitness) {
+    private double calculatePrior(double[] fitness, double sigma) {
         //System.out.printf("Param: %s -> ", Doubles.asList(fitness));
-        double SIGMA = 100;
-        double sig = 1 / Math.pow(SIGMA, 2);
+        double sig = 1 / (2 * Math.pow(sigma, 2));
         double sum = 0;
         for (double f : fitness) {
             sum += Math.pow(f, 2);
         }
         //System.out.printf("%s\n", sig * sum);
-        return sig * sum;
+        return -(sig * sum);
         //return 0;
     }
 

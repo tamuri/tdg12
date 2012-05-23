@@ -88,7 +88,7 @@ public class SiteAnalyser {
         // TODO: Use specified initial fitness for a site from e.g. a file. Would be good for global parameter optimisation.
 
         // ********************* HOMOGENEOUS MODEL *****************************
-        LikelihoodCalculator homogeneousModel = new LikelihoodCalculator(tree, sitePattern);
+        LikelihoodCalculator homogeneousModel = new LikelihoodCalculator(tree, sitePattern, options);
 
         // An object for the fitnesses we want to estimate
         Fitness homogeneousFitness = new Fitness(new double[aminoAcidsAtSite.size()], true);
@@ -170,7 +170,7 @@ public class SiteAnalyser {
         }
 
         // ********************* HETEROGENEOUS MODEL *************************
-        LikelihoodCalculator heterogeneousModel = new LikelihoodCalculator(tree, sitePattern);
+        LikelihoodCalculator heterogeneousModel = new LikelihoodCalculator(tree, sitePattern, options);
 
         List<String> clades = Lists.newArrayList(options.heteroClades.split(","));
         List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
