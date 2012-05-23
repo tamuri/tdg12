@@ -1,11 +1,15 @@
 package tdg.utils;
 
 /**
- * Created with IntelliJ IDEA.
- * User: atamuri
- * Date: 13/05/2012
- * Time: 15:05
- * To change this template use File | Settings | File Templates.
+ * A (handy) generic Pair tuple class
  */
-public class Pair {
+public class Pair<F, S> {
+    public final F first; //first member of pair
+    public final S second; //second member of pair
+
+    public Pair(F first, S second) {
+        this.first = first;
+        this.second = second;
+    }
 }
+
