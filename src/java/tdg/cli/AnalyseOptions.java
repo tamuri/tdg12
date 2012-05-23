@@ -2,6 +2,9 @@ package tdg.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import tdg.utils.Pair;
+
+import java.util.List;
 
 /**
  * AnalyseOptions class used by JCommander to display and load command-line options.
@@ -15,8 +18,8 @@ public class AnalyseOptions {
     @Parameter(names = "-s", description = "Codon alignment file in Phylip sequential format.", required = true)
     public String alignmentFile;
 
-    @Parameter(names = "-site", description = "Location of site to analyse (0 = all sites).", required = false)
-    public int site = 0;
+    @Parameter(names = "-site", description = "Site (e.g. 101) or range of sites (e.g. 101-202) to analyse.", required = false, converter = SiteRangeConverter.class)
+    public Pair<Integer, Integer> site;
 
     @Parameter(names = "-heteroclades", description = "Perform analysis using the heterogeneous model with these comma-separated clade prefixes.")
     public String heteroClades = null;
@@ -35,4 +38,8 @@ public class AnalyseOptions {
 
     @ParametersDelegate
     public ApproxOption approx = new ApproxOption();
+
+    @Parameter(names = "-prior", arity = 2, description = "Type of prior ('normal' or 'dirichlet') and parameter value (a double)", required = false)
+    public List<String> prior;
+
 }
