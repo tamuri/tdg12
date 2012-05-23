@@ -131,7 +131,7 @@ ion Models.
 \end_layout
 
 \begin_layout Section
-Tutorial
+An example analysis
 \end_layout
 
 \begin_layout Subsection
@@ -169,7 +169,7 @@ raxmlHPC -f a -x 12345 -p 12345 -N 100 -m GTRGAMMA -s atp8.phy -n atp8
 
 \begin_layout Standard
 and the PAML codeml control file (codeml.ctl) is available in the download.
- We optimised the branch lengths using the FMutSel0 model.
+ We optimised the branch lengths using the FMutSel0 model in codeml.
 \end_layout
 
 \begin_layout Subsection
@@ -214,7 +214,7 @@ There are a number of global, site-invariant, parameters that are required
 Each of these parameters can be estimated under the TdG12 model but this
  requires significant computational resources and the use of a distributed
  version of the software (not covered here).
- However, you can get obtain good estimates for 
+ However, you can get obtain good estimates for branch lengths, 
 \begin_inset Formula $\kappa$
 \end_inset
 
@@ -235,7 +235,8 @@ mlc
 \begin_inset Quotes ers
 \end_inset
 
-) contains estimates of 
+) contains the new tree (with re-estimated branch lengths) and estimates
+ of 
 \begin_inset Formula $\kappa$
 \end_inset
 
@@ -273,6 +274,17 @@ mlc
 \end_inset
 
  results file.
+ 
+\emph on
+Remember to save the tree from the 
+\begin_inset Quotes els
+\end_inset
+
+mlc
+\begin_inset Quotes ers
+\end_inset
+
+ file and use that for the TdG12 program.
 \end_layout
 
 \begin_layout Standard
@@ -310,7 +322,8 @@ We choose a small number for
 \begin_inset Formula $\tau$
 \end_inset
 
-, 
+, e.g.
+ 
 \begin_inset Formula $1.0\times10^{-2}$
 \end_inset
 
@@ -329,6 +342,11 @@ You can now run the TdG12 program to estimate the site-wise fitness of each
 
 \begin_layout Description
 -t The tree file in NEWICK format (required).
+ Remember to use the tree supplied by PAML
+\begin_inset Quotes ers
+\end_inset
+
+s codeml.
 \end_layout
 
 \begin_layout Description
@@ -581,6 +599,130 @@ The last two are comma-separated value files that can be opened in a program
 
  (ii) all mutations or subsitutions and (iii) non-synonymous mutations or
  substitutions.
+\end_layout
+
+\begin_layout Section
+Simulating data using the mutation-selection model
+\end_layout
+
+\begin_layout Subsection
+Simulating a single set of fitnesses (for one site)
+\end_layout
+
+\begin_layout Quote
+\align left
+
+\family typewriter
+java -cp tdg12.jar tdg.results.All -tree sim.tree -output out.phy -sites 100
+ -fitness 0.0,0.2,0.3,1.0,0.5,0.6,0.7,0.8 -characters A,R,N,D,C,Q,E,H -tau 0 -pi
+ 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard
+\end_layout
+
+\begin_layout Standard
+This command will write an alignment file 
+\begin_inset Quotes els
+\end_inset
+
+out.phy
+\begin_inset Quotes ers
+\end_inset
+
+ (in PHYLIP format) simulating a site (100 times) on the tree 
+\begin_inset Quotes els
+\end_inset
+
+sim.tree
+\begin_inset Quotes ers
+\end_inset
+
+ with the specified fitnesses for the specified characters.
+ Characters that do not appear in the -characters option are not observed
+ at that site (i.e.
+ have fitness of 
+\begin_inset Formula $-\infty$
+\end_inset
+
+).
+ Set the global parameters as required.
+\end_layout
+
+\begin_layout Subsection
+Simulating multiple sets of fitnesses (for multiple sites)
+\end_layout
+
+\begin_layout Standard
+Create a file with 20 fitnesses values on each line, each line corresponding
+ to a single location in the alignment.
+ Each fitness must be separated by a space and each site should be on a
+ new line.
+ For example, to simulate an alignment with 5 sites:
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\size scriptsize
+-21 -21 -21 -21 -21 -21 -21 -21 -21 2.19 3.07 -21 2.39 -21 -21 -21 -21 -21
+ -21 -21
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\size scriptsize
+-21 -21 1.74 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 4.23 -21 -21
+ -21 -21
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\size scriptsize
+0.93 -21 -21 -21 -21 -21 -21 -21 -21 0.31 -21 -21 2.63 -21 -21 -21 4.11 -21
+ -21 6.39
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\size scriptsize
+2.75 -21 -21 -21 -21 -21 -21 -21 -21 0.92 -21 -21 1.71 -21 2.28 0.72 1.33 -21
+ -21 3.51
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+\size scriptsize
+-21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 0.79 -21 -21
+ -21 -21
+\end_layout
+
+\begin_layout Standard
+Each line specifies the fitnesses of each amino acid in the canonical IUPAC
+ order.
+ Residues that are unobserved at a site are given a fitness 
+\begin_inset Formula $<-20$
+\end_inset
+
+.
+ If this file is saved as 
+\begin_inset Quotes els
+\end_inset
+
+F.txt
+\begin_inset Quotes ers
+\end_inset
+
+, the alignment is generated using the command:
+\end_layout
+
+\begin_layout Quote
+\align left
+
+\family typewriter
+java -cp tdg12.jar tdg.results.All -tree sim.tree -output out.phy -fitnessfile
+ F.txt -tau 0 -pi 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard
 \end_layout
 
 \begin_layout Section
