@@ -4,11 +4,13 @@ import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 
-public class DirichletPrior {
+public class DirichletPrior implements Prior {
     private Algebra algebra;
     private DoubleMatrix2D jacobi = DoubleFactory2D.dense.make(19, 19);
+    private final double alpha;
 
-    DirichletPrior() {
+    public DirichletPrior(double alpha) {
+        this.alpha = alpha;
         this.algebra = new Algebra();
     }
 
@@ -26,8 +28,9 @@ public class DirichletPrior {
         return  density;
     }
 
-    public double getLogPrior(double[] fitnesses, double alpha) {
-        double[] invLogit = getInverseLogit(fitnesses);
+    @Override
+    public double calculate(double[] parameters) {
+        double[] invLogit = getInverseLogit(parameters);
         double det = algebra.det(makeJacobian(invLogit));
 
         //Arrays.fill(alpha, 1.0);

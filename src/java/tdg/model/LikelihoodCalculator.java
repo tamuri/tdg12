@@ -37,12 +37,20 @@ public class LikelihoodCalculator {
     private final double[][] tipConditionals;
     private final double[][] internalConditionals;
 
-    private final AnalyseOptions options;
+    private Prior prior;
 
-    public LikelihoodCalculator(Tree tree, Map<String, Integer> states, AnalyseOptions options) {
+    public LikelihoodCalculator(Tree tree, Map<String, Integer> states, List<String> prior) {
         this.tree = tree;
         this.states = states;
-        this.options = options;
+
+        // Instatiate the prior calculator if necessary
+        if (prior != null) {
+            if (prior.get(0).equals("normal")) {
+                this.prior = new NormalPrior(Double.parseDouble(prior.get(1)));
+            } else if (prior.get(0).equals("dirichlet")) {
+                this.prior = new DirichletPrior(Double.parseDouble(prior.get(1)));
+            }
+        }
 
         // set up name lookup
         for (int i = 0; i < tree.getExternalNodeCount(); i++) {
@@ -86,34 +94,14 @@ public class LikelihoodCalculator {
     public double function(double[] parameters) {
         updateParameters(parameters);
         double l = calculateLogLikelihood();
-        //double p = calculatePrior(parameters);
         double p = 0.0;
 
         // If prior has been specified
-        if (options.prior != null && options.prior.size() > 0) {
-            if (options.prior.get(0).equals("normal")) {
-                p = calculatePrior(parameters, Double.parseDouble(options.prior.get(1)));
-            } else if (options.prior.get(0).equals("dirichlet")) {
-                DirichletPrior prior = new DirichletPrior();
-                p = prior.getLogPrior(parameters, Double.parseDouble(options.prior.get(1)));
-            }
+        if (prior != null) {
+            p = prior.calculate(parameters);
         }
 
-        //System.out.printf("F = %s\n", Doubles.join(",", parameters));
-        //System.out.printf("lnL: %s + %s = %s\n", l, p, l + p);
         return l + p;
-    }
-
-    private double calculatePrior(double[] fitness, double sigma) {
-        //System.out.printf("Param: %s -> ", Doubles.asList(fitness));
-        double sig = 1 / (2 * Math.pow(sigma, 2));
-        double sum = 0;
-        for (double f : fitness) {
-            sum += Math.pow(f, 2);
-        }
-        //System.out.printf("%s\n", sig * sum);
-        return -(sig * sum);
-        //return 0;
     }
 
     private double calculateLogLikelihood() {
