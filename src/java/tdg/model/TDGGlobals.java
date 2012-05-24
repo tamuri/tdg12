@@ -1,5 +1,6 @@
 package tdg.model;
 
+import com.google.common.primitives.Doubles;
 import tdg.utils.GeneticCode;
 
 /**
@@ -138,5 +139,16 @@ public class TDGGlobals {
 
     public double getCodonPiProduct(int codon) {
         return codonPiProduct[codon];
+    }
+
+    @Override
+    public String toString() {
+        return "TDGGlobals{" +
+                "tau=" + tau +
+                ", kappa=" + kappa +
+                ", mu=" + mu +
+                ", 1/nu=" + nu +
+                ", pi={" + Doubles.join(", ", pi) + "}" +
+                '}';
     }
 }

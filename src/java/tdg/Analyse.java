@@ -54,6 +54,7 @@ public class Analyse {
 
         // Global parameters for the TdG model
         final TDGGlobals tdgGlobals = new TDGGlobals(options.globals.tau, options.globals.kappa, options.globals.pi, options.globals.mu, options.globals.gamma);
+        System.out.printf("tdg.Analyse - %s\n", tdgGlobals.toString());
         final Tree tree = PhyloUtils.readTree(options.treeFile);
         final Alignment alignment = PhyloUtils.readAlignment(options.alignmentFile);
         final int sites = alignment.getSiteCount() / 3; // Alignment object is a nucleotide alignment
