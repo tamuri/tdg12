@@ -5,62 +5,41 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 
 public class DirichletPrior implements Prior {
-    private Algebra algebra;
-    private DoubleMatrix2D jacobi = DoubleFactory2D.dense.make(19, 19);
+    private static final int DIM = 19;
+    private Algebra algebra = new Algebra();
+    private DoubleMatrix2D jacobi = DoubleFactory2D.dense.make(DIM, DIM);
     private final double alpha;
 
     public DirichletPrior(double alpha) {
         this.alpha = alpha;
-        this.algebra = new Algebra();
-    }
-
-    public static double quickDensity(double[] xx, double alpha) {
-        double density = 1.0;
-        double sum = 0.0;
-
-        for (double x : xx) {
-            density = density * Math.pow(x, alpha - 1);
-            sum += x;
-        }
-
-        density = density * Math.pow(1 - sum, alpha - 1);
-
-        return  density;
     }
 
     @Override
-    public double calculate(double[] parameters) {
-        double[] invLogit = getInverseLogit(parameters);
-        double det = algebra.det(makeJacobian(invLogit));
+    public double calculate(double[] fitness) {
+        double[] theta = logit(fitness);
+        double det = algebra.det(jacobian(theta));
+        double density = density(theta);
 
-        //Arrays.fill(alpha, 1.0);
-        //double density = DirichletDist.density(alpha, invLogit);
-        double density = quickDensity(invLogit, alpha);
-        //System.out.printf("det = %s * den = %s\n", det, density);
         return Math.log(det * density);
     }
 
-    private double[] getInverseLogit(double[] fitnesses) {
-        double[] invLogit = new double[fitnesses.length];
+    private double[] logit(double[] fitness) {
+        double[] theta = new double[fitness.length];
 
         double sumExpF = 0.0;
-        for (double f : fitnesses) {
+
+        for (double f : fitness)
             sumExpF += Math.exp(f);
-        }
-        //sumExpF += Math.exp(0); // = 1
 
-        for (int i = 0; i < fitnesses.length; i++) {
-            invLogit[i] = Math.exp(fitnesses[i]) / (1 + sumExpF);
-        }
+        for (int i = 0; i < fitness.length; i++)
+            theta[i] = Math.exp(fitness[i]) / (1 + sumExpF);
 
-        //invLogit[invLogit.length - 1] = Math.exp(0) / (1 + sumExpF);
-
-        return invLogit;
+        return theta;
     }
 
-    private DoubleMatrix2D makeJacobian(double[] theta) {
-        for (int i = 0; i < 19; i++) {
-            for (int j = 0; j < 19; j++) {
+    private DoubleMatrix2D jacobian(double[] theta) {
+        for (int i = 0; i < DIM; i++) {
+            for (int j = 0; j < DIM; j++) {
                 if (i == j) {
                     jacobi.setQuick(i, j, theta[i] * (1 - theta[i]));
                 } else {
@@ -68,9 +47,20 @@ public class DirichletPrior implements Prior {
                 }
             }
         }
-
         return jacobi;
     }
 
+    public double density(double[] theta) {
+        double density = 1.0;
+        double sum = 0.0;
 
+        for (double x : theta) {
+            density = density * Math.pow(x, alpha - 1);
+            sum += x;
+        }
+
+        density = density * Math.pow(1 - sum, alpha - 1);
+
+        return density;
+    }
 }

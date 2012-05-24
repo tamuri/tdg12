@@ -2,6 +2,7 @@ package tdg.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import tdg.model.Prior;
 import tdg.utils.Pair;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class AnalyseOptions {
     @ParametersDelegate
     public ApproxOption approx = new ApproxOption();
 
-    @Parameter(names = "-prior", arity = 2, description = "Type of prior ('normal' or 'dirichlet') and parameter value (a double)", required = false)
-    public List<String> prior;
+    @Parameter(names = "-prior", description = "Comma-separated prior and prior parameters (e.g. normal,10 or dirichlet,2.0)", required = false, converter = PriorConverter.class)
+    public Prior prior;
 
 }

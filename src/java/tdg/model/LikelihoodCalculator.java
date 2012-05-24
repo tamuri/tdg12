@@ -39,17 +39,12 @@ public class LikelihoodCalculator {
 
     private Prior prior;
 
-    public LikelihoodCalculator(Tree tree, Map<String, Integer> states, List<String> prior) {
+    public LikelihoodCalculator(Tree tree, Map<String, Integer> states, Prior prior) {
         this.tree = tree;
         this.states = states;
 
-        // Instatiate the prior calculator if necessary
         if (prior != null) {
-            if (prior.get(0).equals("normal")) {
-                this.prior = new NormalPrior(Double.parseDouble(prior.get(1)));
-            } else if (prior.get(0).equals("dirichlet")) {
-                this.prior = new DirichletPrior(Double.parseDouble(prior.get(1)));
-            }
+            this.prior = prior;
         }
 
         // set up name lookup
