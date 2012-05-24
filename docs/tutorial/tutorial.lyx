@@ -47,6 +47,14 @@ Guide to estimating the distribution of selection coefficients using the
  TdG12 site-wise mutation-selection model
 \end_layout
 
+\begin_layout Author
+Asif Tamuri
+\end_layout
+
+\begin_layout Date
+24th May 2012
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
@@ -162,6 +170,7 @@ s websites.
 \end_layout
 
 \begin_layout Quote
+\align left
 
 \family typewriter
 raxmlHPC -f a -x 12345 -p 12345 -N 100 -m GTRGAMMA -s atp8.phy -n atp8
@@ -276,7 +285,7 @@ mlc
  results file.
  
 \emph on
-Remember to save the tree from the 
+Remember to use the tree from the 
 \begin_inset Quotes els
 \end_inset
 
@@ -284,7 +293,7 @@ mlc
 \begin_inset Quotes ers
 \end_inset
 
- file and use that for the TdG12 program.
+ file for the TdG12 program.
 \end_layout
 
 \begin_layout Standard
@@ -416,6 +425,7 @@ You start the analysis of the set of ATP8 genes by running:
 \end_layout
 
 \begin_layout Quote
+\align left
 
 \family typewriter
 java -cp tdg12.jar tdg.Analyse -s atp8.phy -t atp8.tree -gc vertebrate_mit -tau
@@ -458,6 +468,7 @@ If you are running the program on a computer with multicore or multiple
 \end_layout
 
 \begin_layout Quote
+\align left
 
 \family typewriter
 java -cp tdg12.jar tdg.Analyse -s atp8.phy -t atp8.tree -gc vertebrate_mit -tau
@@ -539,6 +550,7 @@ The output is quite verbose.
 \end_layout
 
 \begin_layout Quote
+\align left
 
 \family typewriter
 java -cp tdg12.jar tdg.results.All
@@ -597,8 +609,8 @@ The last two are comma-separated value files that can be opened in a program
 \begin_inset Formula $S$
 \end_inset
 
- (ii) all mutations or subsitutions and (iii) non-synonymous mutations or
- substitutions.
+ (ii) all mutations/subsitutions and (iii) non-synonymous mutations/substitution
+s.
 \end_layout
 
 \begin_layout Section
