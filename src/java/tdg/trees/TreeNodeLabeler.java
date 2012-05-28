@@ -1,7 +1,10 @@
 package tdg.trees;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import pal.tree.*;
 
 import java.io.*;
@@ -12,35 +15,31 @@ import java.util.Set;
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class TreeNodeLabeler {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         TreeNodeLabeler m = new TreeNodeLabeler();
         m.run(args[0]);
     }
 
-    private void run(String fileIn) {
-        Tree t;
-        try {
-            t = TreeTool.readTree(new BufferedReader(new FileReader(fileIn)));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+    private void run(String fileIn) throws Exception {
+        System.out.printf("Reading file %s.\n", fileIn);
+        Tree t = TreeTool.readTree(Files.newReader(new File(fileIn), Charsets.US_ASCII));
 
-        SimpleTree st = new SimpleTree(t);
         List<Node> unknownNodes = Lists.newArrayList();
         List<Node> knownNodes = Lists.newArrayList();
 
         // to begin with all internal nodes are unnamed
-        for (int i = 0; i < st.getInternalNodeCount(); i++) {
-            unknownNodes.add(st.getInternalNode(i));
+        for (int i = 0; i < t.getInternalNodeCount(); i++) {
+            unknownNodes.add(t.getInternalNode(i));
         }
 
         int preUnknownNodeCount = unknownNodes.size();
         int postUnknownNodeCount = -1;
 
         while (!unknownNodes.isEmpty() && preUnknownNodeCount != postUnknownNodeCount) {
-            System.out.printf("%s != %s\n", preUnknownNodeCount, postUnknownNodeCount);
+            System.out.printf("Unknown nodes: %s.\n", unknownNodes.size());
+
             preUnknownNodeCount = unknownNodes.size();
+
             // loop through each of the unknown nodes
             for (Node n : unknownNodes) {
                 // get a distinct list of all hosts for the node
@@ -61,9 +60,7 @@ public class TreeNodeLabeler {
                 }
 
                 // list all the possible names for this node
-                System.out.printf("%s = ", n.getNumber());
-                printStringSet(s);
-                System.out.printf("\n");
+                System.out.printf("Node %s possible clade(s): %s\n", n.getNumber(), Joiner.on(" ").join(s));
 
                 if (s.size() == 1) {
                     n.getIdentifier().setName(s.iterator().next());
@@ -88,27 +85,15 @@ public class TreeNodeLabeler {
                 String parentNodeName = n.getParent().getIdentifier().getName();
                 if (parentNodeName != null && parentNodeName.length() > 0) {
                     n.getIdentifier().setName(parentNodeName.substring(0, 2) + "_HS");
+                    System.out.printf("Node %s has change of clade: %s\n", n.getNumber(), n.getIdentifier().getName());
                 }
             }
         }
 
-        FileWriter fw;
-        try {
-            fw = new FileWriter(fileIn + ".out");
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            throw new RuntimeException(e);
-        }
-
-        PrintWriter pw = new PrintWriter(fw);
-        TreeUtils.printNH(st, pw);
+        PrintWriter pw = new PrintWriter(Files.newWriter(new File(fileIn + ".out"), Charsets.US_ASCII));
+        TreeUtils.printNH(t, pw);
         pw.close();
     }
 
-    private void printStringSet(Set<String> set) {
-        for (String s : set) {
-            System.out.printf("%s ", s);
-        }
-    }
 }
 
