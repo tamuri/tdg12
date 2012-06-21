@@ -96,6 +96,8 @@ public class LikelihoodCalculator {
             p = prior.calculate(parameters);
         }
 
+        // System.out.printf("%s\t %s\n", l+p, Doubles.join(" ", parameters));
+
         return l + p;
     }
 
