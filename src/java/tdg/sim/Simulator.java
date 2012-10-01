@@ -125,6 +125,7 @@ public class Simulator {
         System.out.printf("%s has fitness %s for residues %s.\n", model, fitness, aminoAcids);
         TDGCodonModel codonModel = new TDGCodonModel(this.globals, new Fitness(Doubles.toArray(fitness), false), aminoAcids);
         codonModel.updateModel();
+        System.out.printf("Amino acid frequencies are:\n%s\n", Doubles.join(", ", codonModel.getAminoAcidFrequencies()));
         this.cladeModels.put(model, codonModel);
     }
 
