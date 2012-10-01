@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
+import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.RealConvergenceChecker;
 import org.apache.commons.math.optimization.RealPointValuePair;
@@ -198,7 +199,7 @@ public class SiteAnalyser {
     private RealPointValuePair optimise(LikelihoodCalculator model) {
         MinimisationParameters mp = model.getMinimisationParameters();
         DirectSearchOptimizer dso = new NelderMead();
-        dso.setMaxEvaluations(Constants.MAX_EVALUATIONS);
+        dso.setMaxEvaluations(Constants.MAX_EVALUATIONS); // Constants.MAX_EVALUATIONS
 
         // Big difference for total optimisation time. We should think about which
         // convergence criteria to use for optimising global parameters vs. site fitness parameters
@@ -216,15 +217,22 @@ public class SiteAnalyser {
         RealPointValuePair pair;
         try {
             pair = dso.optimize(wrapper, GoalType.MAXIMIZE, mp.getParameters());
-            System.out.printf("Site %s - Optimisation run (%s evaluations). lnL = %s, params = { %s -> %s }\n",
-                    site,
-                    dso.getEvaluations(),
-                    pair.getValue(),
-                    Doubles.join(", ", mp.getParameters()), // initial parameters
-                    Doubles.join(", ", pair.getPoint()));
+
+        } catch (FunctionEvaluationException me) {
+            // Maximum number of evaluations met. Use the last set of parameters as the optimum
+            // TODO: Fix this!
+            System.out.printf("Site %s - Reached maximum number of evaluations. Using last evaluation.\n", site);
+            pair = new RealPointValuePair(me.getArgument(), model.function(me.getArgument()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        System.out.printf("Site %s - Optimisation run (%s evaluations). lnL = %s, params = { %s -> %s }\n",
+                site,
+                dso.getEvaluations(),
+                pair.getValue(),
+                Doubles.join(", ", mp.getParameters()), // initial parameters
+                Doubles.join(", ", pair.getPoint()));
 
         return pair;
     }
