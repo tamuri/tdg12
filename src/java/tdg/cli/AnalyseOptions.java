@@ -5,8 +5,6 @@ import com.beust.jcommander.ParametersDelegate;
 import tdg.model.Prior;
 import tdg.utils.Pair;
 
-import java.util.List;
-
 /**
  * AnalyseOptions class used by JCommander to display and load command-line options.
  *

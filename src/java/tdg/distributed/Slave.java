@@ -1,7 +1,10 @@
 package tdg.distributed;
 
 import com.beust.jcommander.JCommander;
-import com.google.common.base.Joiner;
+import com.beust.jcommander.ParameterException;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -14,6 +17,7 @@ import pal.tree.Tree;
 import tdg.SiteAnalyser;
 import tdg.cli.AnalyseOptions;
 import tdg.model.TDGGlobals;
+import tdg.utils.CoreUtils;
 import tdg.utils.Functions;
 import tdg.utils.PhyloUtils;
 
@@ -26,18 +30,30 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class Slave implements Container {
-
-    static final int SERVER_PORT = 9090; // TODO: Put in config file
     private Scheduler scheduler;
     private AnalyseOptions options;
     private Tree tree;
     private Alignment alignment;
     private TDGGlobals globals;
+
+    LoadingCache<Integer, SiteAnalyser> siteAnalyserCache = CacheBuilder.newBuilder().maximumSize(1000).build(
+            new CacheLoader<Integer, SiteAnalyser>() {
+                @Override
+                public SiteAnalyser load(Integer site) throws Exception {
+                    SiteAnalyser sa = new SiteAnalyser(tree, alignment, globals, site, options);
+                    sa.run();
+                    return sa;
+                }
+            }
+    );
+
 
 
     private class Task implements Runnable {
@@ -51,23 +67,32 @@ public class Slave implements Container {
 
         @Override
         public void run() {
-            long startTime = System.currentTimeMillis();
+            // long startTime = System.currentTimeMillis();
 
             try {
                 int site = Integer.parseInt(request.getParameter("site"));
 
-                System.out.printf("Site %s-- Task started.\n", site);
+                // System.out.printf("Site %s-- Task started.\n", site);
 
-                SiteAnalyser sa = new SiteAnalyser(tree, alignment, globals, site, options);
-                sa.run();
+                SiteAnalyser sa;
+
+                try {
+                    sa = siteAnalyserCache.get(site);
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
 
                 PrintStream body = response.getPrintStream();
                 response.set("Content-Type", "text/plain");
 
-                body.println(sa.getHomogeneousLikelihood());
+                // body.println(sa.getHomogeneousLikelihood());
+                double l = sa.evaluate(globals);
+                body.println(l);
                 body.close();
 
-                System.out.printf("Site %s-- Task complete in %s ms.\n", site, System.currentTimeMillis() - startTime);
+                // System.out.printf("Site %s-- Task complete in %s ms.\n", site, System.currentTimeMillis() - startTime);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -88,18 +113,28 @@ public class Slave implements Container {
         try {
             if (request.getQuery().containsKey("updateglobals")) {
 
+
                 List<Double> g = Lists.transform(Arrays.asList(request.getParameter("updateglobals").split(",")), Functions.stringToDouble());
 
                 globals = new TDGGlobals(g.get(0), g.get(1), new double[]{g.get(2), g.get(3), g.get(4), g.get(5)}, g.get(6), g.get(7));
-                System.out.printf("Successfully updated TDGGlobals { %s }.", Joiner.on(", ").join(g));
+                System.out.printf("Set %s.\n", globals.toString());
 
                 PrintStream body = response.getPrintStream();
                 response.set("Content-Type", "text/plain");
                 body.print("OK.");
                 body.close();
+
+                if (request.getParameter("refresh").equals("true")) {
+                    siteAnalyserCache.invalidateAll();
+                    System.out.println("Refreshed cache.");
+                }
+
+                // siteAnalyserCache.invalidateAll();
+
+
             } else {
                 int site = Integer.parseInt(request.getParameter("site"));
-                System.out.printf("Site %s - Received request. Creating task and adding to queue.\n", site);
+                // System.out.printf("Site %s - Received request. Creating task and adding to queue.\n", site);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,33 +147,37 @@ public class Slave implements Container {
     public static void main(String... args) throws Exception {
         AnalyseOptions options = new AnalyseOptions();
         JCommander jc = new JCommander(options);
-        if (args.length == 0) {
-            jc.usage();
-            System.out.println("AnalyseOptions preceded by an asterisk are required.");
-            System.exit(0);
-        } else {
+
+        try {
             jc.parse(args);
+        } catch (ParameterException e) {
+            System.out.printf("Error: %s\n", e.getMessage());
+            jc.usage();
+            System.exit(0);
         }
 
         Scheduler scheduler = new Scheduler(options.threads);
         Container container = new Slave(scheduler, options);
         Connection connection = new SocketConnection(container);
-        SocketAddress address = new InetSocketAddress(SERVER_PORT);
+
+        int freePort = CoreUtils.findFreePort();
+
+        SocketAddress address = new InetSocketAddress(freePort);
         connection.connect(address);
 
-        System.out.printf("%s started on port %s with %s worker thread(s).\n", Slave.class.getName(), SERVER_PORT, options.threads);
-        writeHostnameFile();
+        System.out.printf("%s started on port %s with %s worker thread(s).\n", Slave.class.getName(), freePort, options.threads);
+        writeHostnameFile(freePort);
     }
 
-    private static void writeHostnameFile() throws Exception {
+    private static void writeHostnameFile(int port) throws Exception {
         InetAddress in = InetAddress.getLocalHost();
         InetAddress[] all = InetAddress.getAllByName(in.getHostName());
 
-        FileWriter writer = new FileWriter("host" + in.getHostName() + ".txt");
+        FileWriter writer = new FileWriter("host_" + in.getHostName() + "_" + new Random().nextInt(100000) +".txt");
         BufferedWriter out = new BufferedWriter(writer);
 
         for (InetAddress anAll : all) {
-            out.write(anAll + "\n");
+            out.write(anAll + ":" + port + "\n");
         }
 
         out.close();

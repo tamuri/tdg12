@@ -1,7 +1,6 @@
 package tdg.cli;
 
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.DoubleConverter;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
