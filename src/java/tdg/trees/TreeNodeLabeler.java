@@ -5,9 +5,13 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import pal.tree.*;
+import pal.tree.Node;
+import pal.tree.Tree;
+import pal.tree.TreeTool;
+import pal.tree.TreeUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 

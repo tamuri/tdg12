@@ -40,39 +40,46 @@ import java.util.Map;
 public class SiteAnalyser {
     private double homogeneousLikelihood;
     private double heterogeneousLikelihood;
+    private double[] fitnessOptima;
     private final Tree tree;
-    private final Alignment alignment;
+    // private final Alignment alignment;
     private final TDGGlobals globals;
     private final int site;
     private final AnalyseOptions options;
     private final RandomData randomData = new RandomDataImpl(new MersenneTwister());
+    private final Map<String, Integer> sitePattern;
+    public final List<Integer> aminoAcidsAtSite;
+    private final int observedResidueCount;
+    public LikelihoodCalculator homogeneousModel;
 
     public SiteAnalyser(Tree tree, Alignment alignment, TDGGlobals globals, int site, AnalyseOptions options) {
         this.tree = tree;
-        this.alignment = alignment;
+        // this.alignment = alignment;
         this.globals = globals;
         this.site = site;
         this.options = options;
-    }
-
-    public void run() {
-        long startTime = System.currentTimeMillis();
 
         // Get the codons observed at this site
-        Map<String, Integer> sitePattern = PhyloUtils.getCodonsAtSite(alignment, site);
+        sitePattern = PhyloUtils.getCodonsAtSite(alignment, site);
 
         // Remove any stop codons and treat them as gaps
+        int unknowns = 0;
         for (Map.Entry<String, Integer> e : sitePattern.entrySet()) {
             if (GeneticCode.getInstance().isUnknownCodonState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(e.getValue()))) {
-                System.out.printf("Site %s - Sequence %s has unknown/stop codon (%s). Treating as gap.\n",
-                        site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
+                // System.out.printf("Site %s - Sequence %s has unknown/stop codon (%s). Treating as gap.\n", site, e.getKey(), GeneticCode.getInstance().getCodonTLA(e.getValue()));
                 sitePattern.put(e.getKey(), GeneticCode.UNKNOWN_STATE);
+                unknowns++;
             }
         }
 
+        if (unknowns > 0) {
+            System.out.printf("Site %s - Found %s sequences with unknown or stop codon. Treating as gap.\n", site, unknowns);
+        }
+
         // Get a list of all amino acids observed at this site (from the given codons)
-        List<Integer> aminoAcidsAtSite = PhyloUtils.getDistinctAminoAcids(sitePattern.values());
-        int observedResidueCount = aminoAcidsAtSite.size();
+        aminoAcidsAtSite= PhyloUtils.getDistinctAminoAcids(sitePattern.values());
+
+        observedResidueCount = aminoAcidsAtSite.size();
 
         // If we're not using the approximate method (collapsing the matrix)
         if (!options.approx.useapprox) {
@@ -85,11 +92,24 @@ public class SiteAnalyser {
 
         // Display which amino acids we've observed at this site and for which we're going to estimate the fitness.
         displayResidues(aminoAcidsAtSite, observedResidueCount);
+    }
 
+    public double evaluate(final TDGGlobals g) {
+        homogeneousModel = new LikelihoodCalculator(tree, sitePattern, options.prior);
+        Fitness f = new Fitness(getFitnessOptima(), false);
+        homogeneousModel.setParameters(f);
+        homogeneousModel.addCladeModel("ALL", new TDGCodonModel(g, f, aminoAcidsAtSite));
+        // System.out.printf("Site %s - Evaluated homogeneous model lnL: %s\n", site, l);
+        return homogeneousModel.function(homogeneousModel.getMinimisationParameters().getParameters());
+    }
+
+    public void run() {
+
+        long startTime = System.currentTimeMillis();
         // TODO: Use specified initial fitness for a site from e.g. a file. Would be good for global parameter optimisation.
 
         // ********************* HOMOGENEOUS MODEL *****************************
-        LikelihoodCalculator homogeneousModel = new LikelihoodCalculator(tree, sitePattern, options.prior);
+        homogeneousModel = new LikelihoodCalculator(tree, sitePattern, options.prior);
 
         // An object for the fitnesses we want to estimate
         Fitness homogeneousFitness = new Fitness(new double[aminoAcidsAtSite.size()], true);
@@ -125,7 +145,7 @@ public class SiteAnalyser {
                 System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, homogeneousLikelihood);
                 System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
                 System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
-
+                fitnessOptima = Arrays.copyOf(homogeneousFitness.get(), homogeneousFitness.get().length);
                 //TODO: we exit out of method here...what about the rest of the output (e.g. heterogeneous model)?
                 return;
             }
@@ -159,7 +179,10 @@ public class SiteAnalyser {
             r = optimiseRuns.get(bestKey);
         }
 
+        // System.out.printf("Site %s - r.getpoint() = %s; homogeneousFitness.get() = %s\n", site, Doubles.join(", ", r.getPoint()), Doubles.join(", ", homogeneousFitness.get()));
+
         homogeneousModel.function(r.getPoint());
+        fitnessOptima = Arrays.copyOf(homogeneousFitness.get(), homogeneousFitness.get().length);
         System.out.printf("Site %s - Homogeneous model lnL: %s\n", site, r.getValue());
         System.out.printf("Site %s - Fitness: { %s }\n", site, Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get())));
         System.out.printf("Site %s - Pi: { %s }\n", site, Doubles.join(", ", tcm1.getAminoAcidFrequencies()));
@@ -287,4 +310,7 @@ public class SiteAnalyser {
         return homogeneousLikelihood;
     }
 
+    public double[] getFitnessOptima() {
+        return fitnessOptima;
+    }
 }

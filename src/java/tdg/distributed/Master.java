@@ -1,5 +1,9 @@
 package tdg.distributed;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -9,14 +13,23 @@ import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.Response;
+import com.ning.http.client.extra.ThrottleRequestFilter;
 import org.apache.commons.math.FunctionEvaluationException;
-import org.apache.commons.math.analysis.UnivariateRealFunction;
+import org.apache.commons.math.analysis.MultivariateRealFunction;
+import org.apache.commons.math.optimization.GoalType;
+import org.apache.commons.math.optimization.RealPointValuePair;
+import org.apache.commons.math.optimization.SimpleScalarValueChecker;
+import org.apache.commons.math.optimization.direct.DirectSearchOptimizer;
+import org.apache.commons.math.optimization.direct.NelderMead;
 import pal.alignment.Alignment;
-import tdg.utils.GeneticCode;
+import tdg.Constants;
+import tdg.cli.GeneticCodeOption;
+import tdg.cli.GlobalsOptions;
+import tdg.utils.CoreUtils;
 import tdg.utils.PhyloUtils;
+import tdg.utils.ValueComparer;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -27,60 +40,141 @@ import java.util.concurrent.Future;
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class Master {
-    private String alignmentFile, hostnameFilesPath;
-    private int maxConnectionsPerHost, requestTimeout, threadPoolSize;
 
-    private void run() throws Exception {
+    private Collection<Integer> sites;
+    private List<String> servers;
+    private boolean refresh = false;
+    AsyncHttpClient asyncHttpClient;
+    private int totalits = 1;
+    private List<Result> results = Lists.newArrayList();
 
-        Collection<Integer> sites = getSites();
+    class Result {
+        public int iteration;
+        public double lnL;
+        public double[] point;
 
-        List<String> servers = getServerAddresses();
-
-        AsyncHttpClient asyncHttpClient = getAsyncHttpClient();
-
-        long startTime = System.currentTimeMillis();
-
-        // optimize for mu
-        /*
-        UnivariateRealFunction alignmentLikelihood = new MuFunction(servers, sites);
-        UnivariateRealOptimizer optimiser = new BrentOptimizer();
-        optimiser.setAbsoluteAccuracy(1E-3);
-
-        double optimum = optimiser.optimize(alignmentLikelihood, GoalType.MAXIMIZE, 2.0, 2.2, 2.1);
-
-        System.out.printf("Found optimimum. lnL = %s for mu = %s\n", optimiser.getFunctionValue(), optimum);
-*/
-
-        Set<Future<Response>> results = Sets.newHashSet();
-
-
-        sendRequestToServers(sites.iterator(), servers, asyncHttpClient, results);
-
-        // Output each result
-        for (Future<Response> r : results) {
-            String response = r.get().getResponseBody();
-            System.out.printf("%s\n", response);
+        Result(int iteration, double lnL, double[] point) {
+            this.iteration = iteration;
+            this.lnL = lnL;
+            this.point = point;
         }
 
-        // We're done
-        System.out.printf("Total time: %s ms\n", System.currentTimeMillis() - startTime);
+        @Override
+        public String toString() {
+            return "Result{" +
+                    iteration + "." +
+                    " lnL =\t" + lnL +
+                    ", point =\t" + Doubles.join("\t", point) +
+                    '}';
+        }
+    }
 
-        // Close the http client thread pool and close all connections
-        asyncHttpClient.getConfig().executorService().shutdown();
+    class GlobalParameterOptimiser implements MultivariateRealFunction {
+        private int evals = 1;
+
+        @Override
+        public double value(double[] point) throws FunctionEvaluationException, IllegalArgumentException {
+            System.out.printf("Evaluation %s / %s\n", evals++, totalits++);
+
+            // use very bad log-likelihood to exit quickly if we're near constraint
+            if (point[0] <= 0) // tau
+                return Constants.VERY_BAD_LIKELIHOOD;
+
+            if (point[1] <= 0) // kappa
+                return Constants.VERY_BAD_LIKELIHOOD;
+
+            if (point[5] <= 0) // mu
+                return Constants.VERY_BAD_LIKELIHOOD;
+
+            double[] pi = CoreUtils.alr_inv(new double[]{point[2], point[3], point[4]});
+            return evaluate(point[0], point[1], pi[0], pi[1], pi[2], point[5]);
+        }
+    }
+
+    private void optimiseBranchLengths() {
+        // We assume that each of the slaves has a cached SiteAnalyser with the correct globals and fitness
+        // i.e. we've estimated global parameters already
+
+        // while the sum log-likelihoods of all sites is reducing
+
+            // for every internal node in the tree
+
+                // re-root the tree with this internal node
+
+
+                // update each slave with the new re-rooted tree
+                // (as part of updating tree, each slave should calculate likelihood of site again
+                // and save conditionals of child nodes)
+
+                // for each child of this internal node
+
+
+
+
+
+    }
+
+    private double evaluate(double... point) {
+        long startTime = System.currentTimeMillis();
+        System.out.printf("Evaluate for: %s\n", Doubles.join(", ", point));
+
+        Set<Future<Response>> results = Sets.newHashSet();
+        double sumlnL = 0.0;
+
+
+        try {
+            // Update TdG globals on each server
+            updateGlobalsOnServers(servers, asyncHttpClient,
+                    point[0], // tau
+                    point[1], // kappa
+                    point[2], point[3], point[4], 1 - point[2] - point[3] - point[4], // pi_T, pi_C, pi_A, pi_G (= 1 - pi_T - pi_C - pi_A)
+                    point[5], // mu
+                    0.0); // gamma
+
+            sendRequestToServers(sites.iterator(), servers, asyncHttpClient, results);
+
+            for (Future<Response> r : results) {
+                String response = null;
+                try {
+                    response = r.get().getResponseBody();
+                    // System.out.printf("response: %s\n\n", response);
+                } catch (Exception e) {
+                    System.err.println("ERROR: couldn't read response.");
+                    e.printStackTrace();
+                }
+
+                sumlnL += Double.parseDouble(response);
+                // System.out.printf("%s\n", response);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.printf("Log-likelihood = %s\n", sumlnL);
+        System.out.printf("Time: %s ms\n\n", System.currentTimeMillis() - startTime);
+
+        return sumlnL;
     }
 
     private void updateGlobalsOnServers(List<String> servers, AsyncHttpClient asyncHttpClient, double tau, double kappa, double t, double c, double a, double g, double mu, double gamma) throws Exception {
         Set<Future<Response>> results = Sets.newHashSet();
 
+        if (refresh)
+            System.out.println("Refreshing slave cache.");
+
         for (String server : servers) {
-            final String url = "http://" + server + ":" + Slave.SERVER_PORT + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma);
+            final String url = "http://" + server + "/?updateglobals=" + Doubles.join(",", tau, kappa, t, c, a, g, mu, gamma) + "&refresh=" + refresh;
             Future<Response> f = asyncHttpClient.prepareGet(url).execute();
             results.add(f);
         }
 
+        refresh = false;
+
         for (Future<Response> r : results) {
             String response = r.get().getResponseBody();
-            System.out.printf("%s\n", response);
+            // System.out.printf("%s\n", response);
         }
 
     }
@@ -94,14 +188,14 @@ public class Master {
             final int site = siteIterator.next();
 
             // Pick a server and construct request URL
-            final String url = "http://" + cycleServers.next() + ":" + Slave.SERVER_PORT + "/?site=" + site;
+            final String url = "http://" + cycleServers.next() + "/?site=" + site;
 
             // Send a request to the selected server
             Future<Response> f = asyncHttpClient.prepareGet(url).execute(
                     new AsyncCompletionHandler<Response>() {
                         @Override
                         public Response onCompleted(Response response) throws Exception {
-                            System.out.printf("Response from %s for site %s. lnL = %s\n", url, site, response.getResponseBody().split(",")[0]);
+                            // System.out.printf("Response from %s for site %s. lnL = %s\n", url, site, response.getResponseBody().split(",")[0]);
                             return response;
                         }
                     });
@@ -120,9 +214,13 @@ public class Master {
     private AsyncHttpClient getAsyncHttpClient() {
         // Configure and startTime the http client, not too many requests, not too many native threads (e.g. OSX barfs on 2560)
         AsyncHttpClientConfig.Builder b = new AsyncHttpClientConfig.Builder()
-                .setMaximumConnectionsPerHost(maxConnectionsPerHost)
+                //.setMaximumConnectionsPerHost(maxConnectionsPerHost)
+                //.setMaximumConnectionsTotal(servers.size() * 20)
                 .setRequestTimeoutInMs(requestTimeout)
-                .setExecutorService(Executors.newFixedThreadPool(threadPoolSize));
+                .setAllowPoolingConnection(true)
+                .addRequestFilter(new ThrottleRequestFilter(servers.size() * 20))
+                .setExecutorService(Executors.newFixedThreadPool(100));
+
         return new AsyncHttpClient(b.build());
     }
 
@@ -132,12 +230,13 @@ public class Master {
      */
     private List<String> getServerAddresses() throws Exception {
         // Get all the TdGServer hostname files
+        String hostnameFilesPath = "./";
         List<File> allHostFiles = Lists.newArrayList(
                 new File(hostnameFilesPath).listFiles(new FilenameFilter() { // could use commons-io: new WildcardFileFilter("host*.txt");
 
                     @Override
                     public boolean accept(File file, String s) {
-                        return s.startsWith("host") && s.endsWith(".txt");
+                        return s.startsWith("host_") && s.endsWith(".txt");
                     }
                 }));
 
@@ -145,7 +244,9 @@ public class Master {
 
         for (File hostFile : allHostFiles) {
             // address written in the form: beo-25/192.168.52.25
-            hostAddresses.add(Files.readFirstLine(hostFile, Charset.forName("US-ASCII")).split("/")[1]);
+            String address = Files.readFirstLine(hostFile, Charset.forName("US-ASCII")).split("/")[1];
+            hostAddresses.add(address);
+            System.out.printf("Slave server address: %s\n", address);
         }
 
         return hostAddresses;
@@ -167,143 +268,126 @@ public class Master {
             Map<String, Integer> sitePattern = PhyloUtils.getCodonsAtSite(alignment, i);
             List<Integer> aminoAcidsAtSite = PhyloUtils.getDistinctAminoAcids(sitePattern.values());
             List<Integer> allCodons = PhyloUtils.getCodonsFromAminoAcids(aminoAcidsAtSite);
-            siteCodonCount.put(i, allCodons.size());
+
+            if (allCodons.size() < codonCutoff)
+                siteCodonCount.put(i, allCodons.size());
         }
 
         // Order sites by number of codons at site, descending
-        SortedMap<Integer, Integer> siteCodonCountDesc = new TreeMap<Integer, Integer>(new ValueComparer<Integer, Integer>(siteCodonCount));
+        SortedMap<Integer, Integer> siteCodonCountDesc = new TreeMap<Integer, Integer>(new ValueComparer<Integer,Integer>(siteCodonCount));
         siteCodonCountDesc.putAll(siteCodonCount);
 
         // DEBUG: Here's what we get:
-        System.out.printf("Order of sites: ");
+        /*System.out.printf("Order of sites: ");
         for (Map.Entry<Integer, Integer> e : siteCodonCountDesc.entrySet()) {
             System.out.printf("%s (%s), ", e.getKey(), e.getValue());
         }
         System.out.println();
-
+*/
         // to iterate over sites in their natural order:
         //return siteCodonCount.keySet().iterator();
 
         return siteCodonCountDesc.keySet();
     }
 
-    private void loadConfiguration() throws Exception {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream("client.properties"));
-            alignmentFile = properties.getProperty("alignment");
-            hostnameFilesPath = properties.getProperty("hostname.file.path");
-            maxConnectionsPerHost = Integer.parseInt(properties.getProperty("http.host.max.connections"));
-            requestTimeout = Integer.parseInt(properties.getProperty("http.request.timeout"));
-            threadPoolSize = Integer.parseInt(properties.getProperty("http.thread.pool.size"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
     public static void main(String[] args) throws Exception {
-        // TODO: There should be a 'BaseClient' and then implementations of 'run', or task etc.
-        // e.g. simple run, optim one variable (mu), optim multiple variables (pi + kappa)
-        // TODO: This needs to be a config item - should use same JCommander option configuration!
-        GeneticCode.setCode(GeneticCode.VERTEBRATE_MITOCHONDRIAL_CODE);
+        // TODO: There should be a 'BaseClient' and then implementations of 'optimise', or task etc.
+        // e.g. simple optimise, optim one variable (mu), optim multiple variables (pi + kappa)
         Master c = new Master();
-        c.loadConfiguration();
+        JCommander jc = new JCommander(c);
+
+        try {
+            jc.parse(args);
+        } catch (ParameterException e) {
+            System.out.printf("Error: %s\n", e.getMessage());
+            jc.usage();
+            System.exit(0);
+        }
         c.run();
+
     }
 
-    /**
-     * Little utility class that can be used to construct a SortedMap that sorts
-     * keys by values, descending. It is type-safe.
-     * <p/>
-     * e.g.
-     * <p/>
-     * Map<K, V> unsorted = new HashMap<K,V>();
-     * SortedMap<K, V> sorted = new TreeMap<K, V>(new ValueComparer<K, V>(unsorted));
-     * sorted.putAll(unsorted);
-     *
-     * @param <K>
-     * @param <V>
-     */
-    class ValueComparer<K, V extends Comparable<V>> implements Comparator<K> {
-        private final Map<K, V> map;
+    private void run() throws Exception {
+        sites = getSites();
+        servers = getServerAddresses();
 
-        public ValueComparer(Map<K, V> map) {
-            this.map = map;
-        }
+        double[] start = new double[]{globals.tau, globals.kappa, globals.pi[0], globals.pi[1], globals.pi[2], globals.mu};
 
-        // Compare two values in a map (in descending order)
-        public int compare(K key1, K key2) {
-            V value1 = this.map.get(key1);
-            V value2 = this.map.get(key2);
-            int c = value2.compareTo(value1);
-            if (c != 0) {
-                return c;
-            }
-            Integer hashCode1 = key1.hashCode();
-            Integer hashCode2 = key2.hashCode();
-            return hashCode1.compareTo(hashCode2);
-        }
-    }
+        asyncHttpClient = getAsyncHttpClient();
 
-    class MuFunction implements UnivariateRealFunction {
-        private List<String> servers;
-        private Collection<Integer> sites;
+        if (optimiseGlobals) {
+            int iteration = 0;
+            while (iteration++ < 5) {
+                System.out.printf("Iteration %s for tolerance %s.\n", iteration, convergence);
 
-        MuFunction(List<String> servers, Collection<Integer> sites) {
-            this.servers = servers;
-            this.sites = sites;
-        }
+                // 6 global parameters to optimise: tau, kappa, pi (3) and mu
+                DirectSearchOptimizer dso = new NelderMead();
+                dso.setConvergenceChecker(new SimpleScalarValueChecker(-1, convergence));
+                dso.setMaxEvaluations(Constants.MAX_EVALUATIONS);
 
-        @Override
-        public double value(double m) throws FunctionEvaluationException {
+                RealPointValuePair pair;
 
-            AsyncHttpClient asyncHttpClient = getAsyncHttpClient();
+                // use additive log-transform to ensure that pi parameters sum to 1
+                double[] pi = CoreUtils.alr(new double[]{start[2], start[3], start[4]});
+                start = new double[]{start[0], start[1], pi[0], pi[1], pi[2], start[5]};
 
-            try {
-                updateGlobalsOnServers(servers, asyncHttpClient, 1e-6, 8.09325, 0.15828, 0.20551, 0.57731, 0.05890, m, 0.0);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-
-            asyncHttpClient.getConfig().executorService().shutdown();
-
-            // calculate the total log-likelihood
-
-            AsyncHttpClient asyncHttpClient2 = getAsyncHttpClient();
-
-            Set<Future<Response>> results = Sets.newHashSet();
-
-            try {
-                sendRequestToServers(sites.iterator(), servers, asyncHttpClient2, results);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-
-
-            // Output each result
-            double sumlnL = 0.0;
-            for (Future<Response> r : results) {
-
-                String response = null;
                 try {
-                    response = r.get().getResponseBody();
-                } catch (Exception e) {
-                    System.err.println("Error: couldn't read response.");
-                    e.printStackTrace();
+                    pair = dso.optimize(new GlobalParameterOptimiser(), GoalType.MAXIMIZE, start);
+                } catch (FunctionEvaluationException me) {
+                    System.out.println("Reached maximum number of evaluations!");
+                    throw new RuntimeException(me);
                 }
 
-                sumlnL += Double.parseDouble(response);
-                System.out.printf("%s\n", response);
+                double[] optima = pair.getPoint();
+                System.out.printf("Found optima.\nLog-likelihood = %s\n", pair.getValue());
+                pi = CoreUtils.alr_inv(Arrays.copyOfRange(optima, 2, 5));
+                System.out.printf("MLE: -tau %s -kappa %s -pi %s,%s,%s,%s -mu %s\n", optima[0], optima[1], pi[0], pi[1], pi[2], (1 - pi[0] - pi[1] - pi[2]), optima[5]);
+
+                System.arraycopy(optima, 0, start, 0, optima.length);
+                start = new double[]{start[0], start[1], pi[0], pi[1], pi[2], start[5]};
+
+                results.add(new Result(iteration, pair.getValue(), Arrays.copyOf(start, start.length)));
+                refresh = true;
             }
 
-            asyncHttpClient2.getConfig().executorService().shutdown();
+            System.out.println("Results of optimisation iterations:");
+            for (Result r : results) {
+                System.out.printf("%s\n", r.toString());
+            }
 
-            System.out.printf("Sum lnL = %s for mu = %s\n", sumlnL, m);
-
-            return sumlnL;
+        } else {
+            evaluate(start);
         }
+
+        System.out.printf("FINISHED!\n");
+        asyncHttpClient.close();
     }
+
+    @Parameter(names = "-s", description = "Codon alignment file in Phylip sequential format", required = true)
+    public String alignmentFile;
+
+    @ParametersDelegate
+    public GeneticCodeOption gc = new GeneticCodeOption();
+
+    @ParametersDelegate
+    public GlobalsOptions globals = new GlobalsOptions();
+
+    @Parameter(names = "-timeout", description = "How long to wait before timing out master-to-slave connection", required = false)
+    public int requestTimeout = 60000000;
+
+    @Parameter(names = "-max-connections", description = "Maximum number of connections from master to each slave host", required = false)
+    public int maxConnectionsPerHost = 10;
+
+    @Parameter(names = "-thread-pool-size", description = "How many threads to have available to connect to each slave", required = false)
+    public int threadPoolSize = 100;
+
+    @Parameter(names = "-optimise-globals", description = "Optimise the global parameters", required = false)
+    public boolean optimiseGlobals = false;
+
+    @Parameter(names = "-codon-cutoff", description = "Only analyse sites with this maximum number of codons observed (just for testing).", required = false, hidden = true)
+    public int codonCutoff = 100;
+
+    @Parameter(names = "-convergence", description = "Convergence tolerance.", required = false, hidden = true)
+    public double convergence = 1E-5;
 }

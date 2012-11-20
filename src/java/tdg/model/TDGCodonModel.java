@@ -242,12 +242,6 @@ public class TDGCodonModel {
         }
 
 
-        /*
-        * instead of multiplying by U[j,i] here and then UInv[k,j] below, we can calculate the product
-        * when we do the eigenvalue decomposition above i.e.:
-        * for (i <- 1..64; j <- 1..64; k <- 1..64) { UUInv[x++] = U[i][k] * UInv[k][j] }
-        */
-
         //CodeTimer.store("getProbabilityMatrix_1", start);
 
         //long start2 = CodeTimer.start();x
