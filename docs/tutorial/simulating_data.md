@@ -4,7 +4,7 @@ In the simplest case, say you have two clades for which you want to generate syn
 
 1. *Preparing the tree*. The tree needs to be fully annotated. We do this by running:
 
-	`java cp dist/tdg12.jar tdg.TreeNodeLabeler PB2_FMutSel0.tree`
+	`java cp dist/tdg12.jar tdg.tree.TreeNodeLabeler PB2_FMutSel0.tree`
 	
 	The TreeNodeLabeler program reads the original tree and writes a new tree (with suffix ".out") in which every internal node has been labeled either "Av" or "Hu". Additionally, there will be a node labeled "Av_HS", indicating that this internal node is connected to a child node with a different label (i.e. we're going from "Av" to "Hu"). The non-homogenous model will use the midpoint of this branch as the point at which substitution models will change. It is recommended that you open the new labeled tree in a tree viewer program such as Figtree and check all the nodes are labeled as you expect. If they aren't, you can manually edit the tree or original Newick file to split the tree as you like.
 	
@@ -16,7 +16,7 @@ In the simplest case, say you have two clades for which you want to generate syn
 	
 	**-heteroclades** gives the 2-letter labels that we are using the in tree (the root of the tree is always assumed to be the first group in this list).
 	
-	**-fitness** (as many -fitness parameters are there are groups). The order in which the -fitness parameters are given should match the order that you specified the group names -heteroclades.
+	**-fitness** (as many -fitness parameters as there are groups). The order in which the -fitness parameters are given should match the order that you specified the group names -heteroclades.
 	
 	**-characters** specifies the corresponding amino acids for the list of fitness values.
 	
@@ -42,4 +42,8 @@ Amino acid frequencies are:
 
 	`java -cp dist/tdg12.jar tdg.sim.AlignmentSimulator -tree PB2_FMutSel0.tree.out -heteroclades Av,Hu -fitnessfile fitness.av.txt -fitnessfile fitness.hu.txt -tau 1e-2 -kappa 6.5 -pi 0.25,0.25,0.25,0.25 -mu 2.0 -gc standard -output alignmentsim.phyl`
 	
-	
+	where the options are as above, but:
+
+	**-fitnessfile** (as many -fitnessfile parameters as there are groups). The order in which the -fitnessfile parameters are given should match the order you specified the group names in -heteroclades.
+
+
