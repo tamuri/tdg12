@@ -131,7 +131,7 @@ public class AlignmentSimulator {
         BufferedWriter out = Files.newWriter(new File(outputFile), Charsets.US_ASCII);
 
         // The PHYLIP header: <taxa>   <seq_length>
-        out.write(sequences.keySet().size() + "   " + sequences.values().iterator().next().size());
+        out.write(sequences.keySet().size() + "   " + sequences.values().iterator().next().size() * 3);
         out.newLine();
 
         for (Map.Entry<String, Collection<Integer>> e : sequences.entrySet()) {
