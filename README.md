@@ -218,6 +218,8 @@ program like Excel to plot the distribution. The three columns in the
 distribution files are (i) the histogram bins for _S_ (ii) all
 mutations/subsitutions and (iii) non-synonymous mutations/substitutions.
 
+![](https://raw.github.com/tamuri/tdg12/master/docs/tutorial/results/exact/plot.png)
+
 Simulating data using the mutation-selection model
 --------------------------------------------------
 
