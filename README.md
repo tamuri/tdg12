@@ -1,5 +1,5 @@
-TdG12: Estimating the distribution of selection coefficients
-============================================================
+TdG12: Estimating distribution of selection coefficients
+========================================================
 
 Program for estimating the distribution of selection coefficients (fitness effects) from phylogenetic data using a site-wise mutation-selection model.
 
@@ -168,22 +168,19 @@ Once the program completes, the results saved in tdg.out need to be
 processed to calculate the distribution of selection coefficients. The
 output looks something like (truncated):
 
-> `Site 1 - Residues: [1/20] { 1:(12, M), 2:(0, A), 3:(1, R), ... } `
->
-> `Site 1 - Optimisation run (267 evaluations). lnL = -4.939901E-5, Params = {0.0, ...} `
->
-> `Site 1 - Homogeneous model lnL: -4.939901011180276E-5 `
->
-> `Site 1 - Fitness: { -13.06494, -18.20550, -16.32137, ... }`
->
-> `Site 1 - Pi: { 4.79931E-6, 5.79345E-8, 2.70189E-7, ... }`
->
-> `...`
+```
+Site 1 - Residues: [1/20] { 1:(12, M), 2:(0, A), 3:(1, R), ... }
+Site 1 - Optimisation run (267 evaluations). lnL = -4.939901E-5, Params = {0.0, ...}
+Site 1 - Homogeneous model lnL: -4.939901011180276E-5
+Site 1 - Fitness: { -13.06494, -18.20550, -16.32137, ... }
+Site 1 - Pi: { 4.79931E-6, 5.79345E-8, 2.70189E-7, ... }
+...
+```
 
 The output is quite verbose. Run the following command (specifying the
 name of the result file with '-o tdg.out'):
 
-> `java -cp tdg12.jar tdg.results.All`` -o tdg.out`` -gc vertebrate_mit -tau 1e-6 -kappa 7.8 -pi 0.25,0.25,0.25,0.25 -mu 2.3`
+> `java -cp tdg12.jar tdg.results.All -o tdg.out -gc vertebrate_mit -tau 1e-6 -kappa 7.8 -pi 0.25,0.25,0.25,0.25 -mu 2.3`
 
 The global parameters should be the same as were specified when you run
 the analysis. This command reads the results file and the global
@@ -240,15 +237,13 @@ corresponding to a single location in the alignment. Each fitness must
 be separated by a space and each site should be on a new line. For
 example, to simulate an alignment with 5 sites:
 
-> `-21 -21 -21 -21 -21 -21 -21 -21 -21 2.19 3.07 -21 2.39 -21 -21 -21 -21 -21 -21 -21`
->
-> `-21 -21 1.74 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 4.23 -21 -21 -21 -21`
->
-> `0.93 -21 -21 -21 -21 -21 -21 -21 -21 0.31 -21 -21 2.63 -21 -21 -21 4.11 -21 -21 6.39`
->
-> `2.75 -21 -21 -21 -21 -21 -21 -21 -21 0.92 -21 -21 1.71 -21 2.28 0.72 1.33 -21 -21 3.51`
->
-> `-21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 0.79 -21 -21 -21 -21`
+```
+-21 -21 -21 -21 -21 -21 -21 -21 -21 2.19 3.07 -21 2.39 -21 -21 -21 -21 -21 -21 -21
+-21 -21 1.74 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 4.23 -21 -21 -21 -21
+0.93 -21 -21 -21 -21 -21 -21 -21 -21 0.31 -21 -21 2.63 -21 -21 -21 4.11 -21 -21 6.39
+2.75 -21 -21 -21 -21 -21 -21 -21 -21 0.92 -21 -21 1.71 -21 2.28 0.72 1.33 -21 -21 3.51
+-21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 -21 0.79 -21 -21 -21 -21
+```
 
 Each line specifies the fitnesses of each amino acid in the canonical
 IUPAC order. Residues that are unobserved at a site are given a fitness &lt;-20. If this file is saved as 'F.txt', the alignment is generated
