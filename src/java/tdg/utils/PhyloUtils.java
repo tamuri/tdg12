@@ -11,8 +11,12 @@ import pal.datatype.DataTypeTool;
 import pal.tree.ReadTree;
 import pal.tree.SimpleTree;
 import pal.tree.Tree;
+import pal.tree.TreeUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -148,5 +152,34 @@ public class PhyloUtils {
         for (Residue r : allResidues) if (r.count > 0) distinctAAs.add(r.index);
 
         return distinctAAs;
+    }
+
+    /**
+     * Converts a tree to a pretty-print String
+     */
+    public static String prettyTreeString(Tree tree) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        TreeUtils.printNH(tree, pw, true, true);
+        pw.close();
+
+        try {
+            sw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sw.toString();
+    }
+
+    public static double getTotalTreeLength(Tree tree) {
+        double treeLength = 0;
+        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
+            treeLength += tree.getExternalNode(i).getBranchLength();
+        }
+        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
+            treeLength += tree.getInternalNode(i).getBranchLength();
+        }
+        return treeLength;
     }
 }

@@ -11,7 +11,7 @@ public class TDGGlobals {
     private final double[] pi;
     private final double[] codonPiProduct = new double[GeneticCode.CODON_STATES];
     private final double[] neutralMu = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
-    private final double[] errorMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    // private final double[] errorMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
     public TDGGlobals(double tau, double kappa, double[] pi, double mu, double gamma) { 
         this.tau = tau;
@@ -34,7 +34,7 @@ public class TDGGlobals {
         */
 
         // trying a different style of error matrix, with no_of_substitutions^gamma
-        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+       /* for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             double diagonal = 0;
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
                 if (i == j) continue;
@@ -53,7 +53,7 @@ public class TDGGlobals {
             }
             errorMatrix[i * GeneticCode.CODON_STATES + i] = 1 - diagonal;
         }
-
+*/
         /*
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
@@ -111,10 +111,6 @@ public class TDGGlobals {
 
     public double getNeutralMutationRate(int codonI, int codonJ) {
         return neutralMu[codonI * GeneticCode.CODON_STATES + codonJ];
-    }
-
-    public double[] getErrorMatrix() {
-        return errorMatrix;
     }
 
     public double getTau() {

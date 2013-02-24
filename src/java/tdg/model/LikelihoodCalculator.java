@@ -25,8 +25,8 @@ public class LikelihoodCalculator {
     private final Map<String, Integer> states;
     private final Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
     private final double[] probMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
-    private final double[] probMatrix0 = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
-    private final double[] probMatrix1 = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+
+    private Map<Node, double[]> rootPartials;
 
     private List<Parameter> parameters;
     private final Map<Node, String> nodeLabels = Maps.newHashMap();
@@ -34,6 +34,9 @@ public class LikelihoodCalculator {
 
     private int[] siteCodons;
 
+    // TODO: Improve memory usage of these conditionals...do we need to store everything??!
+    // TODO: For example, strictly speaking, we only need as many arrays as we have concurrent threads running, and each can be reused
+    // Could we have a reusable pool of 64*64 arrays? We would then only create 16 (or whatever), instead of 3598!
     private final double[][] tipConditionals;
     private final double[][] internalConditionals;
 
@@ -63,6 +66,7 @@ public class LikelihoodCalculator {
     }
 
     private void fillTipConditionals() {
+        // TODO: do we need to save this each time? we just need codon index or gap!
         for (int i = 0; i < tree.getExternalNodeCount(); i++) {
             String parentName = getNodeLabel(tree.getExternalNode(i));
             int codon = states.get(parentName);
@@ -87,8 +91,12 @@ public class LikelihoodCalculator {
     }
 
     public double function(double[] parameters) {
+
+        rootPartials = Maps.newHashMap();
+
         updateParameters(parameters);
         double l = calculateLogLikelihood();
+
         double p = 0.0;
 
         // If prior has been specified
@@ -97,6 +105,7 @@ public class LikelihoodCalculator {
         }
 
         // System.out.printf("%s\t %s\n", l+p, Doubles.join(" ", parameters));
+
 
         return l + p;
     }
@@ -112,7 +121,21 @@ public class LikelihoodCalculator {
 
         if (sum < 0) sum = 0;
 
+        // if (logScaling != 0) System.out.printf("log-scaling = %s\n", logScaling);
+
         return Math.log(sum) + logScaling;
+    }
+
+    public Map<Node, double[]> getRootPartials() {
+        return rootPartials;
+    }
+
+    public Map<String, TDGCodonModel> getCladeModels() {
+        return cladeModels;
+    }
+
+    public double getLogScaling() {
+        return logScaling;
     }
 
     private double[] downTree() {
@@ -135,8 +158,13 @@ public class LikelihoodCalculator {
                     lowerConditional = internalConditionals[child.getNumber()];
                 }
 
+                if (child.getParent().isRoot()) {
+                    rootPartials.put(child, lowerConditional);
+                }
+
                 if (cladeModels.size() == 1) { // homogeneous model
 
+                    // TODO: A probability matrix (of sorts) already exists in TdGCodonModel...do we need to create it again?
                     cladeModels.get(ROOT_MODEL_NAME).getProbabilityMatrix(probMatrix, child.getBranchLength());
                     updateIntraCladeConditionals(lowerConditional, partial, probMatrix);
 
@@ -149,23 +177,47 @@ public class LikelihoodCalculator {
                         updateIntraCladeConditionals(lowerConditional, partial, probMatrix);
 
                     } else { // this is a hostshift!
-
-                        cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix0, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT);
+                        final double[] probMatrix1 = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+                        cladeModels.get(getNodeLabel(node).substring(0, 2)).getProbabilityMatrix(probMatrix, child.getBranchLength() * Constants.CLADE_BRANCH_SPLIT);
                         cladeModels.get(getNodeLabel(child).substring(0, 2)).getProbabilityMatrix(probMatrix1, child.getBranchLength() * (1 - Constants.CLADE_BRANCH_SPLIT));
-                        updateInterCladeConditionals(lowerConditional, partial, probMatrix0, probMatrix1);
-
+                        updateInterCladeConditionals(lowerConditional, partial, probMatrix, probMatrix1);
                     }
                 }
             }
 
-            if (Constants.USE_SCALING) {
+            if (Constants.USE_SCALING && !(node.getParent() == null) && !node.getParent().isRoot() ) {
                 scaleConditionals(node, partial);
             }
 
             internalConditionals[node.getNumber()] = partial;
+
         }
         //CodeTimer.store("downTree", start);
         return internalConditionals[tree.getRoot().getNumber()];
+    }
+
+    public double getNodeLikelihood(Node node, double branchLength) {
+        double[] sumPartial = new double[GeneticCode.CODON_STATES];
+        Arrays.fill(sumPartial, 1.0);
+
+        for (final Map.Entry<Node, double[]> e : getRootPartials().entrySet()) {
+            if (e.getKey().equals(node))
+                getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, branchLength);
+            else
+                getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, e.getKey().getBranchLength());
+
+            updateIntraCladeConditionals(e.getValue(), sumPartial, probMatrix);
+        }
+
+        double lnL = 0;
+        final double[] frequencies = getCladeModels().get("ALL").getCodonFrequencies();
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) lnL += sumPartial[i] * frequencies[i];
+
+        if (lnL < 0) lnL = 0;
+
+        lnL = Math.log(lnL) + getLogScaling();
+
+        return lnL;
     }
 
     private void scaleConditionals(Node node, double[] conditionals) {
@@ -200,7 +252,7 @@ public class LikelihoodCalculator {
         }
     }
 
-    private void updateIntraCladeConditionals(double[] lowerConditional, double[] conditionals, double[] probMatrix) {
+    public void updateIntraCladeConditionals(double[] lowerConditional, double[] conditionals, double[] probMatrix) {
         for (int i : siteCodons) {
             double branchProb = 0.0;
             for (int j : siteCodons) {

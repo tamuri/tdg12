@@ -54,6 +54,7 @@ public class TDGCodonModel {
         this.globals = globals;
         this.fitness = fitness;
 
+        // TODO: Convert this to a byte array (we're only storing a list of 60 codons)...save space
         this.siteCodons = Ints.toArray(PhyloUtils.getCodonsFromAminoAcids(aminoAcids));
 
         this.aminoAcidsToFitness = new int[GeneticCode.AMINO_ACID_STATES];
@@ -194,6 +195,7 @@ public class TDGCodonModel {
      */
     private void doEigenValueDecomposition() {
         EigenvalueDecomposition evdB = new EigenvalueDecomposition(B);
+        // TODO: we don't need to keep B or Q after this point! We just need lamba, U and UInv
 
         lambda = DoubleFactory2D.dense.diagonal(evdB.getD());
         // we scale branch length by global parameter mu here so we only have do it once
@@ -209,6 +211,9 @@ public class TDGCodonModel {
                 UInv[j * matrixSize + i] = piSqrt * R.getQuick(i, j); // inverse(R) == transpose(R)
             }
         }
+
+
+
 
         /* // Eigenvalue decomposition of non-symmetric Q
         EigenvalueDecomposition evdQ = new EigenvalueDecomposition(Q);
