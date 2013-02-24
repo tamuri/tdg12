@@ -39,9 +39,8 @@ public class Constants {
     /**
      * Yang's method of scaling partials on very large trees to avoid numerical underflow.
      */
-    public static final boolean USE_SCALING = true;
     public static final double SCALING_THRESHOLD = 1e-15;
-    public static final int SCALING_NODE_STEP = 5;
+    public static final int SCALING_NODE_STEP = 15;
 
     /**
      * How to split the branch connecting heterogeneous models (e.g. 0.5 = half-way).

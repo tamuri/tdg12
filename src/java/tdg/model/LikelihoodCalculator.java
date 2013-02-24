@@ -185,7 +185,7 @@ public class LikelihoodCalculator {
                 }
             }
 
-            if (Constants.USE_SCALING && !(node.getParent() == null) && !node.getParent().isRoot() ) {
+            if (!(node.getParent() == null) && !node.getParent().isRoot() ) {
                 scaleConditionals(node, partial);
             }
 
