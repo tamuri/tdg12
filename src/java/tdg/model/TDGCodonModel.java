@@ -233,31 +233,30 @@ public class TDGCodonModel {
                 matrix[i] = ref[i];
             }
         } else {*/
-        //long start = CodeTimer.start();
+
         // NOTE: If matrixSize were a final static int, then there would be some
         // performance improvement. Java doesn't array bounds check
         // in that case. See http://wikis.sun.com/display/HotSpotInternals/RangeCheckElimination
         // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
         // More improvement using jdk1.7.0 ~58secs to ~42secs!!
-        for (int i = 0; i < matrixSize; i++) {
-            double temp = Math.exp(branchLength * lambda.getQuick(i));
-            for (int j = 0; j < matrixSize; j++) {
-                PtTemp[j * matrixSize + i] = temp * U[j * matrixSize + i];
+
+        // We store matrices in row-major order: column i, row j
+        for (int i = 0; i < matrixSize; i++) { // for each column
+            double temp = Math.exp(branchLength * lambda.getQuick(i)); // get the diagonal of lambda (= column)
+            for (int j = 0; j < matrixSize; j++) { // for each row
+                PtTemp[j * matrixSize + i] = U[j * matrixSize + i] * temp;
             }
         }
 
-
-        //CodeTimer.store("getProbabilityMatrix_1", start);
-
-        //long start2 = CodeTimer.start();x
+        // matrix[row sitecodons[i] * 64 + column sitecodons[j]]
+        // PtTemp[row i, column k], UInv[row k, column j]
         for (int j = 0; j < matrixSize; j++) {
             for (int i = 0; i < matrixSize; i++) {
                 double temp = 0;
                 for (int k = 0; k < matrixSize; k++) {
                     temp += PtTemp[i * matrixSize + k] * UInv[k * matrixSize + j];
                 }
-                if (temp < 0) temp = 0;
-                matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = temp;
+                matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = Math.abs(temp);
             }
         }
 

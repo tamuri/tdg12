@@ -37,8 +37,15 @@ public class LikelihoodCalculator {
     // TODO: Improve memory usage of these conditionals...do we need to store everything??!
     // TODO: For example, strictly speaking, we only need as many arrays as we have concurrent threads running, and each can be reused
     // Could we have a reusable pool of 64*64 arrays? We would then only create 16 (or whatever), instead of 3598!
-    private final double[][] tipConditionals;
+   //  private final double[][] tipConditionals;
     private final double[][] internalConditionals;
+
+    private final double[] gapPartial = new double[GeneticCode.CODON_STATES];
+    {
+        Arrays.fill(gapPartial, 1.0);
+    }
+
+    private final double[] tipPartial = new double[GeneticCode.CODON_STATES];
 
     private Prior prior;
 
@@ -60,9 +67,9 @@ public class LikelihoodCalculator {
             nodeLabels.put(n, n.getIdentifier().getName());
         }
 
-        this.tipConditionals = new double[tree.getExternalNodeCount()][GeneticCode.CODON_STATES];
+        //this.tipConditionals = new double[tree.getExternalNodeCount()][GeneticCode.CODON_STATES];
         this.internalConditionals = new double[tree.getInternalNodeCount()][GeneticCode.CODON_STATES];
-        fillTipConditionals();
+        //fillTipConditionals();
     }
 
     private void fillTipConditionals() {
@@ -72,9 +79,9 @@ public class LikelihoodCalculator {
             int codon = states.get(parentName);
 
             if (GeneticCode.getInstance().isUnknownCodonState(codon)) {
-                Arrays.fill(tipConditionals[i], 1.0);
+               // Arrays.fill(tipConditionals[i], 1.0);
             } else {
-                tipConditionals[i][codon] = 1.0;
+               // tipConditionals[i][codon] = 1.0;
 
 /*                int aai = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codon);
                 int[] codoni = GeneticCode.getInstance().getCodonIndexFromAminoAcidIndex(aai);
@@ -153,7 +160,14 @@ public class LikelihoodCalculator {
                 double[] lowerConditional;
 
                 if (child.isLeaf()) {
-                    lowerConditional = tipConditionals[child.getNumber()];
+                    if (GeneticCode.getInstance().isUnknownCodonState(states.get(getNodeLabel(child)))) {
+                        lowerConditional = gapPartial;
+                    } else {
+                        Arrays.fill(tipPartial, 0.0);
+                        tipPartial[states.get(getNodeLabel(child))] = 1.0;
+                        lowerConditional = tipPartial;
+                    }
+
                 } else {
                     lowerConditional = internalConditionals[child.getNumber()];
                 }
