@@ -3,24 +3,19 @@ package tdg.utils;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.primitives.Ints;
 import pal.alignment.Alignment;
 import pal.alignment.AlignmentReaders;
 import pal.datatype.DataTypeTool;
-import pal.tree.ReadTree;
-import pal.tree.SimpleTree;
-import pal.tree.Tree;
-import pal.tree.TreeUtils;
+import pal.tree.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Collection of static methods, including some that wrap common functions available in PAL.
@@ -77,6 +72,18 @@ public class PhyloUtils {
                     ));
         }
         return states;
+    }
+
+    public static Map<String, Integer> getCleanedCodons(Alignment alignment, int site) {
+        Map<String, Integer> all = getCodonsAtSite(alignment, site);
+
+        for (Map.Entry<String, Integer> e : all.entrySet()) {
+            if (GeneticCode.getInstance().isUnknownCodonState(GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(e.getValue()))) {
+                all.put(e.getKey(), GeneticCode.UNKNOWN_STATE);
+            }
+        }
+
+        return all;
     }
 
     /**
@@ -181,5 +188,31 @@ public class PhyloUtils {
             treeLength += tree.getInternalNode(i).getBranchLength();
         }
         return treeLength;
+    }
+
+    public static boolean isTreeAndAlignmentValid(Tree tree, Alignment alignment) {
+        Set<String> nodes = Sets.newHashSet();
+        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
+            nodes.add(tree.getExternalNode(i).getIdentifier().getName());
+        }
+
+        Set<String> seqs = Sets.newHashSet();
+        for (int i = 0; i < alignment.getSequenceCount(); i++) {
+            seqs.add(alignment.getIdentifier(i).getName());
+        }
+
+        return !(seqs.size() != nodes.size() || Sets.symmetricDifference(seqs, nodes).size() > 0);
+    }
+
+    public static void setAllBranchLengths(Tree tree, double branchLength) {
+        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
+            tree.getExternalNode(i).setBranchLength(branchLength);
+        }
+        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
+            Node n = tree.getInternalNode(i);
+            if (n.getParent() != null) {
+                n.setBranchLength(branchLength);
+            }
+        }
     }
 }

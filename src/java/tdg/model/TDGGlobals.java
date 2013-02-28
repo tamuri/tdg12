@@ -1,7 +1,11 @@
 package tdg.model;
 
 import com.google.common.primitives.Doubles;
+import tdg.utils.CoreUtils;
 import tdg.utils.GeneticCode;
+import tdg.utils.m;
+
+import java.util.Arrays;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -16,9 +20,37 @@ public class TDGGlobals {
     public TDGGlobals(double tau, double kappa, double[] pi, double mu, double gamma) { 
         this.tau = tau;
         this.kappa = kappa;
-        this.pi = pi;
+        this.pi = pi; // TODO: check that pi is 4 items that sum to 1
         this.mu = mu;
         this.gamma = gamma;
+        calculateCodonPiProduct();
+        this.nu = calculateNeutralMutationRate();
+        makeErrorMatrix();
+    }
+
+    /**
+     * Returns globals initialised with (arbitrary) "sensible" values (used as initial parameters value in MLE)
+     */
+    public TDGGlobals() {
+        this.tau = 0.01;
+        this.kappa = 2.0;
+        this.pi = m.repd(0.25, 4);
+        this.mu = 1.0;
+        this.gamma = 0;
+        calculateCodonPiProduct();
+        this.nu = calculateNeutralMutationRate();
+        makeErrorMatrix();
+    }
+
+    public TDGGlobals(double[] parameters) {
+        this.tau = parameters[0];
+        this.kappa = parameters[1];
+
+        double[] pi_ = CoreUtils.alr_inv(new double[]{parameters[2], parameters[3], parameters[4]});
+        this.pi = new double[]{pi_[0], pi_[1], pi_[2], 1 - (pi_[0] + pi_[1] + pi_[2])};
+
+        this.mu = parameters[5];
+        this.gamma = 0;
         calculateCodonPiProduct();
         this.nu = calculateNeutralMutationRate();
         makeErrorMatrix();
@@ -139,12 +171,37 @@ public class TDGGlobals {
 
     @Override
     public String toString() {
-        return "TDGGlobals{" +
-                "tau=" + tau +
-                ", kappa=" + kappa +
-                ", mu=" + mu +
-                ", 1/nu=" + nu +
-                ", pi={" + Doubles.join(", ", pi) + "}" +
+        return "TDGGlobals{ " +
+                "-tau " + tau +
+                " -kappa " + kappa +
+                " -pi " + Doubles.join(",", pi) +
+                " -mu " + mu +
+                " (1/nu=" + nu + ")" +
                 '}';
     }
+
+    public double[] getOptimiserParameters() {
+        double[] parameters = new double[6]; // tau, kappa, pi (3), mu
+
+        parameters[0] = this.tau;
+        parameters[1] = this.kappa;
+
+        double[] pi_inv = CoreUtils.alr(new double[]{this.pi[0], this.pi[1], this.pi[2]});
+
+        parameters[2] = pi_inv[0];
+        parameters[3] = pi_inv[1];
+        parameters[4] = pi_inv[2];
+
+        parameters[5] = this.mu;
+
+        return parameters;
+    }
+
+    public static void main(String[] args) {
+        TDGGlobals g = new TDGGlobals(0.18384062387520766, 4.128219745551803, new double[]{0.28119571640365953, 0.24370918125910898, 0.3741515588418039, 0.10094354349542756}, 2.6629836091051446, 0);
+        System.out.printf("in: %s\n", g.toString());
+        System.out.printf("out: %s\n", Doubles.join(", ", g.getOptimiserParameters()));
+        System.out.printf("in2: %s\n", (new TDGGlobals(g.getOptimiserParameters())).toString());
+    }
+
 }

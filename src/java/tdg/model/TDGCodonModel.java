@@ -75,6 +75,8 @@ public class TDGCodonModel {
         this.U = new double[matrixSize * matrixSize];
         this.UInv = new double[matrixSize * matrixSize];
         this.PtTemp = new double[matrixSize * matrixSize];
+
+        // TODO: updateModel() should probably be here
     }
 
     public void updateModel() {

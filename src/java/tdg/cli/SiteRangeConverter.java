@@ -16,10 +16,10 @@ public class SiteRangeConverter implements IStringConverter<Pair<Integer,Integer
         // if this is a range
         if (pos >= 0) {
             String[] split = s.split(SEP);
-            return new Pair<Integer, Integer>(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+            return Pair.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
         } else {
             // it's a single site
-            return new Pair<Integer, Integer>(Integer.parseInt(s), Integer.parseInt(s));
+            return Pair.of(Integer.parseInt(s), Integer.parseInt(s));
         }
     }
 }

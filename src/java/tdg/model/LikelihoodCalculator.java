@@ -99,7 +99,7 @@ public class LikelihoodCalculator {
 
     public double function(double[] parameters) {
 
-        rootPartials = Maps.newHashMap();
+
 
         updateParameters(parameters);
         double l = calculateLogLikelihood();
@@ -117,7 +117,8 @@ public class LikelihoodCalculator {
         return l + p;
     }
 
-    private double calculateLogLikelihood() {
+    public double calculateLogLikelihood() {
+        rootPartials = Maps.newHashMap();
         logScaling = 0.0;
         double[] conditionals = downTree();
         double[] f = cladeModels.get(ROOT_MODEL_NAME).getCodonFrequencies();
@@ -173,7 +174,8 @@ public class LikelihoodCalculator {
                 }
 
                 if (child.getParent().isRoot()) {
-                    rootPartials.put(child, lowerConditional);
+                    rootPartials.put(child, Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES));
+                    // System.out.printf("%s\t%s\n", child.getNumber(), Doubles.join(",", lowerConditional));
                 }
 
                 if (cladeModels.size() == 1) { // homogeneous model
