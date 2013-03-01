@@ -23,9 +23,9 @@ public class RerootedTreeIterator implements Iterable<Tree> {
         // Save the outgroup taxa from one child off the root node, so we can restore it once we're done
         if (t.getRoot().getChildCount() == 2) {
             findOutgroups(t.getRoot().getChild(0));
-            System.out.printf("Outgroup(s): %s\n\n", outgroups.toString());
+            //System.out.printf("Outgroup(s): %s\n\n", outgroups.toString());
         } else {
-            System.out.println("Root is trifurcation - no defined outgroup.");
+            //System.out.println("Root is trifurcation - no defined outgroup.");
         }
 
         // Unroot the tree - this is what we'll work with

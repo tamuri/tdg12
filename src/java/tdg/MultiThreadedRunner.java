@@ -5,9 +5,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.AtomicDouble;
-import org.apache.commons.math.ConvergenceException;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
@@ -27,7 +25,6 @@ import tdg.trees.RerootedTreeIterator;
 import tdg.utils.GeneticCode;
 import tdg.utils.Pair;
 import tdg.utils.PhyloUtils;
-import tdg.utils.m;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +35,7 @@ import java.util.concurrent.*;
 /**
  * REMEMBER: lots of cpus != lots of memory
  *  imagine that you're running with 100s of cpus but <1GB memory
+ *  Think about a small tree with lots of sites - can't store all likelihood calculators
  */
 public class MultiThreadedRunner extends AbstractRunner {
     private final ExecutorService threadPool;
@@ -98,7 +96,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                         }
                     }
 
-                    System.out.printf("%s = %s\n", g.toString(), total);
+                    // System.out.printf("%s = %s\n", g.toString(), total);
 
                     return total;
                 }
@@ -129,11 +127,11 @@ public class MultiThreadedRunner extends AbstractRunner {
         // loop through every rerooted tree
         for (Tree tree : rti) {
 
-            System.out.printf("Rerooted tree %s\n", count++);
+            // System.out.printf("Rerooted tree %s\n", count++);
 
             // sanity check the current likelihood
             previousLnL = updateSiteCalculatorTrees(allCalculators, tree, alignment, globals, fitnessStore);
-            System.out.printf("Current lnL: %s\n", previousLnL);
+            // System.out.printf("Current lnL: %s\n", previousLnL);
 
             // get the root for this tree
             Node r = tree.getRoot();
@@ -160,7 +158,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                             }
                         }, GoalType.MAXIMIZE, MIN_BRANCH_LENGTH, MAX_BRANCH_LENGTH);
 
-                        System.out.printf("%s -> %s\t%s -> %s\n", previousLnL, opt.getFunctionValue(), old, opt.getResult());
+                        // System.out.printf("%s -> %s\t%s -> %s\n", previousLnL, opt.getFunctionValue(), old, opt.getResult());
                         previousLnL = opt.getFunctionValue();
                         c.setBranchLength(opt.getResult());
 
@@ -196,6 +194,7 @@ public class MultiThreadedRunner extends AbstractRunner {
 
                     Fitness fitness = new Fitness(new double[residues.size()], true);
                     TDGCodonModel model = new TDGCodonModel(globals, fitness, residues);
+/*
 
                     List<String> residueStrings = Lists.transform(residues, new Function<Integer, String>() {
                         int pos = 1;
@@ -205,6 +204,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                         }
                     });
                     System.out.printf("Site %s - Residues: [%s/%s] { %s }\n", final_i, residues.size(), residues.size(), Joiner.on(", ").join(residueStrings));
+*/
 
                     calculator.addCladeModel("ALL", model);
                     calculator.setParameters(fitness);
@@ -219,8 +219,8 @@ public class MultiThreadedRunner extends AbstractRunner {
 
                     if (residues.size() == 1) {
                         double lnl = calculator.function(new double[]{});
-                        System.out.printf("Site %s - 0.0\n", final_i);
-                        System.out.printf("Site %s - %s\n", final_i, lnl);
+                        //System.out.printf("Site %s - 0.0\n", final_i);
+                        //System.out.printf("Site %s - %s\n", final_i, lnl);
                         total.getAndAdd(lnl);
                         return Pair.of(final_i, fitness);
                     } else {
@@ -236,8 +236,8 @@ public class MultiThreadedRunner extends AbstractRunner {
                         calculator.function(optima.getPoint());
 
 
-                        System.out.printf("Site %s - %s\n", final_i, Doubles.join(", ", fitness.get()));
-                        System.out.printf("Site %s - %s\n", final_i, optima.getValue());
+                        //System.out.printf("Site %s - %s\n", final_i, Doubles.join(", ", fitness.get()));
+                        //System.out.printf("Site %s - %s\n", final_i, optima.getValue());
 
                         total.getAndAdd(optima.getValue());
                         
@@ -248,8 +248,6 @@ public class MultiThreadedRunner extends AbstractRunner {
 
             futures.add(future);
         }
-
-        // List<Fitness> fitnesses = Lists.newArrayList();
 
         for (Future<Pair<Integer, Fitness>> f : futures) {
             try {
@@ -303,7 +301,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                 e.printStackTrace();
             }
         }
-        System.out.println();
+        // System.out.println();
 
         return sum;
     }
