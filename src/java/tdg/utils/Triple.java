@@ -8,18 +8,20 @@ package tdg.utils;
  * at <http://wwws.sun.com/software/communitysource/jrl.html>.
 
  */
-public class Pair<A, B> {
+public class Triple<A, B, C> {
 
     public final A first;
     public final B second;
+    public final C third;
 
-    public Pair(A first, B second) {
+    public Triple(A first, B second, C third) {
         this.first = first;
         this.second = second;
+        this.third = third;
     }
 
     public String toString() {
-        return "Pair[" + first + "," + second + "]";
+        return "Triple[" + first + "," + second + "," + third + "]";
     }
 
     @Override
@@ -27,10 +29,11 @@ public class Pair<A, B> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Pair pair = (Pair) o;
+        Triple triple = (Triple) o;
 
-        if (first != null ? !first.equals(pair.first) : pair.first != null) return false;
-        if (second != null ? !second.equals(pair.second) : pair.second != null) return false;
+        if (first != null ? !first.equals(triple.first) : triple.first != null) return false;
+        if (second != null ? !second.equals(triple.second) : triple.second != null) return false;
+        if (third != null ? !third.equals(triple.third) : triple.third != null) return false;
 
         return true;
     }
@@ -39,11 +42,12 @@ public class Pair<A, B> {
     public int hashCode() {
         int result = first != null ? first.hashCode() : 0;
         result = 31 * result + (second != null ? second.hashCode() : 0);
+        result = 31 * result + (third != null ? third.hashCode() : 0);
         return result;
     }
 
-    public static <A,B> Pair<A,B> of(A a, B b) {
-        return new Pair<A,B>(a,b);
+    public static <A,B,C> Triple<A,B,C> of(A a, B b, C c) {
+        return new Triple<A,B,C>(a,b,c);
     }
 }
 

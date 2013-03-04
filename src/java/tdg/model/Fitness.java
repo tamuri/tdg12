@@ -1,6 +1,7 @@
 package tdg.model;
 
 import com.google.common.primitives.Doubles;
+import tdg.utils.GeneticCode;
 
 /**
  * The LikelihoodCalculator optimises one or more parameters. Fitness is one of the parameters that can be optimised (in
@@ -21,5 +22,11 @@ public class Fitness extends Parameter {
     public String toString() {
         return "Fitness = [" + Doubles.join(", ", get()) + "]";
     }
+
+    public static synchronized Fitness getMutationOnlyFitness() {
+        return mutationalOnlyFitness;
+    }
+
+    private final static Fitness mutationalOnlyFitness = new Fitness(new double[GeneticCode.AMINO_ACID_STATES], true);
 
 }

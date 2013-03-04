@@ -61,4 +61,5 @@ public class Constants {
      * The name of the program .jar (for command-line option help)
      */
     public static final String PROGRAM_JAR = "tdg12.jar";
+    public static final double INITIAL_BRANCH_LENGTH = 0.1;
 }

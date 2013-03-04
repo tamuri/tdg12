@@ -1,11 +1,9 @@
 package tdg.model;
 
 import com.google.common.primitives.Doubles;
+import org.apache.commons.math.util.MathUtils;
 import tdg.utils.CoreUtils;
 import tdg.utils.GeneticCode;
-import tdg.utils.m;
-
-import java.util.Arrays;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -20,7 +18,10 @@ public class TDGGlobals {
     public TDGGlobals(double tau, double kappa, double[] pi, double mu, double gamma) { 
         this.tau = tau;
         this.kappa = kappa;
-        this.pi = pi; // TODO: check that pi is 4 items that sum to 1
+
+        if (pi.length != 4) throw new RuntimeException("-pi should have exactly 4 items.");
+        this.pi = MathUtils.normalizeArray(pi, 1);
+
         this.mu = mu;
         this.gamma = gamma;
         calculateCodonPiProduct();
@@ -34,7 +35,7 @@ public class TDGGlobals {
     public TDGGlobals() {
         this.tau = 0.01;
         this.kappa = 2.0;
-        this.pi = m.repd(0.25, 4);
+        this.pi = CoreUtils.repd(0.25, 4);
         this.mu = 1.0;
         this.gamma = 0;
         calculateCodonPiProduct();

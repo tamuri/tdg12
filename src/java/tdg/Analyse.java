@@ -60,6 +60,8 @@ public class Analyse {
         final int sites = alignment.getSiteCount() / 3; // Alignment object is a nucleotide alignment
         System.out.printf("tdg.Analyse - %s alignment file has %s sequences, each with %s codon sites.\n", options.alignmentFile, alignment.getSequenceCount(), sites);
 
+        MatrixArrayPool.treeSize = tree.getInternalNodeCount();
+
         // Something to collect results from the analysis of each site
         Set<Future<double[]>> results = Sets.newHashSet();
 

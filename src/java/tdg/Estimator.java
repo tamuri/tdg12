@@ -17,7 +17,6 @@ import tdg.utils.PhyloUtils;
  * TODO: Implement checkpointing, to read current globals, tree and fitness parameters
  */
 public class Estimator {
-    private static final double INITIAL_BRANCH_LENGTH = 0.1;
 
     EstimatorOptions options = new EstimatorOptions();
 
@@ -34,8 +33,6 @@ public class Estimator {
 
     private void run() {
 
-        // Load a runner: SingleThreadRunner, MultiThreadRunner(threads), DistributedRunner(slaves)
-
         Runner runner = new MultiThreadedRunner(options.threads);
 
         if (options.runner.equals("distributed")) {
@@ -49,65 +46,51 @@ public class Estimator {
             // SingleThreadedRunner
         }
 
-        // Logic goes here, each time called "Runner" (we're not interested in how it runs)
-
-
         Tree tree = PhyloUtils.readTree(options.tree);
-
-
         Alignment alignment = PhyloUtils.readAlignment(options.alignment);
 
         if (!PhyloUtils.isTreeAndAlignmentValid(tree, alignment)) {
             throw new RuntimeException("ERROR: tree and alignment do not have the same taxa.");
         }
 
-        // Object pooling: http://code.google.com/p/furious-objectpool/ or http://commons.apache.org/proper/commons-pool/
+        MatrixArrayPool.treeSize = tree.getInternalNodeCount();
 
-        /* MdR's routine for parameter estimation:
-        (0) Set inital branch lengths to some reasonable value (say 0.1),
-            set all F=0,
-            and mutational parameters to some starting values as you suggest.
-        (1) Optimise mutation model and mu (i.e. multiply all branches by mu)
-        (2) Optimise branch lengths one by one.
-        (3) Optimise fitnesses.
-        (4) Repeat 1, 2 and 3 until convergence.
-         */
+        // Step 0 - Set the initial parameters
 
-        // Step 0
-        PhyloUtils.setAllBranchLengths(tree, INITIAL_BRANCH_LENGTH);
+        // Get rid of the current branch lengths and set to a sensible initial value
+        PhyloUtils.setAllBranchLengths(tree, Constants.INITIAL_BRANCH_LENGTH);
 
+        // Default constructor sets: -tau 0.01 -kappa 2.0 -pi 0.25,0.25,0.25 -mu 1.0
         TDGGlobals globals = new TDGGlobals();
 
+        // Use the mutational matrix only for the first iteration (all 20 amino acids have F = 0)
+        Fitness intialFitness = Fitness.getMutationOnlyFitness();
         FitnessStore fitnessStore = new FitnessStore(alignment.getSiteCount());
         for (int i = 1; i <= alignment.getSiteCount() / 3; i++) {
-            fitnessStore.setFitness(
-                    i,
-                    new Fitness(
-                            new double[PhyloUtils.getDistinctAminoAcids(
-                                    PhyloUtils.getCleanedCodons(alignment, i).values()
-                                    ).size()], true));
+            fitnessStore.setFitness(i, intialFitness);
         }
 
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1e-3);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1e-4);
         RealPointValuePair previous;
         RealPointValuePair current = new RealPointValuePair(new double[]{}, Double.NEGATIVE_INFINITY);
 
         int iteration = 0;
         boolean converged = false;
+
         while (!converged) {
             iteration++;
 
-            // Step 1
+            // Step 1 - optimise the site-invariant mutational parameters, get new TDGGlobals
             Pair<Double, TDGGlobals> globalsOptResult = runner.optimiseMutationModel(tree, alignment, globals, fitnessStore);
             System.out.printf("%s - Mutational parameters optimisation: %s ( %s )\n", iteration, globalsOptResult.first, globalsOptResult.second.toString());
             globals = globalsOptResult.second;
 
-            // Step 2
+            // Step 2 - optimise the branch lengths, get updated tree
             Pair<Double, Tree> treeOptResult = runner.optimiseBranchLengths(tree, alignment, globals, fitnessStore);
             System.out.printf("%s - Branch length optimisation: %s ( Total tree length: %s )\n", iteration, treeOptResult.first, PhyloUtils.getTotalTreeLength(treeOptResult.second));
             tree = treeOptResult.second;
 
-            // Step 3
+            // Step 3 - optimise the fitness parameters
             double fitnessOptResult = runner.optimiseFitness(tree, alignment, globals, fitnessStore);
             System.out.printf("%s - Fitness optimisation: %s\n", iteration, fitnessOptResult);
 
@@ -116,10 +99,13 @@ public class Estimator {
             } else {
                 previous = current;
                 current = new RealPointValuePair(new double[]{}, fitnessOptResult);
-
                 converged = convergenceChecker.converged(iteration, previous, current);
             }
         }
+
+        System.out.println();
+        System.out.printf("%s\n", tree.toString());
+
 
 
         runner.close();

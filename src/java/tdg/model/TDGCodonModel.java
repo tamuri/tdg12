@@ -7,6 +7,7 @@ import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import cern.jet.math.Functions;
 import com.google.common.primitives.Ints;
 import tdg.Constants;
+import tdg.MatrixArrayPool;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -39,14 +40,14 @@ public class TDGCodonModel {
     private final double[] codonPi;
     private final int[] aminoAcidsToFitness;
 
-    private final double[] Q; // substitution matrix
-    private final DoubleMatrix2D B; // PI^0.5 * Q * PI^-0.5
+     // substitution matrix
+    // private final DoubleMatrix2D B; // PI^0.5 * Q * PI^-0.5
 
     private DoubleMatrix1D lambda; // eigenvalue of B
     // For calculating the PT matrix
     private final double[] U;
     private final double[] UInv;
-    private final double[] PtTemp;
+    //private final double[] PtTemp = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
     // Map<Double, double[]> probMatrixStore = Maps.newHashMap();
 
@@ -70,20 +71,18 @@ public class TDGCodonModel {
         this.matrixSize = siteCodons.length;
 
         this.codonPi = new double[matrixSize];
-        this.Q = new double[matrixSize * matrixSize];
-        this.B = DoubleFactory2D.dense.make(matrixSize, matrixSize);
         this.U = new double[matrixSize * matrixSize];
         this.UInv = new double[matrixSize * matrixSize];
-        this.PtTemp = new double[matrixSize * matrixSize];
+        // this.PtTemp = new double[matrixSize * matrixSize];
 
         // TODO: updateModel() should probably be here
     }
 
     public void updateModel() {
         makePI();
-        makeQ();
-        makeB();
-        doEigenValueDecomposition();
+        double[] Q = makeQ();
+        DoubleMatrix2D B = makeB(Q);
+        doEigenValueDecomposition(B);
         // probMatrixStore.clear();
     }
 
@@ -117,8 +116,9 @@ public class TDGCodonModel {
      * <p/>
      * without using separate S and PI matrices. The two methods are equivalent.
      */
-    private void makeQ() {
+    private double[] makeQ() {
         double[] f = fitness.get();
+        double[] Q = new double[matrixSize * matrixSize];
 
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
@@ -149,6 +149,8 @@ public class TDGCodonModel {
             }
             Q[row * matrixSize + row] = -sum;
         }
+
+        return Q;
     }
 
     private double getRelativeFixationProbability(double Sij) {
@@ -158,12 +160,14 @@ public class TDGCodonModel {
         return Sij / -Math.expm1(-Sij);
     }
 
-    private void makeB() {
+    private DoubleMatrix2D makeB(double[] Q) {
+        DoubleMatrix2D B = DoubleFactory2D.dense.make(matrixSize, matrixSize);
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
                 B.setQuick(i, j, Q[i * matrixSize + j] * Math.sqrt(codonPi[i]) / Math.sqrt(codonPi[j]));
             }
         }
+        return B;
     }
 
     /**
@@ -195,7 +199,7 @@ public class TDGCodonModel {
      * (\Pi ^{{1 \mathord{\left/ {\vphantom {1 2}} \right. \kern-\nulldelimiterspace} 2}} U^{ - 1} )
      * \f]
      */
-    private void doEigenValueDecomposition() {
+    private void doEigenValueDecomposition(DoubleMatrix2D B) {
         EigenvalueDecomposition evdB = new EigenvalueDecomposition(B);
         // TODO: we don't need to keep B or Q after this point! We just need lamba, U and UInv
 
@@ -242,6 +246,8 @@ public class TDGCodonModel {
         // MitoData, site 274, time in this method ~56secs down to ~50secs (54x54 codon matrix)
         // More improvement using jdk1.7.0 ~58secs to ~42secs!!
 
+        double[] PtTemp = MatrixArrayPool.pop();
+
         // We store matrices in row-major order: column i, row j
         for (int i = 0; i < matrixSize; i++) { // for each column
             double temp = Math.exp(branchLength * lambda.getQuick(i)); // get the diagonal of lambda (= column)
@@ -261,6 +267,8 @@ public class TDGCodonModel {
                 matrix[siteCodons[i] * GeneticCode.CODON_STATES + siteCodons[j]] = Math.abs(temp);
             }
         }
+
+        MatrixArrayPool.push(PtTemp);
 
 /*
             probMatrixStore.put(branchLength, Arrays.copyOf(matrix, GeneticCode.CODON_STATES * GeneticCode.CODON_STATES));
@@ -316,6 +324,8 @@ public class TDGCodonModel {
     }
 
     public double[] getFullQ() {
+        double[] Q = makeQ();
+
         double[] fullQ = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
 
         // This is the entire 60x60 matrix for Q

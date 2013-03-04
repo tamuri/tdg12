@@ -7,6 +7,7 @@ import org.apache.commons.math.util.MathUtils;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
+import tdg.MatrixArrayPool;
 import tdg.cli.AnalyseOptions;
 import tdg.utils.GeneticCode;
 
@@ -24,7 +25,8 @@ public class LikelihoodCalculator {
     private String ROOT_MODEL_NAME;
     private final Map<String, Integer> states;
     private final Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
-    private final double[] probMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    // private final double[] probMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    private double[] probMatrix;
 
     private Map<Node, double[]> rootPartials;
 
@@ -38,7 +40,8 @@ public class LikelihoodCalculator {
     // TODO: For example, strictly speaking, we only need as many arrays as we have concurrent threads running, and each can be reused
     // Could we have a reusable pool of 64*64 arrays? We would then only create 16 (or whatever), instead of 3598!
    //  private final double[][] tipConditionals;
-    private final double[][] internalConditionals;
+    // private final double[][] internalConditionals;
+    private double[][] internalConditionals;
 
     private final double[] gapPartial = new double[GeneticCode.CODON_STATES];
     {
@@ -68,7 +71,7 @@ public class LikelihoodCalculator {
         }
 
         //this.tipConditionals = new double[tree.getExternalNodeCount()][GeneticCode.CODON_STATES];
-        this.internalConditionals = new double[tree.getInternalNodeCount()][GeneticCode.CODON_STATES];
+        // this.internalConditionals = new double[tree.getInternalNodeCount()][GeneticCode.CODON_STATES];
         //fillTipConditionals();
     }
 
@@ -118,6 +121,9 @@ public class LikelihoodCalculator {
     }
 
     public double calculateLogLikelihood() {
+
+        if (probMatrix == null) getStorage();
+
         rootPartials = Maps.newHashMap();
         logScaling = 0.0;
         double[] conditionals = downTree();
@@ -131,7 +137,21 @@ public class LikelihoodCalculator {
 
         // if (logScaling != 0) System.out.printf("log-scaling = %s\n", logScaling);
 
+
         return Math.log(sum) + logScaling;
+    }
+
+    public void getStorage() {
+        probMatrix = MatrixArrayPool.pop();
+        internalConditionals = MatrixArrayPool.pop2();
+
+    }
+
+    public void releaseStorage() {
+        MatrixArrayPool.push(probMatrix);
+        MatrixArrayPool.push2(internalConditionals);
+        probMatrix = null;
+        internalConditionals = null;
     }
 
     public Map<Node, double[]> getRootPartials() {
@@ -213,6 +233,8 @@ public class LikelihoodCalculator {
     }
 
     public double getNodeLikelihood(Node node, double branchLength) {
+        probMatrix = MatrixArrayPool.pop();
+
         double[] sumPartial = new double[GeneticCode.CODON_STATES];
         Arrays.fill(sumPartial, 1.0);
 
@@ -232,6 +254,8 @@ public class LikelihoodCalculator {
         if (lnL < 0) lnL = 0;
 
         lnL = Math.log(lnL) + getLogScaling();
+
+        MatrixArrayPool.push(probMatrix);
 
         return lnL;
     }

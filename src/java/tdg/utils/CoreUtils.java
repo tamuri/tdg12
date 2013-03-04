@@ -33,16 +33,6 @@ public class CoreUtils {
         return t;
     }
 
-    public static int[] range(int from, int length) {
-        int[] r = new int[length];
-
-        for (int i = 0; i < r.length; i++) {
-            r[i] = i + from;
-        }
-
-        return r;
-    }
-
     public static double[] alr(double[] p) {
         // additive log-ratio transformation
         // y = log(p1 / pn), log(p2 / pn), log(p3 / pn) ... log(pn-1 / pn)
@@ -100,5 +90,38 @@ public class CoreUtils {
             }
         }
         throw new IllegalStateException("Could not find a free TCP/IP port.");
+    }
+
+    public static double[] repd(double x, int n) {
+        double[] o = new double[n];
+        for (int i = 0; i < n; i++) {
+            o[i] = x;
+        }
+        return o;
+    }
+
+    public static int[] repi(int x, int n) {
+        int[] o = new int[n];
+        for (int i = 0; i < n; i++) {
+            o[i] = x;
+        }
+
+        return o;
+    }
+
+    public static double[] seqd(double start, double end, double step) {
+        double[] o = new double[(int) ((end - start) / step) + 1];
+        for (int i = 0; i < o.length; i++) {
+            o[i] = (step * (i + 1));
+        }
+        return o;
+    }
+
+    public static int[] seqi(int start, int end) {
+        int[] o = new int[end - start + 1];
+        for (int i = 0; i < o.length; i++) {
+            o[i] = start + i;
+        }
+        return o;
     }
 }
