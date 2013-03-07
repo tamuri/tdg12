@@ -3,13 +3,17 @@ package tdg;
 import com.google.common.collect.Lists;
 import tdg.model.Fitness;
 
+import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * User: atamuri
  * Date: 27/02/2013 15:43
  */
-public class FitnessStore {
+public class FitnessStore implements Serializable, Iterable<Fitness> {
+    private static final long serialVersionUID = -2630793049038547404L;
+
     List<Fitness> fitnessStore;
 
     public FitnessStore(int size) {
@@ -27,5 +31,11 @@ public class FitnessStore {
         }
 
         return fitnessStore.get(site - 1);
+    }
+
+
+    @Override
+    public Iterator<Fitness> iterator() {
+        return fitnessStore.iterator();
     }
 }

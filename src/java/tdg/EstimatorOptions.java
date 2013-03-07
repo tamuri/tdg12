@@ -2,7 +2,10 @@ package tdg;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import com.google.common.collect.Lists;
 import tdg.cli.GeneticCodeOption;
+
+import java.util.List;
 
 public class EstimatorOptions {
     @Parameter(names = "-tree", description = "", required = true)
@@ -14,11 +17,14 @@ public class EstimatorOptions {
     @Parameter(names = "-threads", description = "", required = false)
     public int threads = 1;
 
-    @Parameter(names = "-runner", description = "", required = false)
-    public String runner = "DEFAULT";
+    @Parameter(names = "-distributed", description = "", required = false)
+    public boolean distributed;
 
     @ParametersDelegate
     public GeneticCodeOption gc = new GeneticCodeOption();
+
+    @Parameter(names = "-hosts", description = "", required = false, variableArity = true)
+    public List<String> hosts = Lists.newArrayList();
 
     /*
     TODO: allow command-line options for:

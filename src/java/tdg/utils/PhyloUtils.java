@@ -158,6 +158,8 @@ public class PhyloUtils {
         List<Integer> distinctAAs = Lists.newArrayList();
         for (Residue r : allResidues) if (r.count > 0) distinctAAs.add(r.index);
 
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) if (!distinctAAs.contains(i)) distinctAAs.add(i);
+
         return distinctAAs;
     }
 

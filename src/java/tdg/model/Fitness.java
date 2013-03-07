@@ -28,5 +28,4 @@ public class Fitness extends Parameter {
     }
 
     private final static Fitness mutationalOnlyFitness = new Fitness(new double[GeneticCode.AMINO_ACID_STATES], true);
-
 }

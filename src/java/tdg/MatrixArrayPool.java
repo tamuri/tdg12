@@ -3,7 +3,6 @@ package tdg;
 import com.google.common.collect.Lists;
 import tdg.utils.GeneticCode;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**

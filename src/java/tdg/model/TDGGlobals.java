@@ -5,15 +5,19 @@ import org.apache.commons.math.util.MathUtils;
 import tdg.utils.CoreUtils;
 import tdg.utils.GeneticCode;
 
+import java.io.Serializable;
+
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
-public class TDGGlobals {
+public class TDGGlobals implements Serializable {
     private final double tau, kappa, mu, nu, gamma;
     private final double[] pi;
     private final double[] codonPiProduct = new double[GeneticCode.CODON_STATES];
     private final double[] neutralMu = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
     // private final double[] errorMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+
+    private static final long serialVersionUID = -8384731824605072833L;
 
     public TDGGlobals(double tau, double kappa, double[] pi, double mu, double gamma) { 
         this.tau = tau;
@@ -28,6 +32,8 @@ public class TDGGlobals {
         this.nu = calculateNeutralMutationRate();
         makeErrorMatrix();
     }
+
+
 
     /**
      * Returns globals initialised with (arbitrary) "sensible" values (used as initial parameters value in MLE)

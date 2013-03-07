@@ -125,6 +125,7 @@ public class LikelihoodCalculator {
         if (probMatrix == null) getStorage();
 
         rootPartials = Maps.newHashMap();
+        rootpartials = Lists.newArrayList();
         logScaling = 0.0;
         double[] conditionals = downTree();
         double[] f = cladeModels.get(ROOT_MODEL_NAME).getCodonFrequencies();
@@ -166,6 +167,20 @@ public class LikelihoodCalculator {
         return logScaling;
     }
 
+    class Partial {
+        public int number;
+        public double[] partial;
+        public double branchlength;
+
+        Partial(int number, double[] partial, double branchlength) {
+            this.number = number;
+            this.partial = partial;
+            this.branchlength = branchlength;
+        }
+    }
+
+    private List<Partial> rootpartials = Lists.newArrayList();
+
     private double[] downTree() {
         //long start = CodeTimer.start();
         for (int i = 0; i < tree.getInternalNodeCount(); i++) {
@@ -195,6 +210,7 @@ public class LikelihoodCalculator {
 
                 if (child.getParent().isRoot()) {
                     rootPartials.put(child, Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES));
+                    rootpartials.add(new Partial(child.getNumber(), Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES), child.getBranchLength()));
                     // System.out.printf("%s\t%s\n", child.getNumber(), Doubles.join(",", lowerConditional));
                 }
 
@@ -233,18 +249,33 @@ public class LikelihoodCalculator {
     }
 
     public double getNodeLikelihood(Node node, double branchLength) {
+        // TODO: store the true branchlengths here, so they can be updated with the distribtuedrunner
         probMatrix = MatrixArrayPool.pop();
 
         double[] sumPartial = new double[GeneticCode.CODON_STATES];
         Arrays.fill(sumPartial, 1.0);
+/*
 
         for (final Map.Entry<Node, double[]> e : getRootPartials().entrySet()) {
-            if (e.getKey().equals(node))
+            if (e.getKey().getNumber() == node.getNumber()) {
                 getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, branchLength);
-            else
+                // System.out.printf("found!");
+            } else
                 getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, e.getKey().getBranchLength());
 
             updateIntraCladeConditionals(e.getValue(), sumPartial, probMatrix);
+        }
+*/
+
+
+        for (Partial p : rootpartials) {
+            if (p.number == node.getNumber()) {
+                getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, branchLength);
+            } else {
+                getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, p.branchlength);
+            }
+            updateIntraCladeConditionals(p.partial, sumPartial, probMatrix);
+
         }
 
         double lnL = 0;
@@ -258,6 +289,14 @@ public class LikelihoodCalculator {
         MatrixArrayPool.push(probMatrix);
 
         return lnL;
+    }
+
+    public void setBranch(Node node, double bl) {
+        for (Partial p : rootpartials) {
+            if (p.number == node.getNumber()) {
+                p.branchlength = bl;
+            }
+        }
     }
 
     private void scaleConditionals(Node node, double[] conditionals) {
