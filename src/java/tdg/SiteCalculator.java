@@ -32,7 +32,7 @@ public class SiteCalculator {
         return likelihoodCalculator.function(likelihoodCalculator.getMinimisationParameters().getParameters());
     }
 
-    public double getNodeLikelihood(Node node, double branchLength) {
+    public double getNodeLikelihood(int node, double branchLength) {
         return likelihoodCalculator.getNodeLikelihood(node, branchLength);
     }
 }

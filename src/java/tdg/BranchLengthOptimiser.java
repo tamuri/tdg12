@@ -164,7 +164,7 @@ public class BranchLengthOptimiser {
             Future<Double> future = threadPool.submit(new Callable<Double>() {
                 @Override
                 public Double call() throws Exception {
-                    return s.getNodeLikelihood(node, newBranchLength);
+                    return s.getNodeLikelihood(node.getNumber(), newBranchLength);
                 }
             });
             futures.add(future);
