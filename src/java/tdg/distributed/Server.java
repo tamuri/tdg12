@@ -10,6 +10,11 @@ import tdg.cli.GeneticCodeOption;
 import tdg.utils.CoreUtils;
 import tdg.utils.PhyloUtils;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.net.InetAddress;
+import java.util.Random;
+
 /**
  * User: atamuri
  * Date: 05/03/2013 15:55
@@ -33,8 +38,30 @@ public class Server {
 
         int port = CoreUtils.findFreePort();
         HessianServer hessianServer = new HessianServer(port, hessianService);
+
+        try {
+            writeHostnameFile(port);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         hessianServer.start();
     }
+
+    private static void writeHostnameFile(int port) throws Exception {
+        InetAddress in = InetAddress.getLocalHost();
+        InetAddress[] all = InetAddress.getAllByName(in.getHostName());
+
+        FileWriter writer = new FileWriter("host_" + in.getHostName() + "_" + new Random().nextInt(100000) +".txt");
+        BufferedWriter out = new BufferedWriter(writer);
+
+        for (InetAddress anAll : all) {
+            out.write(anAll + ":" + port + "\n");
+        }
+
+        out.close();
+    }
+
 
     private class ServerOptions {
         @Parameter(names = "-alignment", description = "", required = true)

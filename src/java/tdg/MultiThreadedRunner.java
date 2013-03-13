@@ -1,6 +1,7 @@
 package tdg;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
@@ -12,6 +13,9 @@ import org.apache.commons.math.optimization.*;
 import org.apache.commons.math.optimization.direct.DirectSearchOptimizer;
 import org.apache.commons.math.optimization.direct.NelderMead;
 import org.apache.commons.math.optimization.univariate.BrentOptimizer;
+import org.apache.commons.math.random.MersenneTwister;
+import org.apache.commons.math.random.RandomData;
+import org.apache.commons.math.random.RandomDataImpl;
 import pal.alignment.Alignment;
 import pal.tree.Node;
 import pal.tree.Tree;
@@ -22,6 +26,7 @@ import tdg.utils.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.*;
 
@@ -43,6 +48,10 @@ public class MultiThreadedRunner extends AbstractRunner {
         this.calculator = new Calculator();
     }
 
+    public void setSites(int[] sites) {
+        this.sites = sites;
+    }
+
     @Override
     protected void runnerSetTree(Tree tree) {
         // don't need to do anything
@@ -54,7 +63,7 @@ public class MultiThreadedRunner extends AbstractRunner {
     }
 
     @Override
-    protected double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals) {
+    public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals) {
         /* final TDGCodonModel mutationModel;
 
                     if (mutationOnly) {
@@ -67,12 +76,13 @@ public class MultiThreadedRunner extends AbstractRunner {
 
         List<Future<Double>> futures = Lists.newArrayList();
 
-        for (int i : sites) {
-            final int site = i;
+        for (int i = 0; i < sites.length; i++) {
+            final int site = sites[i];
+            final int fitness_i = i + 1;
             Future<Double> future = threadPool.submit(new Callable<Double>() {
                 @Override
                 public Double call() throws Exception {
-                    return calculator.getLogLikelihood(getAlignment(), tree, site, fitnessStore.getFitness(site), globals);
+                    return calculator.getLogLikelihood(getAlignment(), tree, site, fitnessStore.getFitness(fitness_i), globals);
 
                                 /*  Could simplify:          if (mutationOnly) {
                                     calculator.addCladeModel("ALL", mutationModel);
@@ -93,9 +103,11 @@ public class MultiThreadedRunner extends AbstractRunner {
         final List<Future<Pair<Integer, Fitness>>> futures = Lists.newArrayList();
 
         final AtomicDouble total = new AtomicDouble(0);
-        
-        for (int i : sites) {
-            final int site = i;
+        final RandomData randomData = new RandomDataImpl(new MersenneTwister(987654321));
+
+        for (int i = 0; i < sites.length; i++) {
+            final int site = sites[i];
+            final int fitness_i = i + 1;
             Future<Pair<Integer, Fitness>> future = threadPool.submit(new Callable<Pair<Integer, Fitness>>() {
                 @Override
                 public Pair<Integer, Fitness> call() throws Exception {
@@ -105,49 +117,85 @@ public class MultiThreadedRunner extends AbstractRunner {
                     LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, null);
                     calculator.getStorage();
 
-                    Fitness fitness = new Fitness(new double[residues.size()], true);
-                    TDGCodonModel model = new TDGCodonModel(globals, fitness, residues);
+                    // TODO: have multiple run with multiple initial starting parameters
+                    // TODO: handle convergence problems!
+                    // Fitness fitness = new Fitness(fitnessStore.getFitness(fitness_i).get(), true);
 
-                    calculator.addCladeModel("ALL", model);
-                    calculator.setParameters(fitness);
+                    List<Pair<Double, double[]>> results = Lists.newArrayList();
 
-                    DirectSearchOptimizer optimiser = new NelderMead();
-                    optimiser.setMaxEvaluations(Constants.MAX_EVALUATIONS);
-                    RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
-                    optimiser.setConvergenceChecker(convergenceChecker);
+                    for (int run = 0; run < 3; run++) {
+                        double[] f;
 
-                    LikelihoodFunctionWrapper wrapper = new LikelihoodFunctionWrapper();
-                    wrapper.setLc(calculator);
-
-                    if (residues.size() == 1) {
-                        double lnl = calculator.function(new double[]{});
-                        calculator.releaseStorage();
-                        //System.out.printf("Site %s - 0.0\n", final_i);
-                        //System.out.printf("Site %s - %s\n", final_i, lnl);
-                        total.getAndAdd(lnl);
-                        return Pair.of(site, fitness);
-                    } else {
-                        RealPointValuePair optima;
-                        try {
-                            optima = optimiser.optimize(wrapper, GoalType.MAXIMIZE, calculator.getMinimisationParameters().getParameters());
-
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                        if (run == 0) {
+                            f = fitnessStore.getFitness(fitness_i).get();
+                        } else if (run == 1) {
+                            f = new double[residues.size()];
+                        } else {
+                            f = new double[residues.size()];
+                            for (int j = 0; j < f.length; j++) f[j] = randomData.nextUniform(-Constants.RANDOM_INITIAL_FITNESS_RANGE, Constants.RANDOM_INITIAL_FITNESS_RANGE);
                         }
 
-                        if (optima == null) return null;
+                        Fitness fitness = new Fitness(f, true);
+                        TDGCodonModel model = new TDGCodonModel(globals, fitness, residues);
 
-                        calculator.function(optima.getPoint());
+                        calculator.addCladeModel("ALL", model);
+                        calculator.setParameters(fitness);
 
-                        calculator.releaseStorage();
+                        DirectSearchOptimizer optimiser = new NelderMead();
+                        optimiser.setMaxEvaluations(Constants.MAX_EVALUATIONS);
+                        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
+                        optimiser.setConvergenceChecker(convergenceChecker);
 
-                        //System.out.printf("Site %s - %s\n", final_i, Doubles.join(", ", fitness.get()));
-                        //System.out.printf("Site %s - %s\n", final_i, optima.getValue());
+                        LikelihoodFunctionWrapper wrapper = new LikelihoodFunctionWrapper();
+                        wrapper.setLc(calculator);
 
-                        total.getAndAdd(optima.getValue());
 
-                        return Pair.of(site, fitness);
+
+                        if (residues.size() == 1) {
+                            double lnl = calculator.function(new double[]{});
+                            calculator.releaseStorage();
+                            //System.out.printf("Site %s - 0.0\n", final_i);
+                            //System.out.printf("Site %s - %s\n", final_i, lnl);
+                            // total.getAndAdd(lnl);
+                            results.add(Pair.of(lnl, fitness.get().clone()));
+                            // return Pair.of(fitness_i, fitness);
+                        } else {
+                            RealPointValuePair optima;
+                            try {
+                                optima = optimiser.optimize(wrapper, GoalType.MAXIMIZE, calculator.getMinimisationParameters().getParameters());
+                            } catch (FunctionEvaluationException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                            if (optima == null) return null;
+
+                            calculator.function(optima.getPoint());
+
+                            calculator.releaseStorage();
+
+                            //System.out.printf("Site %s - %s\n", final_i, Doubles.join(", ", fitness.get()));
+                            //System.out.printf("Site %s - %s\n", final_i, optima.getValue());
+
+                            // total.getAndAdd(optima.getValue());
+                            results.add(Pair.of(optima.getValue(), fitness.get().clone()));
+
+                            // return Pair.of(fitness_i, fitness);
+                        }
+
                     }
+
+                    double[] bestF = results.get(0).second;
+                    double bestlnL = results.get(0).first;
+                    for (int run = 1; run < results.size(); run++) {
+                        if (results.get(run).first > bestlnL) {
+                            bestlnL = results.get(run).first;
+                            bestF = results.get(run).second;
+                        }
+                    }
+
+                    total.getAndAdd(bestlnL);
+                    return Pair.of(fitness_i, new Fitness(bestF, true));
+
                 }
             });
 
@@ -166,21 +214,22 @@ public class MultiThreadedRunner extends AbstractRunner {
     @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore) {
         List<Future<Pair<Double, LikelihoodCalculator>>> futures = Lists.newArrayList();
 
-        for (int i : sites) {
-            final int site = i;
+        for (int i = 0; i < sites.length; i++) {
+            final int site = sites[i];
+            final int fitness_i = i + 1;
             Future<Pair<Double, LikelihoodCalculator>> future = threadPool.submit(new Callable<Pair<Double, LikelihoodCalculator>>() {
                 @Override
                 public Pair<Double, LikelihoodCalculator> call() throws Exception {
                     Map<String, Integer> states = PhyloUtils.getCleanedCodons(getAlignment(), site);
                     List<Integer> aminoAcids = PhyloUtils.getDistinctAminoAcids(states.values());
 
-                    TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(site), aminoAcids);
+                    TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(fitness_i), aminoAcids);
                     model.updateModel();
 
                     LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, null);
                     calculator.getStorage();
 
-                    calculator.setParameters(fitnessStore.getFitness(site));
+                    calculator.setParameters(fitnessStore.getFitness(fitness_i));
                     calculator.addCladeModel("ALL", model);
 
                     double d = calculator.calculateLogLikelihood();
@@ -204,7 +253,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         return total;
     }
 
-    @Override public double getLikelihoodSum(final Node node, final double newBranchLength) {
+    @Override public double getLikelihoodSum(final int node, final double newBranchLength) {
 
         final List<Future<Double>> futures = Lists.newArrayList();
 
@@ -225,7 +274,7 @@ public class MultiThreadedRunner extends AbstractRunner {
     }
 
     @Override
-    protected void updateBranchLength(Node child, double branchlength) {
+    public void updateBranchLength(int child, double branchlength) {
 
         for (LikelihoodCalculator lc : calculators) {
             lc.setBranch(child, branchlength);

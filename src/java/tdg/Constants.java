@@ -19,7 +19,7 @@ public class Constants {
     /**
      * When to assume convergence of MLE of fitness parameters (log-likelihood).
      */
-    public static final double CONVERGENCE_TOL = 1E-5;
+    public static final double CONVERGENCE_TOL = 1E-6;
 
     /**
      * Effectively -20 = -Infinity and 20 = Infinity for fitness parameter.
@@ -39,8 +39,8 @@ public class Constants {
     /**
      * Yang's method of scaling partials on very large trees to avoid numerical underflow.
      */
-    public static final double SCALING_THRESHOLD = 1e-15;
-    public static final int SCALING_NODE_STEP = 15;
+    public static final double SCALING_THRESHOLD = 1e-5;
+    public static final int SCALING_NODE_STEP = 5;
 
     /**
      * How to split the branch connecting heterogeneous models (e.g. 0.5 = half-way).

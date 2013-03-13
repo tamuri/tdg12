@@ -5,7 +5,7 @@ import tdg.model.TDGGlobals;
 import tdg.utils.Pair;
 
 public interface Runner {
-    public static final double MIN_BRANCH_LENGTH = 0;
+    public static final double MIN_BRANCH_LENGTH = 1e-9;
     public static final double MAX_BRANCH_LENGTH = 10;
 
     public Pair<Double, TDGGlobals> optimiseMutationModel(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore);

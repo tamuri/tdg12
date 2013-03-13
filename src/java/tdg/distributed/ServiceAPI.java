@@ -22,7 +22,11 @@ public interface ServiceAPI {
 
     public double updateLikelihoodCalculators(TDGGlobals globals);
 
-    public double getNodeLikelihood(Node node, double newBranchLength);
+    public double getNodeLikelihood(int node, double newBranchLength);
 
-    public void setBranchLength(Node node, double branchlength);
+    public void setBranchLength(int node, double branchlength);
+
+    public double optimiseFitness(TDGGlobals globals);
+
+    public FitnessStore getFitnessStore();
 }

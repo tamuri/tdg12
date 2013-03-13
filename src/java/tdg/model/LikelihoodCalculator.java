@@ -248,7 +248,7 @@ public class LikelihoodCalculator {
         return internalConditionals[tree.getRoot().getNumber()];
     }
 
-    public double getNodeLikelihood(Node node, double branchLength) {
+    public double getNodeLikelihood(int node, double branchLength) {
         // TODO: store the true branchlengths here, so they can be updated with the distribtuedrunner
         probMatrix = MatrixArrayPool.pop();
 
@@ -269,7 +269,7 @@ public class LikelihoodCalculator {
 
 
         for (Partial p : rootpartials) {
-            if (p.number == node.getNumber()) {
+            if (p.number == node) {
                 getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, branchLength);
             } else {
                 getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, p.branchlength);
@@ -291,9 +291,9 @@ public class LikelihoodCalculator {
         return lnL;
     }
 
-    public void setBranch(Node node, double bl) {
+    public void setBranch(int node, double bl) {
         for (Partial p : rootpartials) {
-            if (p.number == node.getNumber()) {
+            if (p.number == node) {
                 p.branchlength = bl;
             }
         }

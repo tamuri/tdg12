@@ -1,37 +1,30 @@
 package tdg.distributed;
 
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 import pal.alignment.Alignment;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.FitnessStore;
 import tdg.MatrixArrayPool;
-import tdg.model.*;
-import tdg.utils.CoreUtils;
-import tdg.utils.PhyloUtils;
+import tdg.MultiThreadedRunner;
+import tdg.model.TDGGlobals;
 
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
 
 /**
  * User: atamuri
  * Date: 05/03/2013 15:50
  */
 public class ServiceImpl implements ServiceAPI {
-    private final Alignment alignment;
     private int threads;
-    private int[] sites;
 
     private Tree tree;
     private FitnessStore fitnessStore;
-    private final Calculator calculator;
+
+    private final MultiThreadedRunner runner;
 
     public ServiceImpl(Alignment alignment, int threads) {
-        this.alignment = alignment;
-        this.threads = threads;
-        this.calculator = new Calculator();
+        this.runner = new MultiThreadedRunner(alignment, threads);
     }
 
     public void setTree(Tree tree) {
@@ -45,7 +38,7 @@ public class ServiceImpl implements ServiceAPI {
 
     @Override
     public void setSites(int[] sites) {
-        this.sites = sites;
+        runner.setSites(sites);
         System.out.printf("This slave is responsible for sites %s\n", Ints.join(", ", sites));
     }
 
@@ -56,64 +49,44 @@ public class ServiceImpl implements ServiceAPI {
 
     @Override
     public double optimiseMutationModel(TDGGlobals globals) {
-
-        // TODO: make multi-threaded
-
-        double sum = 0;
-        for (int pos = 0; pos < sites.length; pos++) {
-            sum += this.calculator.getLogLikelihood(alignment, tree, sites[pos], fitnessStore.getFitness(pos + 1), globals);
-        }
-
-        return sum;
+        //System.out.printf("%s - optimiseMutationModel in\n", new Timestamp(System.currentTimeMillis()));
+        double d =  runner.runnerGetLogLikelihood(this.tree, this.fitnessStore, globals);
+        //System.out.printf("%s - optimiseMutationModel out\n", new Timestamp(System.currentTimeMillis()));
+        return d;
     }
-
-    private List<LikelihoodCalculator> calculators = Lists.newArrayList();
 
     @Override
     public double updateLikelihoodCalculators(TDGGlobals globals) {
-        // TODO: make multi-threaded
-        calculators.clear();
+        //System.out.printf("%s - updatelikelihoodcalculators in\n", new Timestamp(System.currentTimeMillis()));
 
-        double sum = 0;
+        double d =  runner.updateSiteCalculatorTrees(this.tree, globals, this.fitnessStore);
+        //System.out.printf("%s - updatelikelihoodcalculators out\n", new Timestamp(System.currentTimeMillis()));
 
-        for (int pos = 0; pos < sites.length; pos++) {
-
-            Map<String, Integer> states = PhyloUtils.getCleanedCodons(this.alignment, sites[pos]);
-
-
-            TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(pos + 1), PhyloUtils.getDistinctAminoAcids(states.values()));
-            model.updateModel();
-
-            LikelihoodCalculator calculator = new LikelihoodCalculator(this.tree, states, null);
-            calculator.getStorage();
-            calculator.setParameters(fitnessStore.getFitness(pos + 1));
-            calculator.addCladeModel("ALL", model);
-
-            double result = calculator.calculateLogLikelihood();
-            sum += result;
-
-            calculator.releaseStorage();
-
-            calculators.add(calculator);
-        }
-
-        return sum;
+        return d;
     }
 
     @Override
-    public double getNodeLikelihood(Node node, double newBranchLength) {
-        double sum = 0;
-        for (LikelihoodCalculator c : calculators) {
-            sum += c.getNodeLikelihood(node, newBranchLength);
-        }
+    public double getNodeLikelihood(int node, double newBranchLength) {
+        //System.out.printf("%s - getNodeLikelihood in\n", new Timestamp(System.currentTimeMillis()));
 
-        return sum;
+        double d =  runner.getLikelihoodSum(node, newBranchLength);
+        //System.out.printf("%s - getNodeLikelihood out\n", new Timestamp(System.currentTimeMillis()));
+
+        return d;
     }
 
     @Override
-    public void setBranchLength(Node node, double branchlength) {
-        for (LikelihoodCalculator c : calculators) {
-            c.setBranch(node, branchlength);
-        }
+    public void setBranchLength(int node, double branchlength) {
+        runner.updateBranchLength(node, branchlength);
+    }
+
+    @Override
+    public double optimiseFitness(TDGGlobals globals) {
+        return runner.optimiseFitness(this.tree, globals, fitnessStore);
+    }
+
+    @Override
+    public FitnessStore getFitnessStore() {
+        return fitnessStore;
     }
 }

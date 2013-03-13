@@ -26,6 +26,12 @@ public class EstimatorOptions {
     @Parameter(names = "-hosts", description = "", required = false, variableArity = true)
     public List<String> hosts = Lists.newArrayList();
 
+    @Parameter(names = "-hostsfile", required = false)
+    public String hostsFile;
+
+    @Parameter(names = "-checkpoint", required = false)
+    public String checkpointFile;
+
     /*
     TODO: allow command-line options for:
     1. skip estimation of global parameters

@@ -13,7 +13,7 @@ import java.util.Map;
 public class Calculator {
 
     public double getLogLikelihood(Alignment alignment, Tree tree, int site, Fitness fitness, TDGGlobals globals) {
-        Map<String, Integer> states = PhyloUtils.getCodonsAtSite(alignment, site);
+        Map<String, Integer> states = PhyloUtils.getCleanedCodons(alignment, site);
         TDGCodonModel model = new TDGCodonModel(globals, fitness, PhyloUtils.getDistinctAminoAcids(states.values()));
 
         LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, null);
