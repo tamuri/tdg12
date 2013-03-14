@@ -163,6 +163,43 @@ public class PhyloUtils {
         return distinctAAs;
     }
 
+    public static List<Integer> getObservedAminoAcids(Collection<Integer> codons) {
+        // TODO: Christ almighty, there *must* be a better way to do this! Anyway, here we go...
+
+        // A small class to store counts of amino acid residues from the list of codons
+        class Residue implements Comparable<Residue>{
+            Residue (int index) { this.index = index; }
+            int index;
+            int count = 0;
+            // This sorts residues by the count field (descending) then the amino acid index
+            public int compareTo(Residue residue) {
+                if (this.count != residue.count)
+                    return residue.count - this.count;
+                return this.index - residue.index;
+            }
+        }
+
+        // Create a list to store the 20 amino acids, initial count of 0
+        List<Residue> allResidues = Lists.newArrayListWithCapacity(GeneticCode.AMINO_ACID_STATES);
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) allResidues.add(new Residue(i));
+
+        // Loop through the list of codons
+        for (int c : codons) {
+            // If we find a valid amino acid, increment its count
+            int a = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(c);
+            if (!GeneticCode.getInstance().isUnknownAminoAcidState(a)) allResidues.get(a).count++;
+        }
+
+        Collections.sort(allResidues);
+
+        // Actually, we only want to return a list of integers of observed residues, so, erm, here it is
+        // TODO: Perhaps we should pass the list of Residues back!?
+        List<Integer> distinctAAs = Lists.newArrayList();
+        for (Residue r : allResidues) if (r.count > 0) distinctAAs.add(r.index);
+
+        return distinctAAs;
+    }
+
     /**
      * Converts a tree to a pretty-print String
      */

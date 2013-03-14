@@ -1,34 +1,31 @@
 package tdg;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.commons.math.FunctionEvaluationException;
-import org.apache.commons.math.analysis.MultivariateRealFunction;
-import org.apache.commons.math.analysis.UnivariateRealFunction;
-import org.apache.commons.math.optimization.*;
+import org.apache.commons.math.optimization.GoalType;
+import org.apache.commons.math.optimization.RealConvergenceChecker;
+import org.apache.commons.math.optimization.RealPointValuePair;
+import org.apache.commons.math.optimization.SimpleScalarValueChecker;
 import org.apache.commons.math.optimization.direct.DirectSearchOptimizer;
 import org.apache.commons.math.optimization.direct.NelderMead;
-import org.apache.commons.math.optimization.univariate.BrentOptimizer;
 import org.apache.commons.math.random.MersenneTwister;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import pal.alignment.Alignment;
-import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.model.*;
 import tdg.optim.LikelihoodFunctionWrapper;
-import tdg.trees.RerootedTreeIterator;
-import tdg.utils.*;
+import tdg.utils.CoreUtils;
+import tdg.utils.Pair;
+import tdg.utils.PhyloUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 /**
@@ -38,14 +35,12 @@ import java.util.concurrent.*;
  */
 public class MultiThreadedRunner extends AbstractRunner {
     private final ExecutorService threadPool;
-    private final Calculator calculator;
     private int[] sites;
 
     public MultiThreadedRunner(Alignment alignment, int threads) {
         setAlignment(alignment);
         this.sites = CoreUtils.seqi(1, alignment.getSiteCount() / 3);
         this.threadPool =  Executors.newFixedThreadPool(threads);
-        this.calculator = new Calculator();
     }
 
     public void setSites(int[] sites) {
@@ -63,17 +58,7 @@ public class MultiThreadedRunner extends AbstractRunner {
     }
 
     @Override
-    public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals) {
-        /* final TDGCodonModel mutationModel;
-
-                    if (mutationOnly) {
-                        mutationModel = new CachedTDGCodonModel(globals, fitnessStore.getFitness(1), Ints.asList(CoreUtils.seqi(0, 19)));
-                        mutationModel.updateModel();
-                        mutationModel.getProbabilityMatrix(new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES], Constants.INITIAL_BRANCH_LENGTH);
-                    } else {
-                        mutationModel = null;
-                    }*/
-
+    public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals, final Prior prior) {
         List<Future<Double>> futures = Lists.newArrayList();
 
         for (int i = 0; i < sites.length; i++) {
@@ -82,12 +67,19 @@ public class MultiThreadedRunner extends AbstractRunner {
             Future<Double> future = threadPool.submit(new Callable<Double>() {
                 @Override
                 public Double call() throws Exception {
-                    return calculator.getLogLikelihood(getAlignment(), tree, site, fitnessStore.getFitness(fitness_i), globals);
+                    Fitness fitness = fitnessStore.getFitness(fitness_i);
+                    Map<String, Integer> states = PhyloUtils.getCleanedCodons(getAlignment(), site);
+                    TDGCodonModel model = new TDGCodonModel(globals, fitness, PhyloUtils.getDistinctAminoAcids(states.values()));
 
-                                /*  Could simplify:          if (mutationOnly) {
-                                    calculator.addCladeModel("ALL", mutationModel);
-                                    result = calculator.calculateLogLikelihood();
-                                } */
+                    LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, prior);
+                    calculator.setParameters(fitness);
+                    calculator.addCladeModel("ALL", model);
+
+                    calculator.getStorage();
+                    double result = calculator.function(calculator.getMinimisationParameters().getParameters());
+                    calculator.releaseStorage();
+
+                    return result;
                 }
             });
 
@@ -99,7 +91,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         return total;
     }
 
-    @Override public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore) {
+    @Override public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         final List<Future<Pair<Integer, Fitness>>> futures = Lists.newArrayList();
 
         final AtomicDouble total = new AtomicDouble(0);
@@ -114,7 +106,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                     Map<String, Integer> states = PhyloUtils.getCleanedCodons(getAlignment(), site);
                     List<Integer> residues = PhyloUtils.getDistinctAminoAcids(states.values());
 
-                    LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, null);
+                    LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, prior);
                     calculator.getStorage();
 
                     // TODO: have multiple run with multiple initial starting parameters
@@ -194,11 +186,11 @@ public class MultiThreadedRunner extends AbstractRunner {
                     }
 
                     total.getAndAdd(bestlnL);
+                    System.out.printf("%s - %s\n", fitness_i, bestlnL);
                     return Pair.of(fitness_i, new Fitness(bestF, true));
 
                 }
             });
-
             futures.add(future);
         }
 
@@ -211,7 +203,7 @@ public class MultiThreadedRunner extends AbstractRunner {
 
     private final List<LikelihoodCalculator> calculators = Lists.newArrayList();
 
-    @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore) {
+    @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         List<Future<Pair<Double, LikelihoodCalculator>>> futures = Lists.newArrayList();
 
         for (int i = 0; i < sites.length; i++) {
@@ -226,7 +218,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                     TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(fitness_i), aminoAcids);
                     model.updateModel();
 
-                    LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, null);
+                    LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, prior);
                     calculator.getStorage();
 
                     calculator.setParameters(fitnessStore.getFitness(fitness_i));

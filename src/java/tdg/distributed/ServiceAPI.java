@@ -1,8 +1,8 @@
 package tdg.distributed;
 
-import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.FitnessStore;
+import tdg.model.Prior;
 import tdg.model.TDGGlobals;
 
 /**
@@ -12,7 +12,7 @@ import tdg.model.TDGGlobals;
 public interface ServiceAPI {
     public void setSites(int[] sites);
 
-    public double optimiseMutationModel(TDGGlobals globals);
+    public double optimiseMutationModel(TDGGlobals globals, Prior prior);
 
     public int getThreads();
 
@@ -20,13 +20,13 @@ public interface ServiceAPI {
 
     public void setTree(Tree tree);
 
-    public double updateLikelihoodCalculators(TDGGlobals globals);
+    public double updateLikelihoodCalculators(TDGGlobals globals, Prior prior);
 
     public double getNodeLikelihood(int node, double newBranchLength);
 
     public void setBranchLength(int node, double branchlength);
 
-    public double optimiseFitness(TDGGlobals globals);
+    public double optimiseFitness(final TDGGlobals globals, final Prior prior);
 
     public FitnessStore getFitnessStore();
 }

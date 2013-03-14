@@ -14,7 +14,7 @@ import pal.alignment.Alignment;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.model.Fitness;
-import tdg.model.LikelihoodCalculator;
+import tdg.model.Prior;
 import tdg.model.TDGGlobals;
 import tdg.trees.RerootedTreeIterator;
 import tdg.utils.Pair;
@@ -22,7 +22,6 @@ import tdg.utils.Pair;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public abstract class AbstractRunner implements Runner {
@@ -31,9 +30,9 @@ public abstract class AbstractRunner implements Runner {
     /**
      * Optimises TDGGlobal (mutational) parameters
      */
-    @Override public Pair<Double, TDGGlobals> optimiseMutationModel(final Tree tree, final TDGGlobals startGlobals, final FitnessStore fitnessStore) {
+    @Override public Pair<Double, TDGGlobals> optimiseMutationModel(final Tree tree, final TDGGlobals startGlobals, final FitnessStore fitnessStore, final Prior prior) {
         DirectSearchOptimizer optimiser = new NelderMead();
-        optimiser.setConvergenceChecker(new SimpleScalarValueChecker(-1, 1E-6));
+        optimiser.setConvergenceChecker(new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL));
 
         RealPointValuePair optima;
 
@@ -57,7 +56,7 @@ public abstract class AbstractRunner implements Runner {
                     if (globals.getKappa() < 0) return Constants.VERY_BAD_LIKELIHOOD;
                     if (globals.getMu() < 0) return Constants.VERY_BAD_LIKELIHOOD;
 
-                    double d = runnerGetLogLikelihood(tree, fitnessStore, globals);
+                    double d = runnerGetLogLikelihood(tree, fitnessStore, globals, prior);
 
                     evaluations++;
                     if (evaluations % 25 == 0)
@@ -77,7 +76,7 @@ public abstract class AbstractRunner implements Runner {
     }
 
     @Override
-    public Pair<Double, Tree> optimiseBranchLengths(Tree originalTree, TDGGlobals globals, FitnessStore fitnessStore) {
+    public Pair<Double, Tree> optimiseBranchLengths(Tree originalTree, TDGGlobals globals, FitnessStore fitnessStore, Prior prior) {
 
         // TODO: fitness store does not change (so is tdgglobals but they are pretty lightweight anyway)
         runnerSetFitnessStore(fitnessStore);
@@ -87,7 +86,7 @@ public abstract class AbstractRunner implements Runner {
         double previousLikelihood = Double.NEGATIVE_INFINITY;
         double newLikelihood = Double.NEGATIVE_INFINITY;
 
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(0, 1e-6);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
 
         int iteration = 0;
 
@@ -110,7 +109,7 @@ public abstract class AbstractRunner implements Runner {
                 //System.out.printf("%s - optimiseBranchLengths rerooted tree %s\n", new Timestamp(System.currentTimeMillis()), count++);
 
                 // sanity check the current likelihood
-                newLikelihood = updateSiteCalculatorTrees(tree, globals, fitnessStore);
+                newLikelihood = updateSiteCalculatorTrees(tree, globals, fitnessStore, prior);
 
                 //System.out.printf("%s - optimiseBranchLengths current lnL: %s\n", new Timestamp(System.currentTimeMillis()), previousLnL);
 
@@ -170,11 +169,11 @@ public abstract class AbstractRunner implements Runner {
 
     protected abstract double getLikelihoodSum(int child, double branchlength);
 
-    protected abstract double updateSiteCalculatorTrees(Tree tree, TDGGlobals globals, FitnessStore fitnessStore);
+    protected abstract double updateSiteCalculatorTrees(Tree tree, TDGGlobals globals, FitnessStore fitnessStore, Prior prior);
 
     protected abstract void updateBranchLength(int child, double branchlength);
 
-    protected abstract double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals);
+    protected abstract double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals, final Prior prior);
 
     protected abstract void runnerSetTree(final Tree tree);
 

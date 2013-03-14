@@ -2,14 +2,12 @@ package tdg.distributed;
 
 import com.google.common.primitives.Ints;
 import pal.alignment.Alignment;
-import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.FitnessStore;
 import tdg.MatrixArrayPool;
 import tdg.MultiThreadedRunner;
+import tdg.model.Prior;
 import tdg.model.TDGGlobals;
-
-import java.sql.Timestamp;
 
 /**
  * User: atamuri
@@ -48,18 +46,18 @@ public class ServiceImpl implements ServiceAPI {
     }
 
     @Override
-    public double optimiseMutationModel(TDGGlobals globals) {
+    public double optimiseMutationModel(TDGGlobals globals, Prior prior) {
         //System.out.printf("%s - optimiseMutationModel in\n", new Timestamp(System.currentTimeMillis()));
-        double d =  runner.runnerGetLogLikelihood(this.tree, this.fitnessStore, globals);
+        double d =  runner.runnerGetLogLikelihood(this.tree, this.fitnessStore, globals, prior);
         //System.out.printf("%s - optimiseMutationModel out\n", new Timestamp(System.currentTimeMillis()));
         return d;
     }
 
     @Override
-    public double updateLikelihoodCalculators(TDGGlobals globals) {
+    public double updateLikelihoodCalculators(TDGGlobals globals, Prior prior) {
         //System.out.printf("%s - updatelikelihoodcalculators in\n", new Timestamp(System.currentTimeMillis()));
 
-        double d =  runner.updateSiteCalculatorTrees(this.tree, globals, this.fitnessStore);
+        double d =  runner.updateSiteCalculatorTrees(this.tree, globals, this.fitnessStore, prior);
         //System.out.printf("%s - updatelikelihoodcalculators out\n", new Timestamp(System.currentTimeMillis()));
 
         return d;
@@ -81,8 +79,8 @@ public class ServiceImpl implements ServiceAPI {
     }
 
     @Override
-    public double optimiseFitness(TDGGlobals globals) {
-        return runner.optimiseFitness(this.tree, globals, fitnessStore);
+    public double optimiseFitness(final TDGGlobals globals, final Prior prior) {
+        return runner.optimiseFitness(this.tree, globals, fitnessStore, prior);
     }
 
     @Override

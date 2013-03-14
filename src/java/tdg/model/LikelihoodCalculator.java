@@ -3,12 +3,10 @@ package tdg.model;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
-import org.apache.commons.math.util.MathUtils;
 import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
 import tdg.MatrixArrayPool;
-import tdg.cli.AnalyseOptions;
 import tdg.utils.GeneticCode;
 
 import java.util.Arrays;
@@ -288,7 +286,7 @@ public class LikelihoodCalculator {
 
         MatrixArrayPool.push(probMatrix);
 
-        return lnL;
+        return lnL + prior.calculate(getMinimisationParameters().getParameters());
     }
 
     public void setBranch(int node, double bl) {

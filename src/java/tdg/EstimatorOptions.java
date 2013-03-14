@@ -4,6 +4,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Lists;
 import tdg.cli.GeneticCodeOption;
+import tdg.cli.PriorConverter;
+import tdg.model.Prior;
 
 import java.util.List;
 
@@ -32,11 +34,13 @@ public class EstimatorOptions {
     @Parameter(names = "-checkpoint", required = false)
     public String checkpointFile;
 
+    @Parameter(names = "-prior", description = "Comma-separated prior and prior parameters (e.g. normal,10 or dirichlet,2.0)", required = false, converter = PriorConverter.class)
+    public Prior prior;
+
     /*
     TODO: allow command-line options for:
     1. skip estimation of global parameters
     2. skip estimation of branch length parameters
-    3. provide global parameters (as initial parameter value or for fixed globals)
     4. if you've specified sites, you can't estimate globals or branch lengths (i.e. these are fixed)
     */
 }

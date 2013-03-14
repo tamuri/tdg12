@@ -109,7 +109,7 @@ public class Estimator {
             tree = checkpoint.third;
         }
 
-        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, 1e-5);
+        RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
         RealPointValuePair previous;
         RealPointValuePair current = new RealPointValuePair(new double[]{}, Double.NEGATIVE_INFINITY);
 
@@ -123,17 +123,17 @@ public class Estimator {
             iteration++;
 
             // Step 1 - optimise the site-invariant mutational parameters, get new TDGGlobals
-            Pair<Double, TDGGlobals> globalsOptResult = runner.optimiseMutationModel(tree, globals, fitnessStore);
+            Pair<Double, TDGGlobals> globalsOptResult = runner.optimiseMutationModel(tree, globals, fitnessStore, options.prior);
             System.out.printf("%s - %s - Mutation matrix optima: %s ( %s )\n", new Timestamp(System.currentTimeMillis()), iteration, globalsOptResult.first, globalsOptResult.second.toString());
             globals = globalsOptResult.second;
 
             // Step 2 - optimise the branch lengths, get updated tree
-            Pair<Double, Tree> treeOptResult = runner.optimiseBranchLengths(tree, globals, fitnessStore);
+            Pair<Double, Tree> treeOptResult = runner.optimiseBranchLengths(tree, globals, fitnessStore, options.prior);
             System.out.printf("%s - %s - Branch length optima: %s ( Total tree length: %s )\n", new Timestamp(System.currentTimeMillis()), iteration, treeOptResult.first, PhyloUtils.getTotalTreeLength(treeOptResult.second));
             tree = treeOptResult.second;
 
             // Step 3 - optimise the fitness parameters
-            double fitnessOptResult = runner.optimiseFitness(tree, globals, fitnessStore);
+            double fitnessOptResult = runner.optimiseFitness(tree, globals, fitnessStore, options.prior);
             System.out.printf("%s - %s - Fitness optima: %s\n", new Timestamp(System.currentTimeMillis()), iteration, fitnessOptResult);
 
             if (iteration == 1) {

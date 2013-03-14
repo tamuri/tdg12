@@ -6,8 +6,6 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
-import cern.jet.random.Normal;
-import com.google.common.primitives.Doubles;
 
 public class DirichletPrior implements Prior {
     private static final int DIM = 19;
@@ -18,7 +16,7 @@ public class DirichletPrior implements Prior {
     }
 
     @Override
-    public double calculate(double[] fitness) {
+    public double calculate(final double[] fitness) {
         DoubleMatrix1D theta = DoubleFactory1D.dense.make(fitness);
         theta.assign(Functions.exp);
         theta.assign(Functions.div(1 + theta.zSum()));
@@ -28,7 +26,7 @@ public class DirichletPrior implements Prior {
                 + Math.log(Math.abs(Algebra.DEFAULT.det(jacobian(theta))));
     }
 
-    private DoubleMatrix2D jacobian(DoubleMatrix1D theta) {
+    private DoubleMatrix2D jacobian(final DoubleMatrix1D theta) {
         DoubleMatrix2D jacobi = DoubleFactory2D.dense.make(DIM, DIM);
         for (int i = 0; i < DIM; i++) {
             for (int j = 0; j < DIM; j++) {
@@ -47,7 +45,7 @@ public class DirichletPrior implements Prior {
         return "DirichletPrior{alpha=" + alpha + '}';
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
 
         double[] f = new double[19];
         for (int i = 0; i < f.length; i++) {
@@ -64,6 +62,6 @@ public class DirichletPrior implements Prior {
 
             System.out.printf("%s\t%s\n", a, cal1);
         }
-    }
+    }*/
 
 }

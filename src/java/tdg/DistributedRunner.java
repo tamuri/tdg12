@@ -5,11 +5,10 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import pal.alignment.Alignment;
-import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.distributed.ServiceAPI;
+import tdg.model.Prior;
 import tdg.model.TDGGlobals;
-import tdg.utils.Pair;
 import tdg.utils.PhyloUtils;
 import tdg.utils.Triple;
 import tdg.utils.ValueComparer;
@@ -125,7 +124,7 @@ public class DistributedRunner extends AbstractRunner {
     }
 
     @Override
-    public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals) {
+    public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals, final Prior prior) {
         List<Future<Double>> futures = Lists.newArrayList();
 
 
@@ -134,7 +133,7 @@ public class DistributedRunner extends AbstractRunner {
             Future<Double> future = threadPool.submit(new Callable<Double>() {
                 @Override
                 public Double call() throws Exception {
-                    return service.optimiseMutationModel(globals);
+                    return service.optimiseMutationModel(globals, prior);
                 }
             });
 
@@ -147,7 +146,7 @@ public class DistributedRunner extends AbstractRunner {
         return total;
     }
 
-    @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore) {
+    @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         List<Future<Double>> futures = Lists.newArrayList();
 
         for (int i = 0; i < slaveService.size(); i++) {
@@ -159,7 +158,7 @@ public class DistributedRunner extends AbstractRunner {
                     final ServiceAPI s = slaveService.get(service_i);
                     s.setTree(tree);
 
-                    return s.updateLikelihoodCalculators(globals);
+                    return s.updateLikelihoodCalculators(globals, prior);
                 }
             });
 
@@ -221,7 +220,7 @@ public class DistributedRunner extends AbstractRunner {
     }
 
     @Override
-    public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore) {
+    public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         // we don't need to send the fitness store to the servers, just fill it with the results
 
         runnerSetTree(tree);
@@ -235,7 +234,7 @@ public class DistributedRunner extends AbstractRunner {
                 @Override
                 public Triple<Integer, Double, FitnessStore> call() throws Exception {
                     final ServiceAPI s = slaveService.get(service_i);
-                    double lnl = s.optimiseFitness(globals);
+                    double lnl = s.optimiseFitness(globals, prior);
                     FitnessStore fs =  s.getFitnessStore();
                     return Triple.of(service_i, lnl, fs);
                 }

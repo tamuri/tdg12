@@ -19,7 +19,7 @@ public class Constants {
     /**
      * When to assume convergence of MLE of fitness parameters (log-likelihood).
      */
-    public static final double CONVERGENCE_TOL = 1E-6;
+    public static final double CONVERGENCE_TOL = 5e-6;
 
     /**
      * Effectively -20 = -Infinity and 20 = Infinity for fitness parameter.

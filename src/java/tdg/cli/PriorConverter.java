@@ -20,7 +20,7 @@ public class PriorConverter implements IStringConverter<Prior> {
                 throw new ParameterException("Could not create prior '" + s + "'.\n");
             }
 
-            System.out.printf("tdg.cli.PriorConverter - Using prior %s.\n", p.toString());
+            System.out.printf("tdg.cli.PriorConverter - Using %s.\n", p.toString());
             return p;
 
         } catch (Exception e) {
