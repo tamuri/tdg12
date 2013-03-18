@@ -14,6 +14,7 @@ import pal.tree.Tree;
 import pal.tree.TreeParseException;
 import tdg.model.Fitness;
 import tdg.model.TDGGlobals;
+import tdg.utils.CoreUtils;
 import tdg.utils.Pair;
 import tdg.utils.PhyloUtils;
 import tdg.utils.Triple;
@@ -27,8 +28,6 @@ import java.util.List;
 
 /**
  * The main class for model parameter estimation. This is the class called by end-users.
- *
- * TODO: Implement checkpointing, to read current globals, tree and fitness parameters
  */
 public class Estimator {
 
@@ -46,7 +45,8 @@ public class Estimator {
     }
 
     private void run() {
-        System.out.printf("%s - tdg.Estimator started.\n", new Timestamp(System.currentTimeMillis()));
+
+        CoreUtils.msg("tdg.Estimator started.\n");
 
         Tree tree = PhyloUtils.readTree(options.tree);
         Alignment alignment = PhyloUtils.readAlignment(options.alignment);
@@ -55,33 +55,29 @@ public class Estimator {
             throw new RuntimeException("ERROR: tree and alignment do not have the same taxa.");
         }
 
+        // TODO: is there a better place to put this?
         MatrixArrayPool.treeSize = tree.getInternalNodeCount();
 
         Runner runner;
 
         if (options.distributed) {
-
-            List<String> slaves = null;
+            List<String> slaves;
             try {
                 slaves = Files.readLines(new File(options.hostsFile), Charset.defaultCharset());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            // for (String s : options.hosts) slaves.add("http://localhost:" + s + "/service");
-            for (int i = 0; i < slaves.size(); i++) {
-                slaves.set(i, "http://" + slaves.get(i) + "/service");
-            }
+            for (int i = 0; i < slaves.size(); i++) slaves.set(i, "http://" + slaves.get(i) + "/service");
+
             runner = new DistributedRunner(alignment, slaves);
+
         } else {
             // Object pooling: http://code.google.com/p/furious-objectpool/ or http://commons.apache.org/proper/commons-pool/
             runner = new MultiThreadedRunner(alignment, options.threads);
         }
 
-
         // Step 0 - Set the initial parameters
-
-        // TODO: implement a type of checkpointing....use provides a xxx_optima.txt file & we continue from there
 
         TDGGlobals globals;
         FitnessStore fitnessStore;
@@ -91,8 +87,9 @@ public class Estimator {
             checkpoint = loadCheckpoint(options.checkpointFile, alignment);
         }
 
+        // Either we're starting estimation from scratch *or* checkpoint did not load successfully
         if (checkpoint == null) {
-            globals = new TDGGlobals(); // Default constructor sets: -tau 0.01 -kappa 2.0 -pi 0.25,0.25,0.25 -mu 1.0
+            globals = new TDGGlobals(); // Default initial parameters
 
             // Use the mutational matrix only for the first iteration (all 20 amino acids have F = 0)
             Fitness intialFitness = Fitness.getMutationOnlyFitness();
@@ -110,8 +107,8 @@ public class Estimator {
         }
 
         RealConvergenceChecker convergenceChecker = new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL);
-        RealPointValuePair previous;
-        RealPointValuePair current = new RealPointValuePair(new double[]{}, Double.NEGATIVE_INFINITY);
+        RealPointValuePair lastOptima;
+        RealPointValuePair thisOptima = new RealPointValuePair(new double[]{}, Double.NEGATIVE_INFINITY);
 
         int iteration = 0;
         boolean converged = false;
@@ -124,24 +121,24 @@ public class Estimator {
 
             // Step 1 - optimise the site-invariant mutational parameters, get new TDGGlobals
             Pair<Double, TDGGlobals> globalsOptResult = runner.optimiseMutationModel(tree, globals, fitnessStore, options.prior);
-            System.out.printf("%s - %s - Mutation matrix optima: %s ( %s )\n", new Timestamp(System.currentTimeMillis()), iteration, globalsOptResult.first, globalsOptResult.second.toString());
+            CoreUtils.msg("%s - Mutation matrix optima: %s ( %s )\n", iteration, globalsOptResult.first, globalsOptResult.second.toString());
             globals = globalsOptResult.second;
 
             // Step 2 - optimise the branch lengths, get updated tree
             Pair<Double, Tree> treeOptResult = runner.optimiseBranchLengths(tree, globals, fitnessStore, options.prior);
-            System.out.printf("%s - %s - Branch length optima: %s ( Total tree length: %s )\n", new Timestamp(System.currentTimeMillis()), iteration, treeOptResult.first, PhyloUtils.getTotalTreeLength(treeOptResult.second));
+            CoreUtils.msg("%s - Branch length optima: %s ( Total tree length: %s )\n", iteration, treeOptResult.first, PhyloUtils.getTotalTreeLength(treeOptResult.second));
             tree = treeOptResult.second;
 
             // Step 3 - optimise the fitness parameters
             double fitnessOptResult = runner.optimiseFitness(tree, globals, fitnessStore, options.prior);
-            System.out.printf("%s - %s - Fitness optima: %s\n", new Timestamp(System.currentTimeMillis()), iteration, fitnessOptResult);
+            CoreUtils.msg("%s - Fitness optima: %s\n", iteration, fitnessOptResult);
 
             if (iteration == 1) {
-                current = new RealPointValuePair(new double[]{}, fitnessOptResult);
+                thisOptima = new RealPointValuePair(new double[]{}, fitnessOptResult);
             } else {
-                previous = current;
-                current = new RealPointValuePair(new double[]{}, fitnessOptResult);
-                converged = convergenceChecker.converged(iteration, previous, current);
+                lastOptima = thisOptima;
+                thisOptima = new RealPointValuePair(new double[]{}, fitnessOptResult);
+                converged = convergenceChecker.converged(iteration, lastOptima, thisOptima);
             }
 
             long end = System.currentTimeMillis();
@@ -154,10 +151,7 @@ public class Estimator {
 
         System.out.println();
 
-        System.out.printf("%s - tdg.Estimator converged.\n", new Timestamp(System.currentTimeMillis()));
-
-
-
+        CoreUtils.msg("tdg.Estimator converged.\n");
 
         runner.close();
 

@@ -44,6 +44,8 @@ public class BranchLengthComparer {
         });
 
 
+
+
         for (Set<String> group : keys) {
             Node node1 = tree1Nodes.get(group);
             Node node2 = tree2Nodes.get(group);
@@ -84,3 +86,17 @@ public class BranchLengthComparer {
     }
 
 }
+
+/*
+
+In R:
+x <- read.csv(pipe('pbpaste'), head=F, sep='\t')
+x$V4 <- x$V1 / sum(x$V1) * 100
+x$V5 <- x$V2 / sum(x$V2) * 100
+x$V6 <- abs(x$V4 - x$V5)
+par(pty='s')
+plot(x$V4, x$V5)
+abline(0,1)
+
+
+ */

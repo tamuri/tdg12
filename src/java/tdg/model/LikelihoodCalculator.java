@@ -286,7 +286,12 @@ public class LikelihoodCalculator {
 
         MatrixArrayPool.push(probMatrix);
 
-        return lnL + prior.calculate(getMinimisationParameters().getParameters());
+        double p = 0;
+        if (prior != null) {
+            p = prior.calculate(getMinimisationParameters().getParameters());
+        }
+
+        return lnL + p;
     }
 
     public void setBranch(int node, double bl) {

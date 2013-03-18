@@ -25,14 +25,12 @@ import java.util.concurrent.Future;
  * Date: 05/03/2013 19:17
  */
 public class DistributedRunner extends AbstractRunner {
-    private List<String> slaves;
     private List<ServiceAPI> slaveService = Lists.newArrayList();
     private List<List<Integer>> slaveSites = Lists.newArrayList();
     private final ExecutorService threadPool;
 
     public DistributedRunner(Alignment alignment, List<String> slaves) {
         setAlignment(alignment);
-        this.slaves = slaves;
 
         // get a list of sites ordered by number of observed amino acids, descending
 
@@ -40,13 +38,15 @@ public class DistributedRunner extends AbstractRunner {
         for (String slave : slaves) {
             try {
                 HessianProxyFactory factory = new HessianProxyFactory();
-                this.slaveService.add((ServiceAPI) factory.create(ServiceAPI.class, slave));
+                ServiceAPI service = (ServiceAPI) factory.create(ServiceAPI.class, slave);
+                this.slaveService.add(service);
+
+                // TODO: Use threads-on-servers to distribute sites
+                slaveThreads.add(service.getThreads());
+
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
-
-            // TODO: Use threads-on-servers to distribute sites
-            slaveThreads.add(this.slaveService.get(this.slaveService.size() - 1).getThreads());
         }
 
         System.out.printf("Servers: %s\n", slaveService);

@@ -2,11 +2,17 @@ package tdg.utils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.sql.Timestamp;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
  */
 public class CoreUtils {
+
+    public static void msg(String string, Object... args) {
+        System.out.printf("%s - ", new Timestamp(System.currentTimeMillis()));
+        System.out.printf(string, args);
+    }
 
     public static void print2D(double[][] array, boolean flat) {
         if (flat) {
