@@ -86,10 +86,10 @@ public class Estimator {
             globals = new TDGGlobals(); // Default initial parameters
 
             // Use the mutational matrix only for the first iteration (all 20 amino acids have F = 0)
-            Fitness intialFitness = Fitness.getMutationOnlyFitness();
+            Fitness initialFitness = Fitness.getMutationOnlyFitness();
             fitnessStore = new FitnessStore(alignment.getSiteCount() / 3);
             for (int i = 1; i <= alignment.getSiteCount() / 3; i++) {
-                fitnessStore.setFitness(i, intialFitness);
+                fitnessStore.setFitness(i, initialFitness);
             }
 
             // Get rid of the current branch lengths and set to a sensible initial value
@@ -149,7 +149,6 @@ public class Estimator {
         CoreUtils.msg("tdg.Estimator converged.\n");
 
         runner.close();
-
     }
 
     private Triple<TDGGlobals, FitnessStore, Tree> loadCheckpoint(String checkpointFile, final Alignment alignment) {
