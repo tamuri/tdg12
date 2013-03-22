@@ -30,8 +30,8 @@ import java.util.concurrent.Future;
 
 /**
  * REMEMBER: lots of cpus != lots of memory
- *  imagine that you're running with 100s of cpus but <1GB memory
- *  Think about a small tree with lots of sites - can't store all likelihood calculators
+ * imagine that you're running with 100s of cpus but <1GB memory
+ * Think about a small tree with lots of sites - can't store all likelihood calculators
  */
 public class MultiThreadedRunner extends AbstractRunner {
     private final ExecutorService threadPool;
@@ -40,7 +40,7 @@ public class MultiThreadedRunner extends AbstractRunner {
     public MultiThreadedRunner(Alignment alignment, int threads) {
         setAlignment(alignment);
         this.sites = CoreUtils.seqi(1, alignment.getSiteCount() / 3);
-        this.threadPool =  Executors.newFixedThreadPool(threads);
+        this.threadPool = Executors.newFixedThreadPool(threads);
     }
 
     public void setSites(int[] sites) {
@@ -91,7 +91,8 @@ public class MultiThreadedRunner extends AbstractRunner {
         return total;
     }
 
-    @Override public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
+    @Override
+    public double optimiseFitness(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         final List<Future<Pair<Integer, Fitness>>> futures = Lists.newArrayList();
 
         final AtomicDouble total = new AtomicDouble(0);
@@ -113,7 +114,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                     // TODO: handle convergence problems!
                     // Fitness fitness = new Fitness(fitnessStore.getFitness(fitness_i).get(), true);
 
-                    List<Pair<Double, double[]>> results = Lists.newArrayList();
+                    List<Pair<Double, double[]>> optimals = Lists.newArrayList();
 
                     for (int run = 0; run < 3; run++) {
                         double[] f;
@@ -124,7 +125,8 @@ public class MultiThreadedRunner extends AbstractRunner {
                             f = new double[residues.size()];
                         } else {
                             f = new double[residues.size()];
-                            for (int j = 0; j < f.length; j++) f[j] = randomData.nextUniform(-Constants.RANDOM_INITIAL_FITNESS_RANGE, Constants.RANDOM_INITIAL_FITNESS_RANGE);
+                            for (int j = 0; j < f.length; j++)
+                                f[j] = randomData.nextUniform(-Constants.RANDOM_INITIAL_FITNESS_RANGE, Constants.RANDOM_INITIAL_FITNESS_RANGE);
                         }
 
                         Fitness fitness = new Fitness(f, true);
@@ -141,15 +143,13 @@ public class MultiThreadedRunner extends AbstractRunner {
                         LikelihoodFunctionWrapper wrapper = new LikelihoodFunctionWrapper();
                         wrapper.setLc(calculator);
 
-
-
                         if (residues.size() == 1) {
                             double lnl = calculator.function(new double[]{});
                             calculator.releaseStorage();
                             //System.out.printf("Site %s - 0.0\n", final_i);
                             //System.out.printf("Site %s - %s\n", final_i, lnl);
                             // total.getAndAdd(lnl);
-                            results.add(Pair.of(lnl, fitness.get().clone()));
+                            optimals.add(Pair.of(lnl, fitness.get().clone()));
                             // return Pair.of(fitness_i, fitness);
                         } else {
                             RealPointValuePair optima;
@@ -169,25 +169,20 @@ public class MultiThreadedRunner extends AbstractRunner {
                             //System.out.printf("Site %s - %s\n", final_i, optima.getValue());
 
                             // total.getAndAdd(optima.getValue());
-                            results.add(Pair.of(optima.getValue(), fitness.get().clone()));
+                            optimals.add(Pair.of(optima.getValue(), fitness.get().clone()));
 
                             // return Pair.of(fitness_i, fitness);
                         }
 
                     }
 
-                    double[] bestF = results.get(0).second;
-                    double bestlnL = results.get(0).first;
-                    for (int run = 1; run < results.size(); run++) {
-                        if (results.get(run).first > bestlnL) {
-                            bestlnL = results.get(run).first;
-                            bestF = results.get(run).second;
-                        }
-                    }
+                    int best = 0;
+                    for (int i = 1; i < optimals.size(); i++)
+                        if (optimals.get(i).first > optimals.get(best).first) best = i;
 
-                    total.getAndAdd(bestlnL);
-                    System.out.printf("%s - %s\n", fitness_i, bestlnL);
-                    return Pair.of(fitness_i, new Fitness(bestF, true));
+                    total.getAndAdd(optimals.get(best).first);
+                    System.out.printf("%s - %s\n", fitness_i, optimals.get(best).first);
+                    return Pair.of(fitness_i, new Fitness(optimals.get(best).second, true));
 
                 }
             });
@@ -203,7 +198,8 @@ public class MultiThreadedRunner extends AbstractRunner {
 
     private final List<LikelihoodCalculator> calculators = Lists.newArrayList();
 
-    @Override public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
+    @Override
+    public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         List<Future<Pair<Double, LikelihoodCalculator>>> futures = Lists.newArrayList();
 
         for (int i = 0; i < sites.length; i++) {
@@ -245,7 +241,8 @@ public class MultiThreadedRunner extends AbstractRunner {
         return total;
     }
 
-    @Override public double getLikelihoodSum(final int node, final double newBranchLength) {
+    @Override
+    public double getLikelihoodSum(final int node, final double newBranchLength) {
 
         final List<Future<Double>> futures = Lists.newArrayList();
 
@@ -261,7 +258,7 @@ public class MultiThreadedRunner extends AbstractRunner {
 
         double total = 0;
         for (double x : CoreUtils.getFutureResults(futures)) total += x;
-        
+
         return total;
     }
 

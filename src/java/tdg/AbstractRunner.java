@@ -1,7 +1,6 @@
 package tdg;
 
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
@@ -13,16 +12,13 @@ import org.apache.commons.math.optimization.univariate.BrentOptimizer;
 import pal.alignment.Alignment;
 import pal.tree.Node;
 import pal.tree.Tree;
-import tdg.model.Fitness;
 import tdg.model.Prior;
 import tdg.model.TDGGlobals;
 import tdg.trees.RerootedTreeIterator;
 import tdg.utils.Pair;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Future;
 
 public abstract class AbstractRunner implements Runner {
     private Alignment alignment;
@@ -30,15 +26,12 @@ public abstract class AbstractRunner implements Runner {
     /**
      * Optimises TDGGlobal (mutational) parameters
      */
-    @Override public Pair<Double, TDGGlobals> optimiseMutationModel(final Tree tree, final TDGGlobals startGlobals, final FitnessStore fitnessStore, final Prior prior) {
+    @Override
+    public Pair<Double, TDGGlobals> optimiseMutationModel(final Tree tree, final TDGGlobals startGlobals, final FitnessStore fitnessStore, final Prior prior) {
         DirectSearchOptimizer optimiser = new NelderMead();
         optimiser.setConvergenceChecker(new SimpleScalarValueChecker(-1, Constants.CONVERGENCE_TOL));
 
         RealPointValuePair optima;
-
-        // The mutation only fitness is used *only* at the start of the estimation procedure. We can use this to assume
-        // that: i) All sites will have the same Fitness & TDGCodonModel and ii) All branch lengths are Constants.INITIAL_BRANCH_LENGTH
-        final boolean mutationOnly = (fitnessStore.getFitness(1) == Fitness.getMutationOnlyFitness());
 
         // Tree and FitnessStore does not need to change, so allow runners to do something intelligent
         runnerSetTree(tree);
@@ -47,6 +40,7 @@ public abstract class AbstractRunner implements Runner {
         try {
             optima = optimiser.optimize(new MultivariateRealFunction() {
                 private int evaluations = 0;
+
                 @Override
                 public double value(double[] point) throws FunctionEvaluationException, IllegalArgumentException {
 
