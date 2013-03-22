@@ -7,6 +7,7 @@ import pal.tree.Node;
 import pal.tree.Tree;
 import tdg.Constants;
 import tdg.MatrixArrayPool;
+import tdg.utils.CoreUtils;
 import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
@@ -21,16 +22,16 @@ import java.util.Map;
  */
 public class LikelihoodCalculator {
     private final Tree tree;
-    private String ROOT_MODEL_NAME;
     private final Map<String, Integer> states;
     private final Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
-    // private final double[] probMatrix = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    private final Map<Node, String> nodeLabels = Maps.newHashMap();
+    private final double[] tipPartial = new double[GeneticCode.CODON_STATES];
+    private final double[] gapPartial = CoreUtils.repd(1.0, GeneticCode.CODON_STATES);
+
+    private String ROOT_MODEL_NAME;
     private double[] probMatrix;
 
-    private Map<Node, double[]> rootPartials;
-
     private List<Parameter> parameters;
-    private final Map<Node, String> nodeLabels = Maps.newHashMap();
     private double logScaling = 0.0;
 
     private int[] siteCodons;
@@ -42,14 +43,8 @@ public class LikelihoodCalculator {
     // private final double[][] internalConditionals;
     private double[][] internalConditionals;
 
-    private final double[] gapPartial = new double[GeneticCode.CODON_STATES];
-    {
-        Arrays.fill(gapPartial, 1.0);
-    }
-
-    private final double[] tipPartial = new double[GeneticCode.CODON_STATES];
-
     private Prior prior;
+    private List<Partial> partialsAtRoot = Lists.newArrayList();
 
     public LikelihoodCalculator(Tree tree, Map<String, Integer> states, Prior prior) {
         this.tree = tree;
@@ -94,21 +89,13 @@ public class LikelihoodCalculator {
     }
 
     public double function(double[] parameters) {
-
-
-
         updateParameters(parameters);
+
         double l = calculateLogLikelihood();
 
+        // TODO: handle heterogenerous models (i.e. clademodels.size() > 1)
         double p = 0.0;
-
-        // If prior has been specified
-        if (prior != null) {
-            p = prior.calculate(parameters);
-        }
-
-        // System.out.printf("%s\t %s\n", l+p, Doubles.join(" ", parameters));
-
+        if (prior != null) p = prior.calculate(parameters);
 
         return l + p;
     }
@@ -117,8 +104,7 @@ public class LikelihoodCalculator {
 
         if (probMatrix == null) getStorage();
 
-        rootPartials = Maps.newHashMap();
-        rootpartials = Lists.newArrayList();
+        partialsAtRoot = Lists.newArrayList();
         logScaling = 0.0;
         double[] conditionals = downTree();
         double[] f = cladeModels.get(ROOT_MODEL_NAME).getCodonFrequencies();
@@ -142,14 +128,11 @@ public class LikelihoodCalculator {
     }
 
     public void releaseStorage() {
+        // This way we can keep the reference to the LikelihoodCalculator without keeping this baggage
         MatrixArrayPool.push(probMatrix);
         MatrixArrayPool.push2(internalConditionals);
         probMatrix = null;
         internalConditionals = null;
-    }
-
-    public Map<Node, double[]> getRootPartials() {
-        return rootPartials;
     }
 
     public Map<String, TDGCodonModel> getCladeModels() {
@@ -160,19 +143,7 @@ public class LikelihoodCalculator {
         return logScaling;
     }
 
-    class Partial {
-        public int number;
-        public double[] partial;
-        public double branchlength;
 
-        Partial(int number, double[] partial, double branchlength) {
-            this.number = number;
-            this.partial = partial;
-            this.branchlength = branchlength;
-        }
-    }
-
-    private List<Partial> rootpartials = Lists.newArrayList();
 
     private double[] downTree() {
         //long start = CodeTimer.start();
@@ -200,8 +171,7 @@ public class LikelihoodCalculator {
                 }
 
                 if (child.getParent().isRoot()) {
-                    rootPartials.put(child, Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES));
-                    rootpartials.add(new Partial(child.getNumber(), Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES), child.getBranchLength()));
+                    partialsAtRoot.add(new Partial(child.getNumber(), Arrays.copyOf(lowerConditional, GeneticCode.CODON_STATES), child.getBranchLength()));
                     // System.out.printf("%s\t%s\n", child.getNumber(), Doubles.join(",", lowerConditional));
                 }
 
@@ -259,7 +229,7 @@ public class LikelihoodCalculator {
 */
 
 
-        for (Partial p : rootpartials) {
+        for (Partial p : partialsAtRoot) {
             if (p.number == node) {
                 getCladeModels().get("ALL").getProbabilityMatrix(probMatrix, branchLength);
             } else {
@@ -288,7 +258,7 @@ public class LikelihoodCalculator {
     }
 
     public void setBranch(int node, double bl) {
-        for (Partial p : rootpartials) {
+        for (Partial p : partialsAtRoot) {
             if (p.number == node) {
                 p.branchlength = bl;
             }
@@ -385,6 +355,18 @@ public class LikelihoodCalculator {
                 new double[]{0.0},
                 new double[]{0.0},
                 new double[]{0.0});
+    }
+
+    class Partial {
+        public int number;
+        public double[] partial;
+        public double branchlength;
+
+        Partial(int number, double[] partial, double branchlength) {
+            this.number = number;
+            this.partial = partial;
+            this.branchlength = branchlength;
+        }
     }
 
 
