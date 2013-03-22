@@ -16,17 +16,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
  * The main class for model parameter estimation. This is the class called by end-users.
  */
 public class Estimator {
-
     EstimatorOptions options = new EstimatorOptions();
-
 
     public static void main(String[] args) {
         Estimator e = new Estimator(args);
@@ -35,7 +32,13 @@ public class Estimator {
 
     public Estimator(String... args) {
         JCommander jc = new JCommander(options);
-        jc.parse(args);
+        try {
+            jc.parse(args);
+        } catch (Exception e) {
+            System.out.printf("Error: %s\n", e.getMessage());
+            jc.setProgramName("java -cp tdg12.jar tdg.Estimator");
+            jc.usage();
+        }
     }
 
     private void run() {
@@ -52,34 +55,15 @@ public class Estimator {
         // TODO: is there a better place to put this?
         MatrixArrayPool.treeSize = tree.getInternalNodeCount();
 
-        Runner runner;
-
-        if (options.distributed) {
-            List<String> slaves;
-            try {
-                slaves = Files.readLines(new File(options.hostsFile), Charset.defaultCharset());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            for (int i = 0; i < slaves.size(); i++) slaves.set(i, "http://" + slaves.get(i) + "/service");
-
-            runner = new DistributedRunner(alignment, slaves);
-
-        } else {
-            // Object pooling: http://code.google.com/p/furious-objectpool/ or http://commons.apache.org/proper/commons-pool/
-            runner = new MultiThreadedRunner(alignment, options.threads);
-        }
+        Runner runner = getRunner(alignment);
 
         // Step 0 - Set the initial parameters
-
         TDGGlobals globals;
         FitnessStore fitnessStore;
         Triple<TDGGlobals, FitnessStore, Tree> checkpoint = null;
 
-        if (options.checkpointFile != null) {
-            checkpoint = loadCheckpoint(options.checkpointFile, alignment);
-        }
+        // If a checkpoint file has been supplied, try to load it
+        if (options.checkpointFile != null) checkpoint = loadCheckpoint(options.checkpointFile, alignment);
 
         // Either we're starting estimation from scratch *or* checkpoint did not load successfully
         if (checkpoint == null) {
@@ -109,7 +93,6 @@ public class Estimator {
 
         while (!converged) {
             long start = System.currentTimeMillis();
-            Date starttime = new Date();
 
             iteration++;
 
@@ -124,24 +107,23 @@ public class Estimator {
             tree = treeOptResult.second;
 
             // Step 3 - optimise the fitness parameters
-            double fitnessOptResult = runner.optimiseFitness(tree, globals, fitnessStore, options.prior);
-            CoreUtils.msg("%s - Fitness optima: %s\n", iteration, fitnessOptResult);
+            double iterationLnL = runner.optimiseFitness(tree, globals, fitnessStore, options.prior);
+            CoreUtils.msg("%s - Fitness optima: %s\n", iteration, iterationLnL);
 
             if (iteration == 1) {
-                thisOptima = new RealPointValuePair(new double[]{}, fitnessOptResult);
+                thisOptima = new RealPointValuePair(new double[]{}, iterationLnL);
             } else {
                 lastOptima = thisOptima;
-                thisOptima = new RealPointValuePair(new double[]{}, fitnessOptResult);
+                thisOptima = new RealPointValuePair(new double[]{}, iterationLnL);
                 converged = convergenceChecker.converged(iteration, lastOptima, thisOptima);
             }
 
             long end = System.currentTimeMillis();
 
-            writeResults(starttime, end - start, iteration,
+            writeResults(start, end, iteration, alignment,
                     globals, globalsOptResult.first,
                     tree, treeOptResult.first,
-                    fitnessStore, fitnessOptResult,
-                    alignment);
+                    fitnessStore, iterationLnL);
         }
 
         System.out.println();
@@ -149,6 +131,29 @@ public class Estimator {
         CoreUtils.msg("tdg.Estimator converged.\n");
 
         runner.close();
+    }
+
+    private Runner getRunner(Alignment alignment) {
+        Runner runner;
+        if (options.distributed) {
+            // Distributed RPC alternatives: hessian, Protocolbuffer-rpc-pro, finagle,
+            // http://code.google.com/p/missian/
+            List<String> slaves;
+            try {
+                slaves = Files.readLines(new File(options.hostsFile), Charset.defaultCharset());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (int i = 0; i < slaves.size(); i++) slaves.set(i, "http://" + slaves.get(i) + "/service");
+
+            runner = new DistributedRunner(alignment, slaves);
+
+        } else {
+            // Object pooling: http://code.google.com/p/furious-objectpool/ or http://commons.apache.org/proper/commons-pool/
+            runner = new MultiThreadedRunner(alignment, options.threads);
+        }
+        return runner;
     }
 
     private Triple<TDGGlobals, FitnessStore, Tree> loadCheckpoint(String checkpointFile, final Alignment alignment) {
@@ -160,18 +165,17 @@ public class Estimator {
         }
     }
 
-    private void writeResults(Date date, long millis, int iteration,
-                              TDGGlobals globals, double globalsOpt,
+    private void writeResults(long start, long end, int iteration,
+                              Alignment alignment, TDGGlobals globals, double globalsOpt,
                               Tree tree, double treeOpt,
-                              FitnessStore fitnessStore, double fitnessOpt,
-                              Alignment alignment) {
+                              FitnessStore fitnessStore, double fitnessOpt) {
 
         String filename = String.format("%03d_optima.txt", iteration);
 
         try {
             BufferedWriter bw = Files.newWriter(new File(filename), Charset.defaultCharset());
 
-            bw.write(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+            bw.write(new Timestamp(start).toString());
             bw.newLine();
 
             bw.write(globals.toString());
@@ -191,7 +195,7 @@ public class Estimator {
 
             bw.newLine();
             bw.write(String.format("lnL - %s %s %s\n", globalsOpt, treeOpt, fitnessOpt));
-            bw.write((millis / 1000.0) + " secs.");
+            bw.write(((end - start) / 1000.0) + " secs.");
             bw.newLine();
 
             bw.close();
