@@ -174,14 +174,7 @@ public class Estimator {
 
         try {
             BufferedWriter bw = Files.newWriter(new File(filename), Charset.defaultCharset());
-
-            bw.write(new Timestamp(start).toString());
-            bw.newLine();
-
-            bw.write(globals.toString());
-            bw.newLine();
-            bw.write(tree.toString());
-            bw.newLine();
+            bw.write(String.format("%s%n%s%n%s%n", new Timestamp(start), globals.toString(), tree.toString()));
 
             int site = 1;
             for (Fitness f : fitnessStore) {
