@@ -26,6 +26,7 @@ import java.util.*;
 public class PhyloUtils {
     /**
      * Reads a PHYLIP formatted alignment file
+     *
      * @param path Full path to alignment file
      * @return a PAL alignment object
      */
@@ -41,8 +42,9 @@ public class PhyloUtils {
 
     /**
      * Returns a collection of codons observed at a particular site
+     *
      * @param alignment the PAL alignment object
-     * @param site the location of interest
+     * @param site      the location of interest
      * @return a map, where key for entry is taxon name and value is the codon state
      */
     public static Map<String, Integer> getCodonsAtSite(Alignment alignment, int site) {
@@ -89,6 +91,7 @@ public class PhyloUtils {
 
     /**
      * Reads a Newick formatted tree
+     *
      * @param path path to the tree file
      * @return a PAL tree object
      */
@@ -104,6 +107,7 @@ public class PhyloUtils {
 
     /**
      * Gets all the codons that code for a particular set of amino acids
+     *
      * @param aminoAcids a collection of amino acid indexes
      * @return a list of codon indexes that code for the given amino acids
      */
@@ -117,6 +121,12 @@ public class PhyloUtils {
         return Ints.asList(collected);
     }
 
+    public static List<Integer> getDistinctAminoAcids(Collection<Integer> codons) {
+        List<Integer> distinctAAs = getObservedAminoAcids(codons);
+        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) if (!distinctAAs.contains(i)) distinctAAs.add(i);
+        return distinctAAs;
+    }
+
     /**
      * Given a list of codons [observed at a given site], return a list of all observed residues, ordered by frequency.
      * i.e. the most common observed residue first, then the next most common etc. Amino acids that are observed an
@@ -125,53 +135,18 @@ public class PhyloUtils {
      * @param codons a collection of codons (e.g. all codons observed at a particular location in alignment)
      * @return an ordered list of amino acid from most common -> least common, sub-ordered by canonical ordering.
      */
-    public static List<Integer> getDistinctAminoAcids(Collection<Integer> codons) {
-        // TODO: Christ almighty, there *must* be a better way to do this! Anyway, here we go...
-
-        // A small class to store counts of amino acid residues from the list of codons
-        class Residue implements Comparable<Residue>{
-            Residue (int index) { this.index = index; }
-            int index;
-            int count = 0;
-            // This sorts residues by the count field (descending) then the amino acid index
-            public int compareTo(Residue residue) {
-                if (this.count != residue.count)
-                    return residue.count - this.count;
-                return this.index - residue.index;
-            }
-        }
-
-        // Create a list to store the 20 amino acids, initial count of 0
-        List<Residue> allResidues = Lists.newArrayListWithCapacity(GeneticCode.AMINO_ACID_STATES);
-        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) allResidues.add(new Residue(i));
-	
-        // Loop through the list of codons
-        for (int c : codons) {
-            // If we find a valid amino acid, increment its count
-            int a = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(c);
-            if (!GeneticCode.getInstance().isUnknownAminoAcidState(a)) allResidues.get(a).count++;
-        }
-
-        Collections.sort(allResidues);
-
-        // Actually, we only want to return a list of integers of observed residues, so, erm, here it is
-        // TODO: Perhaps we should pass the list of Residues back!?
-        List<Integer> distinctAAs = Lists.newArrayList();
-        for (Residue r : allResidues) if (r.count > 0) distinctAAs.add(r.index);
-
-        for (int i = 0; i < GeneticCode.AMINO_ACID_STATES; i++) if (!distinctAAs.contains(i)) distinctAAs.add(i);
-
-        return distinctAAs;
-    }
-
     public static List<Integer> getObservedAminoAcids(Collection<Integer> codons) {
         // TODO: Christ almighty, there *must* be a better way to do this! Anyway, here we go...
 
         // A small class to store counts of amino acid residues from the list of codons
-        class Residue implements Comparable<Residue>{
-            Residue (int index) { this.index = index; }
+        class Residue implements Comparable<Residue> {
+            Residue(int index) {
+                this.index = index;
+            }
+
             int index;
             int count = 0;
+
             // This sorts residues by the count field (descending) then the amino acid index
             public int compareTo(Residue residue) {
                 if (this.count != residue.count)
@@ -249,9 +224,21 @@ public class PhyloUtils {
             public Iterator<Node> iterator() {
                 return new Iterator<Node>() {
                     int pos = 0;
-                    @Override public boolean hasNext() { return pos < tree.getInternalNodeCount(); }
-                    @Override public Node next() { return tree.getInternalNode(pos++); }
-                    @Override public void remove() { throw new NotImplementedException(); }
+
+                    @Override
+                    public boolean hasNext() {
+                        return pos < tree.getInternalNodeCount();
+                    }
+
+                    @Override
+                    public Node next() {
+                        return tree.getInternalNode(pos++);
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new NotImplementedException();
+                    }
                 };
             }
         };
@@ -263,9 +250,21 @@ public class PhyloUtils {
             public Iterator<Node> iterator() {
                 return new Iterator<Node>() {
                     int pos = 0;
-                    @Override public boolean hasNext() { return pos < tree.getExternalNodeCount(); }
-                    @Override public Node next() { return tree.getExternalNode(pos++); }
-                    @Override public void remove() { throw new NotImplementedException(); }
+
+                    @Override
+                    public boolean hasNext() {
+                        return pos < tree.getExternalNodeCount();
+                    }
+
+                    @Override
+                    public Node next() {
+                        return tree.getExternalNode(pos++);
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new NotImplementedException();
+                    }
                 };
             }
         };
