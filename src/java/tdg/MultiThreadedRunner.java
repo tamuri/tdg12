@@ -87,7 +87,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         }
 
         double total = 0;
-        for (double x : getAllResults(futures)) total += x;
+        for (double x : CoreUtils.getFutureResults(futures)) total += x;
         return total;
     }
 
@@ -194,7 +194,7 @@ public class MultiThreadedRunner extends AbstractRunner {
             futures.add(future);
         }
 
-        for (Pair<Integer, Fitness> p : getAllResults(futures))
+        for (Pair<Integer, Fitness> p : CoreUtils.getFutureResults(futures))
             fitnessStore.setFitness(p.first, p.second);
 
         return total.get();
@@ -237,7 +237,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         double total = 0;
         calculators.clear();
 
-        for (Pair<Double, LikelihoodCalculator> p : getAllResults(futures)) {
+        for (Pair<Double, LikelihoodCalculator> p : CoreUtils.getFutureResults(futures)) {
             total += p.first;
             calculators.add(p.second);
         }
@@ -260,7 +260,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         }
 
         double total = 0;
-        for (double x : getAllResults(futures)) total += x;
+        for (double x : CoreUtils.getFutureResults(futures)) total += x;
         
         return total;
     }

@@ -1,8 +1,12 @@
 package tdg.utils;
 
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @author Asif Tamuri (atamuri@nimr.mrc.ac.uk)
@@ -129,5 +133,20 @@ public class CoreUtils {
             o[i] = start + i;
         }
         return o;
+    }
+
+    public static <T> List<T> getFutureResults(List<Future<T>> futures) {
+        List<T> results = Lists.newArrayList();
+
+        for (Future<T> f : futures) {
+            try {
+                results.add(f.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
+        return results;
     }
 }

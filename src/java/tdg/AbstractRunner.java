@@ -179,21 +179,6 @@ public abstract class AbstractRunner implements Runner {
 
     protected abstract void runnerSetFitnessStore(final FitnessStore fitnessStore);
 
-    protected <T> List<T> getAllResults(List<Future<T>> futures) {
-        List<T> results = Lists.newArrayList();
-
-        for (Future<T> f : futures) {
-            try {
-                results.add(f.get());
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
-
-        return results;
-    }
-
     public Alignment getAlignment() {
         return alignment;
     }

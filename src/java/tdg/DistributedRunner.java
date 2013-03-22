@@ -9,6 +9,7 @@ import pal.tree.Tree;
 import tdg.distributed.ServiceAPI;
 import tdg.model.Prior;
 import tdg.model.TDGGlobals;
+import tdg.utils.CoreUtils;
 import tdg.utils.PhyloUtils;
 import tdg.utils.Triple;
 import tdg.utils.ValueComparer;
@@ -88,7 +89,7 @@ public class DistributedRunner extends AbstractRunner {
             futures.add(future);
         }
 
-        getAllResults(futures);
+        CoreUtils.getFutureResults(futures);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class DistributedRunner extends AbstractRunner {
             futures.add(future);
         }
 
-        getAllResults(futures);
+        CoreUtils.getFutureResults(futures);
     }
 
     @Override
@@ -141,7 +142,7 @@ public class DistributedRunner extends AbstractRunner {
         }
 
         double total = 0;
-        for (double x : getAllResults(futures)) total += x;
+        for (double x : CoreUtils.getFutureResults(futures)) total += x;
 
         return total;
     }
@@ -167,7 +168,7 @@ public class DistributedRunner extends AbstractRunner {
 
         double total = 0;
 
-        for (Double p : getAllResults(futures)) {
+        for (Double p : CoreUtils.getFutureResults(futures)) {
             total += p;
         }
 
@@ -193,7 +194,7 @@ public class DistributedRunner extends AbstractRunner {
         }
 
         double total = 0;
-        for (double x : getAllResults(futures)) total += x;
+        for (double x : CoreUtils.getFutureResults(futures)) total += x;
 
         return total;
     }
@@ -216,7 +217,7 @@ public class DistributedRunner extends AbstractRunner {
             futures.add(future);
         }
 
-        getAllResults(futures);
+        CoreUtils.getFutureResults(futures);
     }
 
     @Override
@@ -243,7 +244,7 @@ public class DistributedRunner extends AbstractRunner {
             futures.add(future);
         }
 
-        List<Triple<Integer, Double, FitnessStore>> results = getAllResults(futures);
+        List<Triple<Integer, Double, FitnessStore>> results = CoreUtils.getFutureResults(futures);
 
         double sum = 0;
         for (Triple<Integer, Double, FitnessStore> f : results) {
