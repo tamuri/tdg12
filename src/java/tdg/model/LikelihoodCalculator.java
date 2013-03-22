@@ -8,6 +8,7 @@ import pal.tree.Tree;
 import tdg.Constants;
 import tdg.MatrixArrayPool;
 import tdg.utils.GeneticCode;
+import tdg.utils.PhyloUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,14 +60,8 @@ public class LikelihoodCalculator {
         }
 
         // set up name lookup
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            Node n = tree.getExternalNode(i);
-            nodeLabels.put(n, n.getIdentifier().getName());
-        }
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
-            Node n = tree.getInternalNode(i);
-            nodeLabels.put(n, n.getIdentifier().getName());
-        }
+        for (Node n : PhyloUtils.externalNodes(tree)) nodeLabels.put(n, n.getIdentifier().getName());
+        for (Node n : PhyloUtils.internalNodes(tree)) nodeLabels.put(n, n.getIdentifier().getName());
 
         //this.tipConditionals = new double[tree.getExternalNodeCount()][GeneticCode.CODON_STATES];
         // this.internalConditionals = new double[tree.getInternalNodeCount()][GeneticCode.CODON_STATES];
@@ -75,8 +70,8 @@ public class LikelihoodCalculator {
 
     private void fillTipConditionals() {
         // TODO: do we need to save this each time? we just need codon index or gap!
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            String parentName = getNodeLabel(tree.getExternalNode(i));
+        for (Node n : PhyloUtils.externalNodes(tree)) {
+            String parentName = getNodeLabel(n);
             int codon = states.get(parentName);
 
             if (GeneticCode.getInstance().isUnknownCodonState(codon)) {
@@ -181,9 +176,7 @@ public class LikelihoodCalculator {
 
     private double[] downTree() {
         //long start = CodeTimer.start();
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
-
-            Node node = tree.getInternalNode(i);
+        for (Node node : PhyloUtils.internalNodes(tree)) {
 
             double[] partial = new double[GeneticCode.CODON_STATES];
             for (int j : siteCodons) partial[j] = 1.0;

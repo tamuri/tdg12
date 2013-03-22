@@ -9,6 +9,7 @@ import pal.tree.Node;
 import pal.tree.Tree;
 import pal.tree.TreeTool;
 import pal.tree.TreeUtils;
+import tdg.utils.PhyloUtils;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -32,9 +33,7 @@ public class TreeNodeLabeler {
         List<Node> knownNodes = Lists.newArrayList();
 
         // to begin with all internal nodes are unnamed
-        for (int i = 0; i < t.getInternalNodeCount(); i++) {
-            unknownNodes.add(t.getInternalNode(i));
-        }
+        for (Node n : PhyloUtils.internalNodes(t)) unknownNodes.add(n);
 
         int preUnknownNodeCount = unknownNodes.size();
         int postUnknownNodeCount = -1;

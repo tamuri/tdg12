@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class Simulator {
 
-    private Tree parsedTree;
+    private Tree tree;
     private int sites;
     private Map<Identifier, int[]> seqout;
     private TDGGlobals globals;
@@ -36,19 +36,19 @@ public class Simulator {
 
         // Initialise sequence store
         seqout = Maps.newHashMap();
-        seqout.put(parsedTree.getRoot().getIdentifier(), new int[sites]);
-        for (int i = 0; i < parsedTree.getExternalNodeCount(); i++) {
+        seqout.put(tree.getRoot().getIdentifier(), new int[sites]);
+        for (Node node : PhyloUtils.externalNodes(tree)) {
             int[] store = new int[sites];
-            seqout.put(parsedTree.getExternalNode(i).getIdentifier(), store);
+            seqout.put(node.getIdentifier(), store);
         }
-        for (int i = 0; i < parsedTree.getInternalNodeCount(); i++) {
+        for (Node node : PhyloUtils.internalNodes(tree)) {
             int[] store = new int[sites];
-            seqout.put(parsedTree.getInternalNode(i).getIdentifier(), store);
+            seqout.put(node.getIdentifier(), store);
         }
     }
 
     public void setTree(String tree) {
-        parsedTree = PhyloUtils.readTree(tree);
+        this.tree = PhyloUtils.readTree(tree);
     }
 
     public void setGlobals(GlobalsOptions globalsOptions) {
@@ -56,7 +56,7 @@ public class Simulator {
     }
 
     public void simulate() {
-        Node root = parsedTree.getRoot();
+        Node root = tree.getRoot();
 
         // Root all uses the first model in the models list
         for (int i = 0; i < sites; i++) {
@@ -131,8 +131,8 @@ public class Simulator {
 
     public Map<String, int[]> getSimulatedData() {
         Map<String, int[]> data = Maps.newHashMap();
-        for (int i = 0; i < parsedTree.getExternalNodeCount(); i++) {
-            Identifier n = parsedTree.getExternalNode(i).getIdentifier();
+        for (Node node : PhyloUtils.externalNodes(tree)) {
+            Identifier n = node.getIdentifier();
             data.put(n.getName(), seqout.get(n));
         }
         return data;

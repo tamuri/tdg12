@@ -5,6 +5,7 @@ import pal.tree.Node;
 import pal.tree.Tree;
 import pal.tree.TreeManipulator;
 import pal.tree.TreeUtils;
+import tdg.utils.PhyloUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +33,7 @@ public class RerootedTreeIterator implements Iterable<Tree> {
         this.tree = TreeManipulator.getUnrooted(t);
 
         // Keep a list of all the internal nodes of the unrooted tree
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) this.internalNodes.add(tree.getInternalNode(i));
+        for (Node node : PhyloUtils.internalNodes(tree)) this.internalNodes.add(node);
     }
 
     /**

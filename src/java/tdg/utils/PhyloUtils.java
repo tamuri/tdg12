@@ -10,6 +10,7 @@ import pal.alignment.Alignment;
 import pal.alignment.AlignmentReaders;
 import pal.datatype.DataTypeTool;
 import pal.tree.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -220,20 +221,14 @@ public class PhyloUtils {
 
     public static double getTotalTreeLength(Tree tree) {
         double treeLength = 0;
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            treeLength += tree.getExternalNode(i).getBranchLength();
-        }
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
-            treeLength += tree.getInternalNode(i).getBranchLength();
-        }
+        for (Node n : externalNodes(tree)) treeLength += n.getBranchLength();
+        for (Node n : internalNodes(tree)) treeLength += n.getBranchLength();
         return treeLength;
     }
 
     public static boolean isTreeAndAlignmentValid(Tree tree, Alignment alignment) {
         Set<String> nodes = Sets.newHashSet();
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            nodes.add(tree.getExternalNode(i).getIdentifier().getName());
-        }
+        for (Node n : externalNodes(tree)) nodes.add(n.getIdentifier().getName());
 
         Set<String> seqs = Sets.newHashSet();
         for (int i = 0; i < alignment.getSequenceCount(); i++) {
@@ -244,14 +239,36 @@ public class PhyloUtils {
     }
 
     public static void setAllBranchLengths(Tree tree, double branchLength) {
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
-            tree.getExternalNode(i).setBranchLength(branchLength);
-        }
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
-            Node n = tree.getInternalNode(i);
-            if (n.getParent() != null) {
-                n.setBranchLength(branchLength);
-            }
-        }
+        for (Node n : externalNodes(tree)) n.setBranchLength(branchLength);
+        for (Node n : internalNodes(tree)) if (n.getParent() != null) n.setBranchLength(branchLength);
     }
+
+    public static Iterable<Node> internalNodes(final Tree tree) {
+        return new Iterable<Node>() {
+            @Override
+            public Iterator<Node> iterator() {
+                return new Iterator<Node>() {
+                    int pos = 0;
+                    @Override public boolean hasNext() { return pos < tree.getInternalNodeCount(); }
+                    @Override public Node next() { return tree.getInternalNode(pos++); }
+                    @Override public void remove() { throw new NotImplementedException(); }
+                };
+            }
+        };
+    }
+
+    public static Iterable<Node> externalNodes(final Tree tree) {
+        return new Iterable<Node>() {
+            @Override
+            public Iterator<Node> iterator() {
+                return new Iterator<Node>() {
+                    int pos = 0;
+                    @Override public boolean hasNext() { return pos < tree.getExternalNodeCount(); }
+                    @Override public Node next() { return tree.getExternalNode(pos++); }
+                    @Override public void remove() { throw new NotImplementedException(); }
+                };
+            }
+        };
+    }
+
 }

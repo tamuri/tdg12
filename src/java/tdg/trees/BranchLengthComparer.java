@@ -58,17 +58,17 @@ public class BranchLengthComparer {
         Map<Set<String>, Node> treeNodes = Maps.newHashMap();
 
         // Get taxa connect to internal nodes
-        for (int i = 0; i < tree.getInternalNodeCount(); i++) {
+        for (Node node : PhyloUtils.internalNodes(tree)) {
             Set<String> leaves = Sets.newTreeSet();
-            getLeavesFromNode(tree.getInternalNode(i), leaves);
-            treeNodes.put(leaves, tree.getInternalNode(i));
+            getLeavesFromNode(node, leaves);
+            treeNodes.put(leaves, node);
         }
 
         // Get the external nodes themselves
-        for (int i = 0; i < tree.getExternalNodeCount(); i++) {
+        for (Node node : PhyloUtils.externalNodes(tree)) {
             Set<String> leaves = Sets.newTreeSet();
-            getLeavesFromNode(tree.getExternalNode(i), leaves);
-            treeNodes.put(leaves, tree.getExternalNode(i));
+            getLeavesFromNode(node, leaves);
+            treeNodes.put(leaves, node);
         }
 
         return treeNodes;
