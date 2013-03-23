@@ -38,6 +38,7 @@ public class Estimator {
             System.out.printf("Error: %s\n", e.getMessage());
             jc.setProgramName("java -cp tdg12.jar tdg.Estimator");
             jc.usage();
+            System.exit(0);
         }
     }
 
@@ -71,10 +72,8 @@ public class Estimator {
 
             // Use the mutational matrix only for the first iteration (all 20 amino acids have F = 0)
             Fitness initialFitness = Fitness.getMutationOnlyFitness();
-            fitnessStore = new FitnessStore(alignment.getSiteCount() / 3);
-            for (int i = 1; i <= alignment.getSiteCount() / 3; i++) {
-                fitnessStore.setFitness(i, initialFitness);
-            }
+            fitnessStore = new FitnessStore();
+            for (int i = 1; i <= alignment.getSiteCount() / 3; i++) fitnessStore.setFitness(i, initialFitness);
 
             // Get rid of the current branch lengths and set to a sensible initial value
             PhyloUtils.setAllBranchLengths(tree, Constants.INITIAL_BRANCH_LENGTH);

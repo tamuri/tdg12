@@ -108,10 +108,10 @@ public class DistributedRunner extends AbstractRunner {
                     final List<Integer> sites = slaveSites.get(service_i);
 
                     // each slave should just have the fitness for the sites for which it is responsible
-                    FitnessStore slaveFitnessStore = new FitnessStore(sites.size());
-                    for (int i = 0; i < sites.size(); i++) {
-                        slaveFitnessStore.setFitness(i + 1, fitnessStore.getFitness(sites.get(i)));
-                    }
+                    FitnessStore slaveFitnessStore = new FitnessStore();
+
+                    for (int site : sites) slaveFitnessStore.setFitness(site, fitnessStore.getFitness(site));
+
                     s.setFitnessStore(slaveFitnessStore);
 
                     return null;
@@ -248,10 +248,9 @@ public class DistributedRunner extends AbstractRunner {
 
         double sum = 0;
         for (Triple<Integer, Double, FitnessStore> f : results) {
-            List<Integer> sites = this.slaveSites.get(f.first);
 
-            for (int i = 0; i < sites.size(); i++) {
-                fitnessStore.setFitness(sites.get(i), f.third.getFitness(i + 1));
+            for (int site : this.slaveSites.get(f.first)) {
+                fitnessStore.setFitness(site, f.third.getFitness(site));
             }
 
             sum += f.second;

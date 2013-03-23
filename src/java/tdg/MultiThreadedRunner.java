@@ -61,13 +61,11 @@ public class MultiThreadedRunner extends AbstractRunner {
     public double runnerGetLogLikelihood(final Tree tree, final FitnessStore fitnessStore, final TDGGlobals globals, final Prior prior) {
         List<Future<Double>> futures = Lists.newArrayList();
 
-        for (int i = 0; i < sites.length; i++) {
-            final int site = sites[i];
-            final int fitness_i = i + 1;
+        for (final int site : sites) {
             Future<Double> future = threadPool.submit(new Callable<Double>() {
                 @Override
                 public Double call() throws Exception {
-                    Fitness fitness = fitnessStore.getFitness(fitness_i);
+                    Fitness fitness = fitnessStore.getFitness(site);
                     Map<String, Integer> states = PhyloUtils.getCleanedCodons(getAlignment(), site);
                     TDGCodonModel model = new TDGCodonModel(globals, fitness, PhyloUtils.getDistinctAminoAcids(states.values()));
 
@@ -98,9 +96,7 @@ public class MultiThreadedRunner extends AbstractRunner {
         final AtomicDouble total = new AtomicDouble(0);
         final RandomData randomData = new RandomDataImpl(new MersenneTwister(987654321));
 
-        for (int i = 0; i < sites.length; i++) {
-            final int site = sites[i];
-            final int fitness_i = i + 1;
+        for (final int site : sites) {
             Future<Pair<Integer, Fitness>> future = threadPool.submit(new Callable<Pair<Integer, Fitness>>() {
                 @Override
                 public Pair<Integer, Fitness> call() throws Exception {
@@ -120,7 +116,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                         double[] f;
 
                         if (run == 0) {
-                            f = fitnessStore.getFitness(fitness_i).get();
+                            f = fitnessStore.getFitness(site).get();
                         } else if (run == 1) {
                             f = new double[residues.size()];
                         } else {
@@ -181,8 +177,8 @@ public class MultiThreadedRunner extends AbstractRunner {
                         if (optimals.get(i).first > optimals.get(best).first) best = i;
 
                     total.getAndAdd(optimals.get(best).first);
-                    System.out.printf("%s - %s\n", fitness_i, optimals.get(best).first);
-                    return Pair.of(fitness_i, new Fitness(optimals.get(best).second, true));
+                    System.out.printf("%s - %s\n", site, optimals.get(best).first);
+                    return Pair.of(site, new Fitness(optimals.get(best).second, true));
 
                 }
             });
@@ -202,22 +198,20 @@ public class MultiThreadedRunner extends AbstractRunner {
     public double updateSiteCalculatorTrees(final Tree tree, final TDGGlobals globals, final FitnessStore fitnessStore, final Prior prior) {
         List<Future<Pair<Double, LikelihoodCalculator>>> futures = Lists.newArrayList();
 
-        for (int i = 0; i < sites.length; i++) {
-            final int site = sites[i];
-            final int fitness_i = i + 1;
+        for (final int site : sites) {
             Future<Pair<Double, LikelihoodCalculator>> future = threadPool.submit(new Callable<Pair<Double, LikelihoodCalculator>>() {
                 @Override
                 public Pair<Double, LikelihoodCalculator> call() throws Exception {
                     Map<String, Integer> states = PhyloUtils.getCleanedCodons(getAlignment(), site);
                     List<Integer> aminoAcids = PhyloUtils.getDistinctAminoAcids(states.values());
 
-                    TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(fitness_i), aminoAcids);
+                    TDGCodonModel model = new TDGCodonModel(globals, fitnessStore.getFitness(site), aminoAcids);
                     model.updateModel();
 
                     LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, prior);
                     calculator.getStorage();
 
-                    calculator.setParameters(fitnessStore.getFitness(fitness_i));
+                    calculator.setParameters(fitnessStore.getFitness(site));
                     calculator.addCladeModel("ALL", model);
 
                     double d = calculator.calculateLogLikelihood();

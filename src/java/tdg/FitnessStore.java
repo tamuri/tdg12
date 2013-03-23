@@ -1,11 +1,11 @@
 package tdg;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import tdg.model.Fitness;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 /**
  * User: atamuri
@@ -14,28 +14,24 @@ import java.util.List;
 public class FitnessStore implements Serializable, Iterable<Fitness> {
     private static final long serialVersionUID = -2630793049038547404L;
 
-    List<Fitness> fitnessStore;
+    Map<Integer, Fitness> store;
 
-    public FitnessStore(int size) {
-        fitnessStore = Lists.newArrayList();
-        for (int i = 0; i < size; i++) fitnessStore.add(null);
+    public FitnessStore() {
+        store = Maps.newTreeMap();
     }
 
     public void setFitness(int site, Fitness f) {
-        fitnessStore.set(site - 1, f);
+        store.put(site, f);
     }
 
     public Fitness getFitness(int site) {
-        if (fitnessStore.get(site - 1) == null) {
-            throw new RuntimeException("No fitness stored for site " + site);
-        }
-
-        return fitnessStore.get(site - 1);
+        if (!store.containsKey(site)) throw new RuntimeException("No fitness stored for site " + site);
+        return store.get(site);
     }
 
 
     @Override
     public Iterator<Fitness> iterator() {
-        return fitnessStore.iterator();
+        return store.values().iterator();
     }
 }

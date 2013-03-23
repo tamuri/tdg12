@@ -88,7 +88,7 @@ public class CheckpointLineProcessor implements LineProcessor<Triple<TDGGlobals,
     @Override
     public Triple<TDGGlobals, FitnessStore, Tree> getResult() {
         int site = 1;
-        FitnessStore fitnessStore = new FitnessStore(fitnessList.size());
+        FitnessStore fitnessStore = new FitnessStore();
         for (Fitness f : fitnessList) fitnessStore.setFitness(site++, f);
         System.out.printf("%s - tdg.Estimator loaded checkpoint (%s fitness vectors)\n", new Timestamp(System.currentTimeMillis()), fitnessList.size());
 
