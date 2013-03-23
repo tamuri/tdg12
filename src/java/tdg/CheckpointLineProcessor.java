@@ -62,7 +62,7 @@ public class CheckpointLineProcessor implements LineProcessor<Triple<TDGGlobals,
             }
 
             // check the tree will work with the alignment
-            if (!PhyloUtils.isTreeAndAlignmentValid(this.tree, alignment)) {
+            if (!PhyloUtils.isComplementary(this.tree, alignment)) {
                 throw new IOException("ERROR: Checkpoint tree does not match alignment.");
             }
 

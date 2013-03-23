@@ -49,7 +49,7 @@ public class Estimator {
         Tree tree = PhyloUtils.readTree(options.tree);
         Alignment alignment = PhyloUtils.readAlignment(options.alignment);
 
-        if (!PhyloUtils.isTreeAndAlignmentValid(tree, alignment)) {
+        if (!PhyloUtils.isComplementary(tree, alignment)) {
             throw new RuntimeException("ERROR: tree and alignment do not have the same taxa.");
         }
 

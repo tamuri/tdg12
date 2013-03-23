@@ -201,7 +201,7 @@ public class PhyloUtils {
         return treeLength;
     }
 
-    public static boolean isTreeAndAlignmentValid(Tree tree, Alignment alignment) {
+    public static boolean isComplementary(Tree tree, Alignment alignment) {
         Set<String> nodes = Sets.newHashSet();
         for (Node n : externalNodes(tree)) nodes.add(n.getIdentifier().getName());
 
