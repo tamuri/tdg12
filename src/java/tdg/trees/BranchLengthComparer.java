@@ -59,6 +59,8 @@ public class BranchLengthComparer {
             totalLength2 += node2.getBranchLength();
         }
 
+        System.out.println();
+
         // Normalise both trees so total tree length is the same, so we can compare relative branch lengths
         double newTotal = 100.0;
 
