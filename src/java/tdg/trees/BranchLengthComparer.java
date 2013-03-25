@@ -24,17 +24,18 @@ public class BranchLengthComparer {
         Tree tree1 = TreeManipulator.getUnrooted(PhyloUtils.readTree(tree1Path));
         Tree tree2 = TreeManipulator.getUnrooted(PhyloUtils.readTree(tree2Path));
 
+        // The key for every node in the tree is the group of external nodes which are its children
         Map<Set<String>, Node> tree1Nodes = getNodeLeaves(tree1);
         Map<Set<String>, Node> tree2Nodes = getNodeLeaves(tree2);
 
         // Sanity check - the trees to have the same topology
-        System.out.printf("Tree 1: %s nodes.\n", tree1Nodes.size());
-        System.out.printf("Tree 2: %s nodes.\n", tree2Nodes.size());
-        System.out.printf("Intersection: %s nodes.\n", Sets.intersection(tree1Nodes.keySet(), tree2Nodes.keySet()).size());
-        System.out.printf("Difference: %s nodes.\n", Sets.difference(tree1Nodes.keySet(), tree2Nodes.keySet()).size());
+        System.out.printf("Tree1Nodes: %s\n", tree1Nodes.size());
+        System.out.printf("Tree2Nodes: %s\n", tree2Nodes.size());
+        System.out.printf("Intersection: %s\n", Sets.intersection(tree1Nodes.keySet(), tree2Nodes.keySet()).size());
+        System.out.printf("Difference: %s\n", Sets.difference(tree1Nodes.keySet(), tree2Nodes.keySet()).size());
         System.out.println();
 
-
+        // Just for pretty printing
         List<Set<String>> keys = Lists.newArrayList(tree1Nodes.keySet());
         Collections.sort(keys, new Comparator<Set<String>>() {
             @Override
@@ -43,15 +44,31 @@ public class BranchLengthComparer {
             }
         });
 
+        // Output the branch lengths of each matching node
+        double totalLength1 = 0.0;
+        double totalLength2 = 0.0;
 
-
-
+        System.out.println("BranchLengths:");
         for (Set<String> group : keys) {
             Node node1 = tree1Nodes.get(group);
             Node node2 = tree2Nodes.get(group);
 
-            System.out.printf("%s\t%s\t%s\n", node1.getBranchLength(), node2.getBranchLength(), group);
+            System.out.printf("  - [ %s, %s, \"%s\" ]%n", node1.getBranchLength(), node2.getBranchLength(), group);
+
+            totalLength1 += node1.getBranchLength();
+            totalLength2 += node2.getBranchLength();
         }
+
+        // Normalise both trees so total tree length is the same, so we can compare relative branch lengths
+        double newTotal = 100.0;
+
+        for (Set<String> group : keys) {
+            tree1Nodes.get(group).setBranchLength(tree1Nodes.get(group).getBranchLength() / totalLength1 * newTotal);
+            tree2Nodes.get(group).setBranchLength(tree2Nodes.get(group).getBranchLength() / totalLength2 * newTotal);
+        }
+
+        System.out.printf("FirstTree: >%n  %s%n", PhyloUtils.prettyTreeString(tree1).replaceAll("\n", "\n  "));
+        System.out.printf("SecondTree: >%n  %s%n", PhyloUtils.prettyTreeString(tree2).replaceAll("\n", "\n  "));
     }
 
     private Map<Set<String>, Node> getNodeLeaves(Tree tree) {
