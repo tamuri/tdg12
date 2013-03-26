@@ -39,7 +39,7 @@ public class LikelihoodCalculator {
     // TODO: Improve memory usage of these conditionals...do we need to store everything??!
     // TODO: For example, strictly speaking, we only need as many arrays as we have concurrent threads running, and each can be reused
     // Could we have a reusable pool of 64*64 arrays? We would then only create 16 (or whatever), instead of 3598!
-   //  private final double[][] tipConditionals;
+    //  private final double[][] tipConditionals;
     // private final double[][] internalConditionals;
     private double[][] internalConditionals;
 
@@ -70,9 +70,9 @@ public class LikelihoodCalculator {
             int codon = states.get(parentName);
 
             if (GeneticCode.getInstance().isUnknownCodonState(codon)) {
-               // Arrays.fill(tipConditionals[i], 1.0);
+                // Arrays.fill(tipConditionals[i], 1.0);
             } else {
-               // tipConditionals[i][codon] = 1.0;
+                // tipConditionals[i][codon] = 1.0;
 
 /*                int aai = GeneticCode.getInstance().getAminoAcidIndexFromCodonIndex(codon);
                 int[] codoni = GeneticCode.getInstance().getCodonIndexFromAminoAcidIndex(aai);
@@ -91,13 +91,19 @@ public class LikelihoodCalculator {
     public double function(double[] parameters) {
         updateParameters(parameters);
 
-        double l = calculateLogLikelihood();
+        double logLikelihood = calculateLogLikelihood();
 
-        // TODO: handle heterogenerous models (i.e. clademodels.size() > 1)
-        double p = 0.0;
-        if (prior != null) p = prior.calculate(parameters);
+        double penalty = 0.0;
+        if (prior != null) {
+            for (Parameter param : this.parameters) {
+                if (param.getClass() == Fitness.class) {
+                    // TODO: does not work with approximate method!
+                    penalty += prior.calculate(Arrays.copyOfRange((double[]) param.get(), 1, 20));
+                }
+            }
+        }
 
-        return l + p;
+        return logLikelihood + penalty;
     }
 
     public double calculateLogLikelihood() {
@@ -142,7 +148,6 @@ public class LikelihoodCalculator {
     public double getLogScaling() {
         return logScaling;
     }
-
 
 
     private double[] downTree() {
@@ -198,7 +203,7 @@ public class LikelihoodCalculator {
                 }
             }
 
-            if (!(node.getParent() == null) && !node.getParent().isRoot() ) {
+            if (!(node.getParent() == null) && !node.getParent().isRoot()) {
                 scaleConditionals(node, partial);
             }
 
