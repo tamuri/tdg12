@@ -122,7 +122,7 @@ public class CoreUtils {
     public static double[] seqd(double start, double end, double step) {
         double[] o = new double[(int) ((end - start) / step) + 1];
         for (int i = 0; i < o.length; i++) {
-            o[i] = (step * (i + 1));
+            o[i] = (step * (i + start));
         }
         return o;
     }
