@@ -21,9 +21,26 @@ public class DirichletPrior implements Prior {
         theta.assign(Functions.exp);
         theta.assign(Functions.div(1 + theta.zSum()));
 
+
+        // original:
         return ((alpha - 1) * theta.aggregate(Functions.plus, Functions.log))
                 + ((alpha - 1) * Math.log(1 - theta.zSum()))
                 + Math.log(Math.abs(Algebra.DEFAULT.det(jacobian(theta))));
+
+        /*
+
+        double prod = 1;
+        for (int i = 0; i < theta.size(); i++) {
+            prod = prod * theta.getQuick(i);
+        }
+
+        // Mario's simplification
+        return ((alpha - 1) * theta.aggregate(Functions.plus, Functions.log))
+                + ((alpha - 1) * Math.log(1 - theta.zSum()))
+                + Math.log(Math.abs(prod));
+        */
+
+
     }
 
     private DoubleMatrix2D jacobian(final DoubleMatrix1D theta) {
@@ -33,7 +50,7 @@ public class DirichletPrior implements Prior {
                 if (i == j) {
                     jacobi.setQuick(i, j, theta.getQuick(i) * (1 - theta.getQuick(i)));
                 } else {
-                    jacobi.setQuick(i, j, -theta.getQuick(i) * theta.getQuick(i));
+                    jacobi.setQuick(i, j, -theta.getQuick(i) * theta.getQuick(j));
                 }
             }
         }
@@ -45,7 +62,8 @@ public class DirichletPrior implements Prior {
         return "DirichletPrior{alpha=" + alpha + '}';
     }
 
-/*    public static void main(String[] args) {
+
+  /*  public static void main(String[] args) {
 
         double[] f = new double[19];
         for (int i = 0; i < f.length; i++) {
@@ -56,12 +74,34 @@ public class DirichletPrior implements Prior {
 
         System.out.printf("Fitness: %s\n", Doubles.join(", ", f));
 
-        for (double a : new double[]{1.0, 0.1, 0.01, 0.0001}) {
+        for (double a : new double[]{1.0, 0.5, 0.1, 0.01, 0.0001}) {
             DirichletPrior dp = new DirichletPrior(a);
             double cal1 = dp.calculate(f);
 
             System.out.printf("%s\t%s\n", a, cal1);
         }
-    }*/
+
+        System.out.printf("length: %s\n", f.length);
+
+        for (double a : new double[]{1.0, 0.1, 0.01, 0.0001}) {
+            double sum1 = 0;
+            for (double ff : f) {
+                sum1 += Math.exp(ff);
+            }
+            sum1 += 1;
+            sum1 = Math.log(sum1);
+            System.out.printf("sum1 = %s\n", sum1);
+
+            double sum2 = 0;
+            for (double ff : f) {
+                sum2 += ff - sum1;
+            }
+            System.out.printf("sum2 = %s\n", sum2);
+
+            double p = sum2 * a;
+            System.out.printf("%s\t%s\n", a, p);
+        }
+    }
+*/
 
 }
