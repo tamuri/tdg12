@@ -10,7 +10,6 @@ import pal.alignment.Alignment;
 import pal.alignment.AlignmentReaders;
 import pal.datatype.DataTypeTool;
 import pal.tree.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -237,7 +236,7 @@ public class PhyloUtils {
 
                     @Override
                     public void remove() {
-                        throw new NotImplementedException();
+                        throw new RuntimeException("internalNodes.remove() Not implemented.");
                     }
                 };
             }
@@ -263,7 +262,7 @@ public class PhyloUtils {
 
                     @Override
                     public void remove() {
-                        throw new NotImplementedException();
+                        throw new RuntimeException("externals.remove() Not implemented.");
                     }
                 };
             }
