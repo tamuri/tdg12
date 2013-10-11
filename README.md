@@ -93,9 +93,9 @@ Therefore, the estimates for the global parameters for the ATP8 gene
 alignment are:
 
 <table>
-<tr><td>&kappa; = </td><td>4.93022</td></tr>
-<tr><td>&pi; = </td><td>{0.25299, 0.22268, 0.43860, 0.08572}</td></tr>
-<tr><td>&mu; = </td><td>3 * T_dS / T = 3 * 70.7207 / 113.24814 = 1.8734</td></tr>
+    <tr><td>&kappa; = </td><td> 4.93022                                         </td></tr>
+    <tr><td>&pi;    = </td><td> {0.25299, 0.22268, 0.43860, 0.08572}            </td></tr>
+    <tr><td>&mu;    = </td><td> 3 * T_dS / T = 3 * 70.7207 / 113.24814 = 1.8734 </td></tr>
 </table>
 
 We choose a small number for &tau;, e.g. 1.0 \* 10^-2.
@@ -280,4 +280,4 @@ TdG12 uses the following libraries:
     tdg.distributed.Master to make asynchronous HTTP requests to the
     slaves.
 
-[^1]: However, you can use other programs if you prefer.
+[^1]: You can use other programs if you prefer.
