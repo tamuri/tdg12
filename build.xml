@@ -14,36 +14,40 @@
 
     <target name="clean">
         <delete dir="${build.dir}" />
-        <delete dir="${docs.dir}" />
         <delete dir="${dist.dir}" />
     </target>
 
     <target name="makedir">
         <mkdir dir="${build.dir}" />
-        <mkdir dir="${docs.dir}" />
         <mkdir dir="${dist.dir}" />
     </target>
 
-    <target name="compile" depends="clean, makedir">
-        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="build.classpath">
+    <target name="compile">
+        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" classpathref="build.classpath">
         </javac>
     </target>
 
     <target name="docs" depends="compile">
-        <javadoc sourcepath="${src.dir}" destdir="${docs.dir}" Overview="etc/overview.html" classpathref="build.classpath">
+        <delete dir="${docs.dir}" />
+        <mkdir dir="${docs.dir}" />
+        <javadoc sourcepath="${src.dir}" destdir="${docs.dir}" classpathref="build.classpath"> <!--  Overview="etc/overview.html"  -->
             <fileset dir="${src.dir}">
                 <include name="**" />
+                <exclude name="**/${ant.project.name}.iml"/>
             </fileset>
         </javadoc>
     </target>
 
     <target name="jar" depends="compile">
-        <jar destfile="${dist.dir}\${ant.project.name}.jar" basedir="${build.dir}">
+        <tstamp>
+            <format property="timenow" pattern="YYMMddHHmmss" />
+        </tstamp>
+        <jar destfile="${dist.dir}\${ant.project.name}-${timenow}.jar" basedir="${build.dir}">
             <zipgroupfileset dir="lib" includes="*.jar" />
         </jar>
     </target>
 
-    <target name="dist" depends="compile, jar">
+    <target name="dist" depends="clean, makedir, compile, jar">
         <description>Build everything</description>
     </target>
 
