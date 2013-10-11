@@ -27,17 +27,16 @@ public class DirichletPrior implements Prior {
                 + ((alpha - 1) * Math.log(1 - theta.zSum()))
                 + Math.log(Math.abs(Algebra.DEFAULT.det(jacobian(theta))));
 
+
+        // MdR's function in the manuscript:
         /*
+        DoubleMatrix1D theta = DoubleFactory1D.dense.make(20, 0.0);
+        for (int i = 0; i < fitness.length; i++) theta.setQuick(i, fitness[i]);
 
-        double prod = 1;
-        for (int i = 0; i < theta.size(); i++) {
-            prod = prod * theta.getQuick(i);
-        }
+        theta.assign(Functions.exp);
+        theta.assign(Functions.div(theta.zSum()));
 
-        // Mario's simplification
-        return ((alpha - 1) * theta.aggregate(Functions.plus, Functions.log))
-                + ((alpha - 1) * Math.log(1 - theta.zSum()))
-                + Math.log(Math.abs(prod));
+        return alpha * theta.aggregate(Functions.plus, Functions.log);
         */
 
 
