@@ -127,13 +127,14 @@ public abstract class AbstractRunner implements Runner {
                         UnivariateRealOptimizer opt = new BrentOptimizer();
 
                         try {
+                            double rnd = Math.random();
                             opt.optimize(new UnivariateRealFunction() {
                                 @Override
                                 public double value(double branchlength) throws FunctionEvaluationException {
                                     double d = getLikelihoodSum(child.getNumber(), branchlength);
                                     return d;
                                 }
-                            }, GoalType.MAXIMIZE, MIN_BRANCH_LENGTH, MAX_BRANCH_LENGTH, child.getBranchLength());
+                            }, GoalType.MAXIMIZE, MIN_BRANCH_LENGTH, Math.max(MAX_BRANCH_LENGTH + rnd, child.getBranchLength() + rnd), child.getBranchLength());
 
                             //System.out.printf("%s - %s -> %s\t%s -> %s\n", new Timestamp(System.currentTimeMillis()), previousLnL, opt.getFunctionValue(), old, opt.getResult());
 
