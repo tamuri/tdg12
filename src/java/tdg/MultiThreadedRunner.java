@@ -1,6 +1,7 @@
 package tdg;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Doubles;
 import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.optimization.GoalType;
@@ -106,13 +107,11 @@ public class MultiThreadedRunner extends AbstractRunner {
                     LikelihoodCalculator calculator = new LikelihoodCalculator(tree, states, prior);
                     calculator.getStorage();
 
-                    // TODO: have multiple run with multiple initial starting parameters
-                    // TODO: handle convergence problems!
                     // Fitness fitness = new Fitness(fitnessStore.getFitness(fitness_i).get(), true);
 
                     List<Pair<Double, double[]>> optimals = Lists.newArrayList();
 
-                    for (int run = 0; run < 3; run++) {
+                    for (int run = 0; run < 3; run++) { // TODO: this needs honour command-line option -optims
                         double[] f;
 
                         if (run == 0) {
@@ -152,7 +151,9 @@ public class MultiThreadedRunner extends AbstractRunner {
                             try {
                                 optima = optimiser.optimize(wrapper, GoalType.MAXIMIZE, calculator.getMinimisationParameters().getParameters());
                             } catch (FunctionEvaluationException e) {
-                                throw new RuntimeException(e);
+                                // Did not converge - use the last attempted point and assume it's close to the optima...!
+                                optima = new RealPointValuePair(e.getArgument(), calculator.function(e.getArgument()));
+                                System.out.printf("MultiThreadedRunner.optimiseFitness - Site %s exceeded maximum number of evaluations (%s).%n", site, optimiser.getEvaluations());
                             }
 
                             if (optima == null) return null;
@@ -177,7 +178,7 @@ public class MultiThreadedRunner extends AbstractRunner {
                         if (optimals.get(i).first > optimals.get(best).first) best = i;
 
                     total.getAndAdd(optimals.get(best).first);
-                    System.out.printf("%s - %s\n", site, optimals.get(best).first);
+                    // System.out.printf("%s - %s\n", site, optimals.get(best).first);
                     return Pair.of(site, new Fitness(optimals.get(best).second, true));
 
                 }
