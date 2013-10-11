@@ -1,5 +1,7 @@
 package tdg.results;
 
+import cern.colt.matrix.DoubleFactory2D;
+import cern.colt.matrix.DoubleMatrix2D;
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
@@ -61,16 +63,30 @@ public class ModelWriter {
 
     public void run() throws Exception {
         // Neutral Q
-        List<Double> Q0 = Lists.newArrayListWithCapacity(GeneticCode.CODON_STATES * GeneticCode.CODON_STATES);
+        DoubleMatrix2D q0 = DoubleFactory2D.dense.make(GeneticCode.CODON_STATES, GeneticCode.CODON_STATES);
+
         for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
             for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
-                if (i == j) Q0.add(-1.0);
-                else Q0.add(tdgGlobals.getNeutralMutationRate(i, j) * tdgGlobals.getNu());
+                if (i == j) q0.setQuick(i, j, 0);
+                else q0.setQuick(i, j, tdgGlobals.getNeutralMutationRate(i, j) * tdgGlobals.getNu());
             }
         }
 
+        // Q0 rows sum to 0
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            double sum = 0;
+            for (int j = 0; j < GeneticCode.CODON_STATES; j++) {
+                sum += q0.getQuick(i, j);
+            }
+            q0.setQuick(i, i, -sum);
+        }
+
         FileWriter outQ0 = new FileWriter(new File(Constants.Q0_FILENAME));
-        outQ0.write(Joiner.on(' ').join(Q0));
+        for (int i = 0; i < GeneticCode.CODON_STATES; i++) {
+            outQ0.write(Doubles.join(" ", q0.viewRow(i).toArray()));
+            if (i < GeneticCode.CODON_STATES - 1) outQ0.write(" ");
+        }
+
         outQ0.close();
 
         // S, Q with selection and codon pi files

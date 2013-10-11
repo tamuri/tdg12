@@ -96,8 +96,8 @@ public class DistributionWriter {
                 deltaS = Math.min(deltaS, S_LIMIT);
 
                 double val = deltaS - LOW;
-                int mutsBin = (int) (MUTS_BINS * (val / (HI - LOW)));
-                int subsBin = (int) (SUBS_BINS * (val / (HI - LOW)));
+                int mutsBin = (int) (MUTS_BINS * (val / (HI - LOW))); // this just drops any decimal places i.e. (int) Math.floor(double)
+                int subsBin = (int) (SUBS_BINS * (val / (HI - LOW))); // perhaps it should be (int) Math.round(SUBS_BIN * ... - LOW) etc.
 
                 if (isNonSynChange) {
                     mutsNonSynSiteSum += piValue * Q0[i];
