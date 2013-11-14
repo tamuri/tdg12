@@ -222,7 +222,7 @@ Simulating data using the mutation-selection model
 
 ### Simulating a single set of fitnesses (for one site)
 
-> `java -cp tdg12.jar tdg.results.All -tree sim.tree -output out.phy -sites 100 -fitness 0.0,0.2,0.3,1.0,0.5,0.6,0.7,0.8 -characters A,R,N,D,C,Q,E,H -tau 0 -pi 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard`
+> `java -cp tdg12.jar tdg.sim.AlignmentSimulator -tree sim.tree -output out.phy -sites 100 -fitness 0.0,0.2,0.3,1.0,0.5,0.6,0.7,0.8 -characters A,R,N,D,C,Q,E,H -tau 0 -pi 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard`
 
 This command will write an alignment file 'out.phy' (in PHYLIP format)
 simulating a site (100 times) on the tree 'sim.tree' with the specified
@@ -249,7 +249,7 @@ Each line specifies the fitnesses of each amino acid in the canonical
 IUPAC order. Residues that are unobserved at a site are given a fitness &lt;-20. If this file is saved as 'F.txt', the alignment is generated
 using the command:
 
-> `java -cp tdg12.jar tdg.results.All -tree sim.tree -output out.phy -fitnessfile F.txt -tau 0 -pi 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard`
+> `java -cp tdg12.jar tdg.sim.AlignmentSimulator -tree sim.tree -output out.phy -fitnessfile F.txt -tau 0 -pi 0.25,0.25,0.25,0.25 -mu 1.0 -gc standard`
 
 Colophon
 --------
