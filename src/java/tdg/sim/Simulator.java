@@ -67,7 +67,7 @@ public class Simulator {
     }
 
     private void downTree(Node parent) {
-        for (int i = 0; i < parent.getChildCount(); i++) {
+               for (int i = 0; i < parent.getChildCount(); i++) {
             Node child = parent.getChild(i);
 
             String model;
@@ -75,20 +75,42 @@ public class Simulator {
             // if we're using a homogeneous model
             if (this.heteroClades.size() == 1) {
                 model = "ALL";
+
+                this.cladeModels.get(model).getProbabilityMatrix(Pt, child.getBranchLength());
+
+                for (int j = 0; j < this.sites; j++) {
+                    int row = seqout.get(parent.getIdentifier())[j];
+                    seqout.get(child.getIdentifier())[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                }
+
             } else {
-                // this is a heterogeneous model - get the model for this particular branch
-                model = (parent.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : parent.getIdentifier().getName().substring(0, 2);
-            }
+                // this is a heterogeneous model - split the branch in two
+                String modelA = (parent.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : parent.getIdentifier().getName().substring(0, 2);
+                String modelB = (child.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : child.getIdentifier().getName().substring(0, 2);
 
-            this.cladeModels.get(model).getProbabilityMatrix(Pt, child.getBranchLength());
+                int[] midpoint = new int[this.sites];
 
-            for (int j = 0; j < this.sites; j++) {
-                int row = seqout.get(parent.getIdentifier())[j];
-                seqout.get(child.getIdentifier())[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                // modelA to midpoint
+                this.cladeModels.get(modelA).getProbabilityMatrix(Pt, child.getBranchLength() * 0.5);
+
+                for (int j = 0; j < this.sites; j++) {
+                    int row = seqout.get(parent.getIdentifier())[j];
+                    midpoint[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                }
+
+                // midpoint to modelB
+                this.cladeModels.get(modelB).getProbabilityMatrix(Pt, child.getBranchLength() * 0.5);
+
+                for (int j = 0; j < this.sites; j++) {
+                    int row = midpoint[j];
+                    seqout.get(child.getIdentifier())[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                }
+
             }
 
             downTree(child);
         }
+
     }
 
     private int selectRandomCharacter(double[] array) {
