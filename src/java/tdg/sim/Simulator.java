@@ -30,6 +30,7 @@ public class Simulator {
     private List<Integer> aminoAcids = Lists.newArrayList();
     private Map<String, TDGCodonModel> cladeModels = Maps.newHashMap();
     private double[] Pt = new double[GeneticCode.CODON_STATES * GeneticCode.CODON_STATES];
+    private double shiftFraction;
 
     public void initialise(int sites) {
         this.sites = sites;
@@ -88,24 +89,35 @@ public class Simulator {
                 String modelA = (parent.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : parent.getIdentifier().getName().substring(0, 2);
                 String modelB = (child.getIdentifier().getName().length() == 0) ? this.heteroClades.get(0) : child.getIdentifier().getName().substring(0, 2);
 
-                int[] midpoint = new int[this.sites];
+                int[] switchPoint = new int[this.sites];
 
                 // modelA to midpoint
-                this.cladeModels.get(modelA).getProbabilityMatrix(Pt, child.getBranchLength() * 0.5);
+                if (shiftFraction == 0) {
+                    for (int j = 0; j < this.sites; j++) {
+                        switchPoint[j] = seqout.get(parent.getIdentifier())[j];
+                    }
+                } else {
+                    this.cladeModels.get(modelA).getProbabilityMatrix(Pt, child.getBranchLength() * shiftFraction);
 
-                for (int j = 0; j < this.sites; j++) {
-                    int row = seqout.get(parent.getIdentifier())[j];
-                    midpoint[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                    for (int j = 0; j < this.sites; j++) {
+                        int row = seqout.get(parent.getIdentifier())[j];
+                        switchPoint[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                    }
                 }
 
                 // midpoint to modelB
-                this.cladeModels.get(modelB).getProbabilityMatrix(Pt, child.getBranchLength() * 0.5);
+                if (shiftFraction == 1) {
+                    for (int j = 0; j < this.sites; j++) {
+                        seqout.get(child.getIdentifier())[j] = switchPoint[j];
+                    }
+                } else {
+                    this.cladeModels.get(modelB).getProbabilityMatrix(Pt, child.getBranchLength() * (1 - shiftFraction));
 
-                for (int j = 0; j < this.sites; j++) {
-                    int row = midpoint[j];
-                    seqout.get(child.getIdentifier())[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                    for (int j = 0; j < this.sites; j++) {
+                        int row = switchPoint[j];
+                        seqout.get(child.getIdentifier())[j] = selectRandomCharacter(Arrays.copyOfRange(Pt, row * GeneticCode.CODON_STATES, row * GeneticCode.CODON_STATES + GeneticCode.CODON_STATES));
+                    }
                 }
-
             }
 
             downTree(child);
@@ -170,5 +182,12 @@ public class Simulator {
             }
             System.out.println();
         }
+    }
+
+    public void setShiftFraction(double shiftFraction) {
+        if (shiftFraction < 0 || shiftFraction > 1) {
+            throw new RuntimeException("-shiftfrac should be between 0 and 1");
+        }
+        this.shiftFraction = shiftFraction;
     }
 }

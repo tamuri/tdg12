@@ -65,6 +65,7 @@ public class AlignmentSimulator {
         s.setGlobals(globalOptions);
         s.setClades(heteroClades);
         s.setAminoAcids(residues);
+        s.setShiftFraction(shiftFrac);
 
         // If we're simulating a single set of fitnesses, specified using the -fitness option
         if (this.fitness.size() > 0) {
@@ -207,6 +208,9 @@ public class AlignmentSimulator {
 
     @Parameter(names = "-output", description = "The name of the file to save the simulated alignment.", required = true)
     public String outputFile;
+
+    @Parameter(names = "-shiftfrac", description = "How far down the branch to switch non-homogeneous models. 0 = start of branch, 1 = end of branch, x = percentage of branch")
+    public double shiftFrac = 0.5;
 
     @ParametersDelegate
     public GlobalsOptions globalOptions = new GlobalsOptions();
