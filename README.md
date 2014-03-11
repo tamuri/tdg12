@@ -1,5 +1,7 @@
+This program is no longer being updated. Please use the implementation at https://github.com/tamuri/swmutsel
+
 TdG12: Estimating distribution of selection coefficients
-========================================================
+--------------------------------------------------------
 
 Program for estimating the distribution of selection coefficients (fitness effects) from phylogenetic data using a site-wise mutation-selection model.
 
