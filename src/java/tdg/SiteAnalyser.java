@@ -24,6 +24,7 @@ import tdg.utils.GeneticCode;
 import tdg.utils.PhyloUtils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -197,13 +198,43 @@ public class SiteAnalyser {
         LikelihoodCalculator heterogeneousModel = new LikelihoodCalculator(tree, sitePattern, options.prior);
 
         List<String> clades = Lists.newArrayList(options.heteroClades.split(","));
+        double[] orderedFitnessHomogeneousMLE = getOrderedFitness(aminoAcidsAtSite, homogeneousFitness.get());
         List<Fitness> fitnesses = Lists.newArrayListWithCapacity(clades.size());
         List<TDGCodonModel> tdgModels = Lists.newArrayListWithCapacity(clades.size());
+        Map<String, List<Integer>> aminoAcidsForClade = Maps.newHashMap();
+
         for (int i = 0; i < clades.size(); i++) {
-            fitnesses.add(i, new Fitness(homogeneousFitness.get().clone(), true));
-            tdgModels.add(i, new TDGCodonModel(globals, fitnesses.get(i), aminoAcidsAtSite));
+            // Get amino acids observed for this clade (i) get the codons
+            Collection<Integer> codonsForClade = Lists.newArrayList();
+            for (Map.Entry<String, Integer> e: sitePattern.entrySet())
+                if (e.getKey().startsWith(clades.get(i)))
+                    codonsForClade.add(e.getValue());
+
+            // (ii) get distinct amino acids
+            List<Integer> observedAminoAcidsForClade = PhyloUtils.getDistinctAminoAcids(codonsForClade);
+
+            // (iii) add any missing amino acids (i.e. observed at site but not in clade) to end
+            for (int aminoAcid : aminoAcidsAtSite)
+                if (!observedAminoAcidsForClade.contains(aminoAcid))
+                    observedAminoAcidsForClade.add(aminoAcid);
+
+            // (iv) save the amino acid order for the clade for outputting
+            aminoAcidsForClade.put(clades.get(i), observedAminoAcidsForClade);
+
+            double[] cladeFitness = new double[aminoAcidsAtSite.size()];
+
+            for (int j = 0; j < aminoAcidsAtSite.size(); j++)
+                cladeFitness[j] = orderedFitnessHomogeneousMLE[observedAminoAcidsForClade.get(j)];
+
+            for (int j = 0; j < aminoAcidsAtSite.size(); j++)
+                cladeFitness[j] -= cladeFitness[0];
+
+            fitnesses.add(i, new Fitness(cladeFitness, true));
+            tdgModels.add(i, new TDGCodonModel(globals, fitnesses.get(i), observedAminoAcidsForClade));
+
             heterogeneousModel.addCladeModel(clades.get(i), tdgModels.get(i));
         }
+
         heterogeneousModel.setParameters(fitnesses.toArray(new Parameter[fitnesses.size()]));
 
         RealPointValuePair r2 = optimise(heterogeneousModel);
@@ -211,7 +242,7 @@ public class SiteAnalyser {
 
         System.out.printf("Site %s - Non-homogeneous model lnL: %s\n", site, r2.getValue());
         for (int i = 0; i < clades.size(); i++) {
-            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", getOrderedFitness(aminoAcidsAtSite, fitnesses.get(i).get())));
+            System.out.printf("Site %s - Fitness %s: { %s }\n", site, clades.get(i), Doubles.join(", ", getOrderedFitness(aminoAcidsForClade.get(clades.get(i)), fitnesses.get(i).get())));
             System.out.printf("Site %s - Pi %s: { %s }\n", site, clades.get(i), Doubles.join(", ", tdgModels.get(i).getAminoAcidFrequencies()));
         }
         heterogeneousLikelihood = r2.getValue();
